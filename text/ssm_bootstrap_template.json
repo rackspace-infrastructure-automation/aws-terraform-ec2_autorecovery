@@ -1,0 +1,6 @@
+{
+  "schemaVersion": "2.2",
+  "description": "SSM Document for instance configuration.",
+  "parameters": {},
+  "mainSteps": [${run_command_list}]
+}
