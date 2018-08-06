@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork//"
+  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.1"
   vpc_name = "EC2-AR-BaseNetwork-Test1"
 }
 
@@ -28,7 +28,7 @@ data "aws_ami" "amazon_centos_7" {
 }
 
 module "ec2_ar" {
-  source                            = "<_path_/_to_/_module_>/ec2_autorecovery/"
+  source                            = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.1"
   ec2_os                            = "centos7"
   instance_count                    = "3"
   ec2_subnet                        = "${element(module.vpc.public_subnets, 0)}"

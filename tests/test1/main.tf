@@ -183,7 +183,6 @@ EOF
 
 data "aws_ami" "amazon_windows_2016" {
   most_recent = true
-  owners      = ["amazon"]
 
   filter {
     name   = "name"
@@ -235,13 +234,10 @@ module "ec2_ar_windows_with_codedeploy" {
       {
         "action": "aws:runDocument",
         "inputs": {
-          "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package",
-          "documentParameters": {
-            "Packages": "bind bindutils"
-          },
+          "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Datadog",
           "documentType": "SSMDocument"
         },
-        "name": "InstallBindAndTools",
+        "name": "InstallDataDog",
         "timeoutSeconds": 300
       }
 EOF
@@ -251,9 +247,9 @@ EOF
       {
         "action": "aws:runDocument",
         "inputs": {
-          "documentPath": "AWS-RunShellScript",
+          "documentPath": "AWS-RunPowerShellScript",
           "documentParameters": {
-            "commands": ["touch /tmp/myfile"]
+            "commands": ["echo $null >> C:\testfile"]
           },
           "documentType": "SSMDocument"
         },
@@ -325,13 +321,10 @@ module "ec2_ar_windows_no_codedeploy" {
       {
         "action": "aws:runDocument",
         "inputs": {
-          "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package",
-          "documentParameters": {
-            "Packages": "bind bindutils"
-          },
+          "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Datadog",
           "documentType": "SSMDocument"
         },
-        "name": "InstallBindAndTools",
+        "name": "InstallDataDog",
         "timeoutSeconds": 300
       }
 EOF
@@ -341,9 +334,9 @@ EOF
       {
         "action": "aws:runDocument",
         "inputs": {
-          "documentPath": "AWS-RunShellScript",
+          "documentPath": "AWS-RunPowerShellScript",
           "documentParameters": {
-            "commands": ["touch /tmp/myfile"]
+            "commands": ["echo $null >> C:\testfile"]
           },
           "documentType": "SSMDocument"
         },
