@@ -1,0 +1,42 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: hashicorp/terraform:0.11.7
+    steps:
+      - checkout:
+            path: ~/module
+      - run: mkdir -p ~/workspace
+      - run: cp -pr ~/module/.circleci/bin ~/bin
+      - run: chmod +x ~/bin/*.sh
+      - run: mv ~/module/tests/ ~/layers/ # Move tests into layers directory
+      - run:
+          name: lint tests
+          command: cd ~ && ~/bin/lint.sh
+      - run: mkdir -p ~/example_lint/layers/ && mv ~/module/examples/ ~/example_lint/layers/
+      - run:
+          name: lint examples
+          command: cd ~/example_lint  && ~/bin/lint.sh
+      - run: mkdir -p ~/module_lint/layers/ && cp -pr ~/module/ ~/module_lint/layers/module/
+      - run:
+          name: lint module
+          command: cd ~/module_lint  && ~/bin/lint.sh
+      - run:
+          name: plan
+          command: cd ~ && ~/bin/plan.sh
+      - run:
+          name: apply
+          command: cd ~ && ~/bin/apply.sh
+      - run:
+          name: destroy
+          command: cd ~ && ~/bin/destroy.sh  # must succeed or we have something to clean up manually
+          when: always
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - test:
+          filters:
+            branches:
+             ignore: master
