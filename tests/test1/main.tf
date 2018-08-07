@@ -28,7 +28,7 @@ module "ec2_ar_centos7_with_codedeploy" {
   ec2_subnet                         = "${element(module.vpc.public_subnets, 0)}"
   security_group_list                = ["${module.vpc.default_sg}"]
   image_id                           = "${data.aws_ami.amazon_centos_7.image_id}"
-  key_pair                           = "mcardenas_testing"
+  key_pair                           = "CircleCI"
   instance_type                      = "t2.micro"
   resource_name                      = "ec2_ar_centos7_with_codedeploy"
   install_codedeploy_agent           = "False"
@@ -108,7 +108,7 @@ module "ec2_ar_centos7_no_codedeploy" {
   ec2_subnet                         = "${element(module.vpc.public_subnets, 0)}"
   security_group_list                = ["${module.vpc.default_sg}"]
   image_id                           = "${data.aws_ami.amazon_centos_7.image_id}"
-  key_pair                           = "mcardenas_testing"
+  key_pair                           = "CircleCI"
   instance_type                      = "t2.micro"
   resource_name                      = "ec2_ar_centos7_no_codedeploy"
   install_codedeploy_agent           = false
@@ -197,7 +197,7 @@ module "ec2_ar_windows_with_codedeploy" {
   ec2_subnet                         = "${element(module.vpc.public_subnets, 0)}"
   security_group_list                = ["${module.vpc.default_sg}"]
   image_id                           = "${data.aws_ami.amazon_windows_2016.image_id}"
-  key_pair                           = "mcardenas_testing"
+  key_pair                           = "CircleCI"
   instance_type                      = "t2.micro"
   resource_name                      = "ec2_ar_windows_with_codedeploy"
   install_codedeploy_agent           = true
@@ -278,7 +278,7 @@ module "ec2_ar_windows_no_codedeploy" {
   ]
 
   image_id                     = "${data.aws_ami.amazon_windows_2016.image_id}"
-  key_pair                     = "mcardenas_testing"
+  key_pair                     = "CircleCI"
   instance_type                = "t2.micro"
   resource_name                = "ec2_ar_windows_no_codedeploy"
   install_codedeploy_agent     = false
