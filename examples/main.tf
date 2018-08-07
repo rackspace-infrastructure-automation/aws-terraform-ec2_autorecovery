@@ -1,10 +1,39 @@
+provider "aws" {
+  version = "~> 1.2"
+  region  = "us-west-2"
+}
+
+module "vpc" {
+  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.1"
+  vpc_name = "EC2-AR-BaseNetwork-Test1"
+}
+
+data "aws_region" "current_region" {}
+
+# Lookup the correct AMI based on the region specified
+data "aws_ami" "amazon_centos_7" {
+  most_recent = true
+
+  owners = [
+    "679593333241",
+  ]
+
+  filter {
+    name = "name"
+
+    values = [
+      "CentOS Linux 7 x86_64 HVM EBS*",
+    ]
+  }
+}
+
 module "ec2_ar" {
-  source                            = "<_path_/_to_/_module_>/ec2_autorecovery/"
-  ec2_os                            = "rhel7"
+  source                            = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.1"
+  ec2_os                            = "centos7"
   instance_count                    = "3"
-  ec2_subnet                        = "${aws_subnet.my_subnet.id}"
-  security_group_list               = ["${aws_security_group.my_security_group.id}"]
-  image_id                          = "ami-7c491f05"
+  ec2_subnet                        = "${element(module.vpc.public_subnets, 0)}"
+  security_group_list               = ["${module.vpc.default_sg}"]
+  image_id                          = "${data.aws_ami.amazon_centos_7.image_id}"
   key_pair                          = "mcardenas_testing"
   instance_type                     = "t2.micro"
   resource_name                     = "my_test_instance"
