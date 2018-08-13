@@ -199,6 +199,12 @@ variable "perform_ssm_inventory_tag" {
   default     = "True"
 }
 
+variable "rackspace_managed" {
+  description = "Boolean parameter controlling if instance will be fully managed by Rackspace support teams, created CloudWatch alarms that generate tickets, and utilize Rackspace managed SSM documents."
+  type        = "string"
+  default     = true
+}
+
 variable "ssm_association_refresh_rate" {
   description = "A cron or rate pattern to define the SSM Association refresh schedule, defaulting to once per day. See https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-cron.html for more details. Schedule can be disabled by providing an empty string."
   type        = "string"

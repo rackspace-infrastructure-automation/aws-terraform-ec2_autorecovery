@@ -37,102 +37,6 @@ locals {
     "Patch Group"   = "${var.ssm_patching_group}"
   }
 
-  # This is a list of ssm main steps
-  default_ssm_cmd_list = [
-    {
-      ssm_add_step = <<EOF
-      {
-        "action": "aws:runDocument",
-        "inputs": {
-          "documentPath": "AWS-ConfigureAWSPackage",
-          "documentParameters": {
-            "action": "Install",
-            "name": "AmazonCloudWatchAgent"
-          },
-          "documentType": "SSMDocument"
-        },
-        "name": "InstallCWAgent",
-        "timeoutSeconds": 300
-      }
-EOF
-    },
-    {
-      ssm_add_step = <<EOF
-      {
-        "action": "aws:runDocument",
-        "inputs": {
-          "documentPath": "AmazonCloudWatch-ManageAgent",
-          "documentParameters": {
-            "action": "configure",
-            "optionalConfigurationSource": "ssm",
-            "optionalConfigurationLocation": "${aws_ssm_parameter.cwagentparam.name}",
-            "optionalRestart": "yes",
-            "name": "AmazonCloudWatchAgent"
-          },
-          "documentType": "SSMDocument"
-        },
-        "name": "ConfigureCWAgent",
-        "timeoutSeconds": 300
-      }
-EOF
-    },
-    {
-      ssm_add_step = <<EOF
-      {
-        "action": "aws:runDocument",
-        "inputs": {
-          "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-ConfigureAWSTimeSync",
-          "documentType": "SSMDocument"
-        },
-        "name": "SetupTimeSync",
-        "timeoutSeconds": 300
-      }
-EOF
-    },
-    {
-      ssm_add_step = <<EOF
-      {
-        "action": "aws:runDocument",
-        "inputs": {
-          "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_ScaleFT",
-          "documentType": "SSMDocument"
-        },
-        "name": "SetupPassport",
-        "timeoutSeconds": 300
-      }
-EOF
-    },
-    {
-      ssm_add_step = <<EOF
-      {
-        "action": "aws:runDocument",
-        "inputs": {
-          "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package",
-          "documentParameters": {
-            "Packages": "sysstat ltrace strace iptraf tcpdump"
-          },
-          "documentType": "SSMDocument"
-        },
-        "name": "DiagnosticTools",
-        "timeoutSeconds": 300
-      }
-EOF
-    },
-    {
-      ssm_add_step = <<EOF
-      {
-        "action": "aws:runDocument",
-        "inputs": {
-          "documentPath": "AWS-UpdateSSMAgent",
-          "documentType": "SSMDocument"
-        },
-        "name": "UpdateSSMAgent",
-        "timeoutSeconds": 300
-      }
-EOF
-    },
-  ]
-
   ssm_codedeploy_include = {
     enabled = <<EOF
     {
@@ -142,15 +46,26 @@ EOF
         "documentType": "SSMDocument"
       },
       "name": "InstallCodeDeployAgent"
-    }
+    },
 EOF
 
     disabled = ""
   }
 
-  codedeploy_install = "${var.install_codedeploy_agent ? "enabled" : "disabled"}"
+  codedeploy_install     = "${var.install_codedeploy_agent && var.rackspace_managed ? "enabled" : "disabled"}"
+  alarm_sns_notification = "${compact(list(var.alarm_notification_topic))}"
+  alarm_emergency_ticket = ["arn:aws:sns:${data.aws_region.current_region.name}:${data.aws_caller_identity.current_account.account_id}:rackspace-support-emergency"]
+  recovery_action        = "${var.rackspace_managed ? "managed" : "unmanaged"}"
 
-  ssm_command_count = 6
+  recovery_alarm_action = {
+    managed   = "${local.alarm_emergency_ticket}"
+    unmanaged = "${local.alarm_sns_notification}"
+  }
+
+  recovery_ok_action = {
+    managed   = "${local.alarm_emergency_ticket}"
+    unmanaged = []
+  }
 }
 
 data "aws_region" "current_region" {}
@@ -259,22 +174,20 @@ resource "aws_iam_instance_profile" "instance_role_instance_profile" {
 # SSM Association
 #
 
-data "template_file" "ssm_command_docs" {
-  template = "$${ssm_cmd_json}"
-
-  count = "${local.ssm_command_count}"
+data "template_file" "ssm_managed_commands" {
+  template = "\n${file("${path.module}/text/managed_ssm_steps.json")}"
 
   vars {
-    ssm_cmd_json = "${lookup(local.default_ssm_cmd_list[count.index], "ssm_add_step")}"
+    region = "${data.aws_region.current_region.name}"
   }
 }
 
 data "template_file" "additional_ssm_docs" {
-  template = "$${addtional_ssm_cmd_json}"
+  template = "    $${addtional_ssm_cmd_json},"
   count    = "${var.addtional_ssm_bootstrap_step_count}"
 
   vars {
-    addtional_ssm_cmd_json = "${lookup(var.addtional_ssm_bootstrap_list[count.index], "ssm_add_step")}"
+    addtional_ssm_cmd_json = "${trimspace(lookup(var.addtional_ssm_bootstrap_list[count.index], "ssm_add_step"))}"
   }
 }
 
@@ -282,7 +195,10 @@ data "template_file" "ssm_bootstrap_template" {
   template = "${file("${path.module}/text/ssm_bootstrap_template.json")}"
 
   vars {
-    run_command_list = "${join(",",compact(concat(data.template_file.ssm_command_docs.*.rendered, list(local.ssm_codedeploy_include[local.codedeploy_install]), data.template_file.additional_ssm_docs.*.rendered)))}"
+    cw_agent_param      = "${aws_ssm_parameter.cwagentparam.name}"
+    managed_ssm_docs    = "${var.rackspace_managed ? data.template_file.ssm_managed_commands.rendered : ""}"
+    codedeploy_doc      = "${local.ssm_codedeploy_include[local.codedeploy_install]}"
+    additional_ssm_docs = "${join("\n", data.template_file.additional_ssm_docs.*.rendered)}"
   }
 }
 
@@ -337,8 +253,8 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_ticket"
   evaluation_periods  = "2"
   period              = "60"
   metric_name         = "StatusCheckFailed_System"
-  alarm_actions       = ["arn:aws:sns:${data.aws_region.current_region.name}:${data.aws_caller_identity.current_account.account_id}:rackspace-support-emergency"]
-  ok_actions          = ["arn:aws:sns:${data.aws_region.current_region.name}:${data.aws_caller_identity.current_account.account_id}:rackspace-support-emergency"]
+  ok_actions          = ["${local.recovery_ok_action[local.recovery_action]}"]
+  alarm_actions       = ["${local.recovery_alarm_action[local.recovery_action]}"]
 
   dimensions {
     # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
@@ -398,8 +314,8 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_instance_alarm_ticke
   evaluation_periods  = "10"
   period              = "60"
   metric_name         = "StatusCheckFailed_Instance"
-  ok_actions          = ["arn:aws:sns:${data.aws_region.current_region.name}:${data.aws_caller_identity.current_account.account_id}:rackspace-support-emergency"]
-  alarm_actions       = ["arn:aws:sns:${data.aws_region.current_region.name}:${data.aws_caller_identity.current_account.account_id}:rackspace-support-emergency"]
+  ok_actions          = ["${local.recovery_ok_action[local.recovery_action]}"]
+  alarm_actions       = ["${local.recovery_alarm_action[local.recovery_action]}"]
 
   dimensions {
     # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
