@@ -35,6 +35,7 @@
 | primary_ebs_volume_size | EBS Volume Size in GB | string | `60` | no |
 | primary_ebs_volume_type | EBS Volume Type. e.g. gp2, io1, st1, sc1 | string | `gp2` | no |
 | private_ip_address | A list of static private IP addresses to be configured on the instance.  This IP should be in the assigned subnet and if the instance is replaced, a new IP would need to be assigned. If used, one private IP needs to be provided per instance. | list | `<list>` | no |
+| rackspace_managed | Boolean parameter controlling if instance will be fully managed by Rackspace support teams, created CloudWatch alarms that generate tickets, and utilize Rackspace managed SSM documents. | string | `true` | no |
 | resource_name | Name to be used for the provisioned EC2 instance(s) and other resources provisioned in this module | string | - | yes |
 | secondary_ebs_volume_iops | Iops value required for use with io1 EBS volumes. This value should be 3 times the EBS volume size | string | `0` | no |
 | secondary_ebs_volume_size | EBS Volume Size in GB | string | `` | no |
@@ -50,4 +51,3 @@
 | Name | Description |
 |------|-------------|
 | ar_instance_id_list | List of resulting Instance IDs |
-

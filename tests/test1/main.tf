@@ -31,7 +31,7 @@ module "ec2_ar_centos7_with_codedeploy" {
   key_pair                           = "CircleCI"
   instance_type                      = "t2.micro"
   resource_name                      = "ec2_ar_centos7_with_codedeploy"
-  install_codedeploy_agent           = "False"
+  install_codedeploy_agent           = true
   enable_ebs_optimization            = "False"
   tenancy                            = "default"
   backup_tag_value                   = "False"
@@ -352,4 +352,23 @@ EOF
     MyTag2 = "MyValue2"
     MyTag3 = "MyValue3"
   }
+}
+
+module "sns" {
+  source     = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns//"
+  topic_name = "my-alarm-notification-topic"
+}
+
+module "unmanaged_ar" {
+  source = "../../module"
+
+  ec2_os                   = "centos7"
+  instance_count           = "1"
+  ec2_subnet               = "${element(module.vpc.private_subnets, 0)}"
+  security_group_list      = ["${module.vpc.default_sg}"]
+  image_id                 = "${data.aws_ami.amazon_centos_7.image_id}"
+  instance_type            = "t2.micro"
+  resource_name            = "my_unmanaged_instance"
+  alarm_notification_topic = "${module.sns.topic_arn}"
+  rackspace_managed        = false
 }
