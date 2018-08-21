@@ -33,13 +33,13 @@ module "sns" {
 }
 
 module "unmanaged_ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.1"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.2"
 
   ec2_os                   = "centos7"
   instance_count           = "1"
   ec2_subnet               = "${element(module.vpc.private_subnets, 0)}"
   security_group_list      = ["${module.vpc.default_sg}"]
-  image_id                 = "${data.aws_ami.instance.image_id}"
+  image_id                 = "${data.aws_ami.amazon_centos_7.image_id}"
   instance_type            = "t2.micro"
   resource_name            = "my_unmanaged_instance"
   alarm_notification_topic = "${module.sns.topic_arn}"

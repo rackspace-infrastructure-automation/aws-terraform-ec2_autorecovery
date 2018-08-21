@@ -183,11 +183,11 @@ data "template_file" "ssm_managed_commands" {
 }
 
 data "template_file" "additional_ssm_docs" {
-  template = "    $${addtional_ssm_cmd_json},"
-  count    = "${var.addtional_ssm_bootstrap_step_count}"
+  template = "    $${additional_ssm_cmd_json},"
+  count    = "${var.additional_ssm_bootstrap_step_count}"
 
   vars {
-    addtional_ssm_cmd_json = "${trimspace(lookup(var.addtional_ssm_bootstrap_list[count.index], "ssm_add_step"))}"
+    additional_ssm_cmd_json = "${trimspace(lookup(var.additional_ssm_bootstrap_list[count.index], "ssm_add_step"))}"
   }
 }
 
@@ -435,6 +435,6 @@ resource "aws_eip_association" "eip_assoc" {
   count = "${var.eip_allocation_id_count}"
 
   # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-  instance_id   = "${var.primary_ebs_volume_size != "" ? element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, list("novalue")), count.index) : element(coalescelist(aws_instance.mod_ec2_instance_no_secondary_ebs.*.id, list("novalue")), count.index)}"
+  instance_id   = "${var.secondary_ebs_volume_size != "" ? element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, list("novalue")), count.index) : element(coalescelist(aws_instance.mod_ec2_instance_no_secondary_ebs.*.id, list("novalue")), count.index)}"
   allocation_id = "${element(var.eip_allocation_id_list, count.index)}"
 }
