@@ -21,6 +21,14 @@ data "aws_ami" "amazon_centos_7" {
   }
 }
 
+resource "aws_eip" "test_eip_1" {
+  vpc = true
+
+  tags = {
+    Name = "Circle-CI-Test1-1"
+  }
+}
+
 module "ec2_ar_centos7_with_codedeploy" {
   source                             = "../../module"
   ec2_os                             = "centos7"
@@ -40,9 +48,6 @@ module "ec2_ar_centos7_with_codedeploy" {
   primary_ebs_volume_size            = "60"
   primary_ebs_volume_iops            = "0"
   primary_ebs_volume_type            = "gp2"
-  secondary_ebs_volume_size          = "60"
-  secondary_ebs_volume_iops          = "0"
-  secondary_ebs_volume_type          = "gp2"
   encrypt_secondary_ebs_volume       = "False"
   environment                        = "Development"
   instance_role_managed_policy_arns  = ["arn:aws:iam::aws:policy/AmazonEC2FullAccess", "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole", "arn:aws:iam::aws:policy/CloudWatchActionsEC2Access"]
@@ -58,6 +63,8 @@ module "ec2_ar_centos7_with_codedeploy" {
   cw_cpu_high_threshold              = "90"
   cw_cpu_high_evaluations            = "15"
   cw_cpu_high_period                 = "60"
+  eip_allocation_id_count            = "1"
+  eip_allocation_id_list             = ["${aws_eip.test_eip_1.id}"]
 
   addtional_ssm_bootstrap_list = [
     {
@@ -101,6 +108,14 @@ EOF
   }
 }
 
+resource "aws_eip" "test_eip_2" {
+  vpc = true
+
+  tags = {
+    Name = "Circle-CI-Test1-2"
+  }
+}
+
 module "ec2_ar_centos7_no_codedeploy" {
   source                             = "../../module"
   ec2_os                             = "centos7"
@@ -138,6 +153,8 @@ module "ec2_ar_centos7_no_codedeploy" {
   cw_cpu_high_threshold              = "90"
   cw_cpu_high_evaluations            = "15"
   cw_cpu_high_period                 = "60"
+  eip_allocation_id_count            = "1"
+  eip_allocation_id_list             = ["${aws_eip.test_eip_2.id}"]
 
   addtional_ssm_bootstrap_list = [
     {

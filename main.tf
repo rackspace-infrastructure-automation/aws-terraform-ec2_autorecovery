@@ -435,6 +435,6 @@ resource "aws_eip_association" "eip_assoc" {
   count = "${var.eip_allocation_id_count}"
 
   # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-  instance_id   = "${var.primary_ebs_volume_size != "" ? element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, list("novalue")), count.index) : element(coalescelist(aws_instance.mod_ec2_instance_no_secondary_ebs.*.id, list("novalue")), count.index)}"
+  instance_id   = "${var.secondary_ebs_volume_size != "" ? element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, list("novalue")), count.index) : element(coalescelist(aws_instance.mod_ec2_instance_no_secondary_ebs.*.id, list("novalue")), count.index)}"
   allocation_id = "${element(var.eip_allocation_id_list, count.index)}"
 }
