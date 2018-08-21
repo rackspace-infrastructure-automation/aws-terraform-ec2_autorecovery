@@ -28,7 +28,7 @@ data "aws_ami" "amazon_centos_7" {
 }
 
 module "ec2_ar" {
-  source                            = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.1"
+  source                            = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.2"
   ec2_os                            = "centos7"
   instance_count                    = "3"
   ec2_subnet                        = "${element(module.vpc.public_subnets, 0)}"
@@ -56,7 +56,7 @@ module "ec2_ar" {
   cloudwatch_log_retention          = "30"
   ssm_association_refresh_rate      = "rate(1 day)"
 
-  addtional_ssm_bootstrap_list = [
+  additional_ssm_bootstrap_list = [
     {
       ssm_add_step = <<EOF
       {
@@ -91,18 +91,18 @@ EOF
     },
   ]
 
-  addtional_ssm_bootstrap_step_count = "1"
-  private_ip_address                 = ["10.0.1.131", "10.0.1.132", "10.0.1.133"]
-  eip_allocation_id_list             = ["${aws_eip.my_eips.*.id}"]
-  eip_allocation_id_count            = "3"
-  alarm_notification_topic           = ""
-  disable_api_termination            = "False"
-  t2_unlimited_mode                  = "standard"
-  creation_policy_timeout            = "20m"
-  cw_cpu_high_operator               = "GreaterThanThreshold"
-  cw_cpu_high_threshold              = "90"
-  cw_cpu_high_evaluations            = "15"
-  cw_cpu_high_period                 = "60"
+  additional_ssm_bootstrap_step_count = "1"
+  private_ip_address                  = ["10.0.1.131", "10.0.1.132", "10.0.1.133"]
+  eip_allocation_id_list              = ["${aws_eip.my_eips.*.id}"]
+  eip_allocation_id_count             = "3"
+  alarm_notification_topic            = ""
+  disable_api_termination             = "False"
+  t2_unlimited_mode                   = "standard"
+  creation_policy_timeout             = "20m"
+  cw_cpu_high_operator                = "GreaterThanThreshold"
+  cw_cpu_high_threshold               = "90"
+  cw_cpu_high_evaluations             = "15"
+  cw_cpu_high_period                  = "60"
 
   additional_tags = {
     MyTag1 = "MyValue1"

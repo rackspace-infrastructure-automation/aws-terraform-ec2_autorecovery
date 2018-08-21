@@ -181,14 +181,14 @@ variable "environment" {
 # SSM and Associations
 #
 
-variable "addtional_ssm_bootstrap_list" {
+variable "additional_ssm_bootstrap_list" {
   description = "A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples."
   type        = "list"
   default     = []
 }
 
-variable "addtional_ssm_bootstrap_step_count" {
-  description = "Count of steps added for input 'addtional_ssm_bootstrap_list'. This is required since 'addtional_ssm_bootstrap_list' is a list of maps"
+variable "additional_ssm_bootstrap_step_count" {
+  description = "Count of steps added for input 'additional_ssm_bootstrap_list'. This is required since 'additional_ssm_bootstrap_list' is a list of maps"
   type        = "string"
   default     = "0"
 }
