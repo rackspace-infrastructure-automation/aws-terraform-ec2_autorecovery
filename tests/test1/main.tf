@@ -3,6 +3,15 @@ provider "aws" {
   region  = "us-west-2"
 }
 
+terraform {
+  backend "s3" {
+    encrypt = true
+    bucket  = "((GENERATED_BUCKET_NAME))"
+    region  = "us-west-2"
+    key     = "terraform.tfstate"
+  }
+}
+
 module "vpc" {
   source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork//"
   vpc_name = "EC2-AR-BaseNetwork-Test1"
@@ -32,7 +41,7 @@ resource "aws_eip" "test_eip_1" {
 module "ec2_ar_centos7_with_codedeploy" {
   source                              = "../../module"
   ec2_os                              = "centos7"
-  instance_count                      = "3"
+  instance_count                      = "2"
   ec2_subnet                          = "${element(module.vpc.public_subnets, 0)}"
   security_group_list                 = ["${module.vpc.default_sg}"]
   image_id                            = "${data.aws_ami.amazon_centos_7.image_id}"
@@ -372,7 +381,7 @@ EOF
 }
 
 module "sns" {
-  source     = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns//"
+  source     = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns?ref=v0.0.1"
   topic_name = "my-alarm-notification-topic"
 }
 

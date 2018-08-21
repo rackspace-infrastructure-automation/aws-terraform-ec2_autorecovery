@@ -2,41 +2,96 @@ version: 2
 jobs:
   test:
     docker:
-      - image: hashicorp/terraform:0.11.7
+      - image: hashicorp/terraform:0.11.8
     steps:
+      - run: mkdir -p ~/branches/master
+      - run: cd ~/branches/master && GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=no' git clone $CIRCLE_REPOSITORY_URL .
       - checkout:
-            path: ~/module
-      - run: mkdir -p ~/workspace
+            path: ~/branches/${CIRCLE_BRANCH}
+      - run: mkdir -p ~/workspace/plan_results
+      - run: ln -s ~/branches/${CIRCLE_BRANCH} ~/module
+      - run: cp -pr ~/module/.circleci/templates ~/templates
       - run: cp -pr ~/module/.circleci/bin ~/bin
       - run: chmod +x ~/bin/*.sh
-      - run: mv ~/module/tests/ ~/layers/ # Move tests into layers directory
       - run:
-          name: lint tests
-          command: cd ~ && ~/bin/lint.sh
-      - run: mkdir -p ~/example_lint/layers/ && mv ~/module/examples/ ~/example_lint/layers/
+          name: switch symlink to master branch
+          command: |
+            rm -f ~/module
+            ln -s ~/branches/master ~/module
+      - run: cp -pr ~/module/tests/ ~/layers/ # Move tests into layers directory
       - run:
-          name: lint examples
-          command: cd ~/example_lint  && ~/bin/lint.sh
-      - run: mkdir -p ~/module_lint/layers/ && cp -pr ~/module/ ~/module_lint/layers/module/
+          name: create tf s3 backends
+          command: cd ~ && ~/bin/create_s3.sh
       - run:
-          name: lint module
-          command: cd ~/module_lint  && ~/bin/lint.sh
-      - run:
-          name: plan
+          name: plan master branch
           command: cd ~ && ~/bin/plan.sh
       - run:
-          name: apply
+          name: apply master branch
+          command: cd ~ && ~/bin/apply.sh
+      - run:
+          name: switch symlink to branch
+          command: |
+            rm -f ~/module
+            ln -s ~/branches/${CIRCLE_BRANCH} ~/module
+      - run:
+          name: set up directories
+          command: |
+            cd ~ && ~/bin/branch_test_setup.sh
+      - run:
+          name: create tf s3 backends
+          command: cd ~ && ~/bin/create_s3.sh
+      - run:
+          name: plan branch updates
+          command: cd ~ && ~/bin/plan.sh
+      - run:
+          name: write plan destroy results
+          command: cd ~ && ~/bin/plan_check.sh
+      - run:
+          name: apply branch updates
           command: cd ~ && ~/bin/apply.sh
       - run:
           name: destroy
-          command: cd ~ && ~/bin/destroy.sh  # must succeed or we have something to clean up manually
+          command: cd ~ && ~/bin/destroy.sh && ~/bin/destroy_s3_buckets.sh # must succeed or we have something to clean up manually
           when: always
+      - persist_to_workspace:
+          root: ~/workspace
+          paths: plan_results/*
+  test_job:
+    docker:
+      - image: hashicorp/terraform:0.11.8
+    steps:
+      - run:
+          name: generate files
+          command: |
+              mkdir -p ~/workspace/plan_results
+              echo "1" > ~/workspace/plan_results/test1
+      - persist_to_workspace:
+          root: ~/workspace
+          paths: plan_results/*
+  check_destruction:
+    docker:
+      - image: hashicorp/terraform:0.11.8
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - checkout:
+            path: ~/module
+      - run: cp -pr ~/module/.circleci/bin ~/bin
+      - run:
+          name: raise errors if destroy detected
+          command: cd ~ && ~/bin/raise.sh
 
 workflows:
   version: 2
   build_and_test:
     jobs:
       - test:
+          filters:
+            branches:
+             ignore: master
+      - check_destruction:
+          requires:
+            - test
           filters:
             branches:
              ignore: master
