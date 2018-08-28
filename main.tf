@@ -8,12 +8,15 @@ resource "random_string" "r_string" {
 
 locals {
   user_data_map = {
-    rhel6    = "${file("${path.module}/text/rhel_centos_6_userdata.sh")}"
-    rhel7    = "${file("${path.module}/text/rhel_centos_7_userdata.sh")}"
-    centos6  = "${file("${path.module}/text/rhel_centos_6_userdata.sh")}"
-    centos7  = "${file("${path.module}/text/rhel_centos_7_userdata.sh")}"
-    ubuntu14 = "${file("${path.module}/text/ubuntu_userdata.sh")}"
-    ubuntu16 = "${file("${path.module}/text/ubuntu_userdata.sh")}"
+    amazon   = "amazon_linux_userdata.sh"
+    amazon2  = "amazon_linux_userdata.sh"
+    rhel6    = "rhel_centos_6_userdata.sh"
+    rhel7    = "rhel_centos_7_userdata.sh"
+    centos6  = "rhel_centos_6_userdata.sh"
+    centos7  = "rhel_centos_7_userdata.sh"
+    ubuntu14 = "ubuntu_userdata.sh"
+    ubuntu16 = "ubuntu_userdata.sh"
+    windows  = "windows_userdata.ps1"
   }
 
   ebs_device_map = {
@@ -66,6 +69,12 @@ EOF
     managed   = "${local.alarm_emergency_ticket}"
     unmanaged = []
   }
+}
+
+data "template_file" "user_data" {
+  template = "${file("${path.module}/text/${lookup(local.user_data_map, var.ec2_os)}")}"
+
+  vars {}
 }
 
 data "aws_region" "current_region" {}
@@ -358,7 +367,7 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   tenancy                = "${var.tenancy}"
   monitoring             = "${var.detailed_monitoring}"
   iam_instance_profile   = "${aws_iam_instance_profile.instance_role_instance_profile.name}"
-  user_data_base64       = "${base64encode(lookup(local.user_data_map, var.ec2_os, ""))}"
+  user_data_base64       = "${base64encode(data.template_file.user_data.rendered)}"
 
   # coalescelist and list("") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
   private_ip              = "${element(coalescelist(var.private_ip_address, list("")), count.index)}"
@@ -396,7 +405,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   tenancy                = "${var.tenancy}"
   monitoring             = "${var.detailed_monitoring}"
   iam_instance_profile   = "${aws_iam_instance_profile.instance_role_instance_profile.name}"
-  user_data_base64       = "${base64encode(lookup(local.user_data_map, var.ec2_os, ""))}"
+  user_data_base64       = "${base64encode(data.template_file.user_data.rendered)}"
 
   # coalescelist and list("") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
   private_ip              = "${element(coalescelist(var.private_ip_address, list("")), count.index)}"
