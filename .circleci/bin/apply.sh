@@ -9,7 +9,7 @@ LAYERS_DIR="$WORKING_DIR/layers"
 if [ -f "$WORKSPACE_DIR/changed_layers" ]; then
   LAYERS=$(cat "$WORKSPACE_DIR/changed_layers" | sort -n)
 else
-  LAYERS=$(find "$LAYERS_DIR"/* -type d -maxdepth 0 -exec basename '{}' \; | sort -n)
+  LAYERS=$(find "$LAYERS_DIR"/* -maxdepth 0 -type d -exec basename '{}' \; | sort -n)
 fi
 
 for LAYER in $LAYERS; do
