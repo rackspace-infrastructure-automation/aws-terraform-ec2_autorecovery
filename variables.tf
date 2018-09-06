@@ -272,3 +272,15 @@ variable "instance_role_managed_policy_arn_count" {
   type        = "string"
   default     = "0"
 }
+
+variable "initial_userdata_commands" {
+  description = "Commands to be given at the start of userdata for an instance. This should generally not include bootstrapping or ssm install."
+  type        = "string"
+  default     = ""
+}
+
+variable "final_userdata_commands" {
+  description = "Commands to be given at the end of userdata for an instance. This should generally not include bootstrapping or ssm install."
+  type        = "string"
+  default     = ""
+}

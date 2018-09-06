@@ -74,7 +74,10 @@ EOF
 data "template_file" "user_data" {
   template = "${file("${path.module}/text/${lookup(local.user_data_map, var.ec2_os)}")}"
 
-  vars {}
+  vars {
+    initial_commands = "${var.initial_userdata_commands != "" ? "${var.initial_userdata_commands}" : "" }"
+    final_commands   = "${var.final_userdata_commands != "" ? "${var.final_userdata_commands}" : "" }"
+  }
 }
 
 data "aws_region" "current_region" {}
