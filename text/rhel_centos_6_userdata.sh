@@ -1,4 +1,7 @@
 #!/bin/bash -xe
+
+${initial_commands}
+
 exec 1> >(logger -s -t $(basename $0)) 2>&1
 
 mkdir -p /opt/aws/bin
@@ -29,3 +32,5 @@ else
         fi
     fi
 fi
+
+${final_commands}

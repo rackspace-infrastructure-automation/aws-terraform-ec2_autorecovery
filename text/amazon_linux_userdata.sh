@@ -1,5 +1,7 @@
 #!/bin/bash
 
+${initial_commands}
+
 # Ensure SSM installed on Amazon Linux
 # in cases where it is not available / removed
 ssm_running=$( ps -ef | grep ['a']mazon-ssm-agent | wc -l )
@@ -25,3 +27,5 @@ else
         fi
     fi
 fi
+
+${final_commands}

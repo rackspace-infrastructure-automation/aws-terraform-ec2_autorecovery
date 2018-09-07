@@ -1,6 +1,8 @@
 #!/bin/bash -xe
-exec 1> >(logger -s -t $(basename $0)) 2>&1
 
+${initial_commands}
+
+exec 1> >(logger -s -t $(basename $0)) 2>&1
 
 export LC_ALL=C.UTF-8
 
@@ -35,3 +37,5 @@ else
         fi
     fi
 fi
+
+${final_commands}
