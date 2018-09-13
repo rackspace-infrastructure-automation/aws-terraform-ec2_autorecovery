@@ -3,6 +3,15 @@ provider "aws" {
   region  = "us-west-2"
 }
 
+terraform {
+  backend "s3" {
+    encrypt = true
+    bucket  = "((GENERATED_BUCKET_NAME))"
+    region  = "us-west-2"
+    key     = "terraform.tfstate"
+  }
+}
+
 module "vpc" {
   source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork//"
   vpc_name = "EC2-AR-BaseNetwork-Test1"
@@ -372,7 +381,7 @@ EOF
 }
 
 module "sns" {
-  source     = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns//"
+  source     = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns?ref=v0.0.1"
   topic_name = "my-alarm-notification-topic"
 }
 
