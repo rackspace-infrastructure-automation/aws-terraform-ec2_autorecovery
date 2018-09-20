@@ -24,7 +24,7 @@ jobs:
           command: cd ~ && ~/bin/plan.sh
       - run:
           name: apply master branch
-          command: cd ~ && ~/bin/apply.sh
+          command: cd ~ && ~/bin/apply.sh  || echo "Apply Failed"
       - run:
           name: switch symlink to branch
           command: |

@@ -270,7 +270,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_ticket"
 
   dimensions {
     # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-    InstanceId = "${var.primary_ebs_volume_size != "" ? element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, list("novalue")), count.index) : element(coalescelist(aws_instance.mod_ec2_instance_no_secondary_ebs.*.id, list("novalue")), count.index)}"
+    InstanceId = "${element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, aws_instance.mod_ec2_instance_no_secondary_ebs.*.id), count.index)}"
   }
 }
 
@@ -290,7 +290,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_instance_alarm_reboo
 
   dimensions {
     # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-    InstanceId = "${var.primary_ebs_volume_size != "" ? element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, list("novalue")), count.index) : element(coalescelist(aws_instance.mod_ec2_instance_no_secondary_ebs.*.id, list("novalue")), count.index)}"
+    InstanceId = "${element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, aws_instance.mod_ec2_instance_no_secondary_ebs.*.id), count.index)}"
   }
 }
 
@@ -310,7 +310,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_recover
 
   dimensions {
     # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-    InstanceId = "${var.primary_ebs_volume_size != "" ? element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, list("novalue")), count.index) : element(coalescelist(aws_instance.mod_ec2_instance_no_secondary_ebs.*.id, list("novalue")), count.index)}"
+    InstanceId = "${element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, aws_instance.mod_ec2_instance_no_secondary_ebs.*.id), count.index)}"
   }
 }
 
@@ -331,7 +331,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_instance_alarm_ticke
 
   dimensions {
     # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-    InstanceId = "${var.primary_ebs_volume_size != "" ? element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, list("novalue")), count.index) : element(coalescelist(aws_instance.mod_ec2_instance_no_secondary_ebs.*.id, list("novalue")), count.index)}"
+    InstanceId = "${element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, aws_instance.mod_ec2_instance_no_secondary_ebs.*.id), count.index)}"
   }
 }
 
@@ -351,7 +351,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm_high" {
 
   dimensions {
     # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-    InstanceId = "${var.primary_ebs_volume_size != "" ? element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, list("novalue")), count.index) : element(coalescelist(aws_instance.mod_ec2_instance_no_secondary_ebs.*.id, list("novalue")), count.index)}"
+    InstanceId = "${element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, aws_instance.mod_ec2_instance_no_secondary_ebs.*.id), count.index)}"
   }
 }
 
@@ -447,6 +447,6 @@ resource "aws_eip_association" "eip_assoc" {
   count = "${var.eip_allocation_id_count}"
 
   # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-  instance_id   = "${var.secondary_ebs_volume_size != "" ? element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, list("novalue")), count.index) : element(coalescelist(aws_instance.mod_ec2_instance_no_secondary_ebs.*.id, list("novalue")), count.index)}"
+  instance_id   = "${element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, aws_instance.mod_ec2_instance_no_secondary_ebs.*.id), count.index)}"
   allocation_id = "${element(var.eip_allocation_id_list, count.index)}"
 }
