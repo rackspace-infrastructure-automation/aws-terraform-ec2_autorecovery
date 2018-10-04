@@ -16,6 +16,7 @@
 | cw_cpu_high_threshold | The value against which the specified statistic is compared. | string | `90` | no |
 | detailed_monitoring | Enable Detailed Monitoring? true or false | string | `true` | no |
 | disable_api_termination | Specifies that an instance should not be able to be deleted via the API. true or false. This option must be toggled to false to allow Terraform to destroy the resource. | string | `false` | no |
+| ebs_volume_tags | (Optional) A mapping of tags to assign to the devices created by the instance at launch time. | map | `<map>` | no |
 | ec2_os | Intended Operating System/Distribution of Instance. Valid inputs are ('amazon', 'rhel6', 'rhel7', 'centos6', 'centos7', 'ubuntu14', 'ubuntu16', 'windows') | string | - | yes |
 | ec2_subnet | Subnet ID for EC2 Instance | string | - | yes |
 | eip_allocation_id_count | A count of supplied eip allocation IDs in variable eip_allocation_id_list | string | `0` | no |

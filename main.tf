@@ -384,6 +384,7 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
     volume_type = "${var.primary_ebs_volume_type}"
     volume_size = "${var.primary_ebs_volume_size}"
     iops        = "${var.primary_ebs_volume_iops}"
+    volume_tags = "${var.ebs_volume_tags}"
   }
 
   timeouts {
@@ -422,6 +423,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
     volume_type = "${var.primary_ebs_volume_type}"
     volume_size = "${var.primary_ebs_volume_size}"
     iops        = "${var.primary_ebs_volume_iops}"
+    volume_tags = "${var.ebs_volume_tags}"
   }
 
   ebs_block_device {
@@ -430,6 +432,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
     volume_size = "${var.secondary_ebs_volume_size}"
     iops        = "${var.secondary_ebs_volume_iops}"
     encrypted   = "${var.encrypt_secondary_ebs_volume}"
+    volume_tags = "${var.ebs_volume_tags}"
   }
 
   timeouts {

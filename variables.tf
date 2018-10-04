@@ -113,6 +113,12 @@ variable "backup_tag_value" {
   default     = "False"
 }
 
+variable "ebs_volume_tags" {
+  description = "(Optional) A mapping of tags to assign to the devices created by the instance at launch time."
+  type        = "map"
+  default     = {}
+}
+
 variable "enable_ebs_optimization" {
   description = "Use EBS Optimized? true or false"
   type        = "string"
