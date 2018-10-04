@@ -385,6 +385,7 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
     volume_size = "${var.primary_ebs_volume_size}"
     iops        = "${var.primary_ebs_volume_iops}"
   }
+
   volume_tags = "${var.ebs_volume_tags}"
 
   timeouts {
@@ -424,6 +425,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
     volume_size = "${var.primary_ebs_volume_size}"
     iops        = "${var.primary_ebs_volume_iops}"
   }
+
   volume_tags = "${var.ebs_volume_tags}"
 
   ebs_block_device {
