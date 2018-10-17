@@ -5,6 +5,7 @@ set -e
 WORKING_DIR=$(pwd)
 WORKSPACE_DIR="$WORKING_DIR/workspace"
 LAYERS_DIR="$WORKING_DIR/layers"
+ARTIFACT_DIR="${WORKSPACE_DIR}/artifacts"
 
 if [ -f "$WORKSPACE_DIR/changed_layers" ]; then
   LAYERS=$(cat "$WORKSPACE_DIR/changed_layers")
@@ -26,4 +27,7 @@ for LAYER in $LAYERS; do
   # for debugging, show these files exist
   ls -la "$WORKSPACE_DIR/.terraform.$LAYER.tar.gz"
   ls -la "$WORKSPACE_DIR/terraform.$LAYER.plan"
+
+  # Copy plan stdout to artifact directory
+  (cd "$LAYERS_DIR/$LAYER" && cp layerplan.log ${ARTIFACT_DIR}/terraform.${LAYER}.plan.log)
 done
