@@ -306,7 +306,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_recover
   evaluation_periods  = "2"
   period              = "60"
   metric_name         = "StatusCheckFailed_System"
-  alarm_actions       = ["arn:aws:automate:${data.aws_region.current_region.name}:ec2:recover"]
+  alarm_actions       = ["arn:aws:automate:${data.aws_region.current_region.name}:${data.aws_caller_identity.current_account.account_id}:ec2:recover"]
 
   dimensions {
     # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
