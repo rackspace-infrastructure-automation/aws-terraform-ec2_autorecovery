@@ -3,9 +3,9 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| additional_ssm_bootstrap_list | A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples. | list | `<list>` | no |
+| additional_ssm_bootstrap_step_count | Count of steps added for input 'additional_ssm_bootstrap_list'. This is required since 'additional_ssm_bootstrap_list' is a list of maps | string | `0` | no |
 | additional_tags | Additional tags to be added to the EC2 instance Please see usage.tf.example in this repo for examples. | map | `<map>` | no |
-| addtional_ssm_bootstrap_list | A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples. | list | `<list>` | no |
-| addtional_ssm_bootstrap_step_count | Count of steps added for input 'addtional_ssm_bootstrap_list'. This is required since 'addtional_ssm_bootstrap_list' is a list of maps | string | `0` | no |
 | alarm_notification_topic | SNS Topic ARN to notify if there are any alarms | string | `` | no |
 | backup_tag_value | Value of the 'Backup' tag, used to assign te EBSSnapper configuration | string | `False` | no |
 | cloudwatch_log_retention | The number of days to retain Cloudwatch Logs for this instance. | string | `30` | no |
@@ -18,13 +18,14 @@
 | disable_api_termination | Specifies that an instance should not be able to be deleted via the API. true or false. This option must be toggled to false to allow Terraform to destroy the resource. | string | `false` | no |
 | ebs_volume_tags | (Optional) A mapping of tags to assign to the devices created by the instance at launch time. | map | `<map>` | no |
 | ec2_os | Intended Operating System/Distribution of Instance. Valid inputs are ('amazon', 'rhel6', 'rhel7', 'centos6', 'centos7', 'ubuntu14', 'ubuntu16', 'windows') | string | - | yes |
-| ec2_subnet | Subnet ID for EC2 Instance | string | - | yes |
 | eip_allocation_id_count | A count of supplied eip allocation IDs in variable eip_allocation_id_list | string | `0` | no |
 | eip_allocation_id_list | A list of Allocation IDs of the EIPs you want to associate with the instance(s). This is one per instance. e.g. if you specify 2 for instance_count then you must supply two allocation ids  here. | list | `<list>` | no |
 | enable_ebs_optimization | Use EBS Optimized? true or false | string | `false` | no |
 | encrypt_secondary_ebs_volume | Encrypt EBS Volume? true or false | string | `false` | no |
 | environment | Application environment for which this network is being created. Preferred value are Development, Integration, PreProduction, Production, QA, Staging, or Test | string | `Development` | no |
+| final_userdata_commands | Commands to be given at the end of userdata for an instance. This should generally not include bootstrapping or ssm install. | string | `` | no |
 | image_id | The AMI ID to be used to build the EC2 Instance. | string | - | yes |
+| initial_userdata_commands | Commands to be given at the start of userdata for an instance. This should generally not include bootstrapping or ssm install. | string | `` | no |
 | install_codedeploy_agent | Install codedeploy agent on instance(s)? true or false | string | `false` | no |
 | instance_count | Number of identical instances to deploy | string | `1` | no |
 | instance_role_managed_policy_arn_count | The number of policy ARNs provided/set in variable 'instance_role_managed_policy_arns' | string | `0` | no |
@@ -44,6 +45,7 @@
 | security_group_list | A list of security group IDs to assign to this resource. e.g. ['sg-00e88e6a', 'sg-0943cd61', 'sg-2f46c847'] | list | - | yes |
 | ssm_association_refresh_rate | A cron or rate pattern to define the SSM Association refresh schedule, defaulting to once per day. See https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-cron.html for more details. Schedule can be disabled by providing an empty string. | string | `rate(1 day)` | no |
 | ssm_patching_group | Group ID to be used by System Manager for Patching. This is the value to be used for tag 'Patch Group' | string | `` | no |
+| subnets | Subnet ID(s) for EC2 Instance(s). If multiple are provided, instances will be distributed amongst them. | list | `<list>` | no |
 | t2_unlimited_mode | Determines whether to enable the T2 Unlimited feature.  Only applicable on instance classes that support burstable CPU. | string | `standard` | no |
 | tenancy | The placement tenancy for EC2 devices. e.g. host, default, dedicated | string | `default` | no |
 
