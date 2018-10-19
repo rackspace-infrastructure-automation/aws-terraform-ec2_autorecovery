@@ -1,5 +1,6 @@
 provider "aws" {
-  version = "~> 1.2"
+  # Temporary workaround for https://github.com/terraform-providers/terraform-provider-aws/issues/6203
+  version = "~> 1.2, < 1.41.0"
   region  = "us-west-2"
 }
 
@@ -31,7 +32,7 @@ module "ec2_ar" {
   source                            = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.2"
   ec2_os                            = "centos7"
   instance_count                    = "3"
-  ec2_subnet                        = "${element(module.vpc.public_subnets, 0)}"
+  subnets                           = "${module.vpc.public_subnets}"
   security_group_list               = ["${module.vpc.default_sg}"]
   image_id                          = "${data.aws_ami.amazon_centos_7.image_id}"
   key_pair                          = "mcardenas_testing"

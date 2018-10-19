@@ -80,9 +80,10 @@ variable "tenancy" {
 # EC2 Network
 #
 
-variable "ec2_subnet" {
-  description = "Subnet ID for EC2 Instance"
-  type        = "string"
+variable "subnets" {
+  description = "Subnet ID(s) for EC2 Instance(s). If multiple are provided, instances will be distributed amongst them."
+  type        = "list"
+  default     = []
 }
 
 variable "eip_allocation_id_count" {

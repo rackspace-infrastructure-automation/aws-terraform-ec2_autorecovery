@@ -362,7 +362,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm_high" {
 resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   ami                    = "${var.image_id}"
   count                  = "${var.secondary_ebs_volume_size != "" ? 0 : var.instance_count}"
-  subnet_id              = "${var.ec2_subnet}"
+  subnet_id              = "${element(var.subnets, count.index)}"
   vpc_security_group_ids = ["${var.security_group_list}"]
   instance_type          = "${var.instance_type}"
   key_name               = "${var.key_pair}"
@@ -402,7 +402,7 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
 resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   ami                    = "${var.image_id}"
   count                  = "${var.secondary_ebs_volume_size != "" ? var.instance_count : 0}"
-  subnet_id              = "${var.ec2_subnet}"
+  subnet_id              = "${element(var.subnets, count.index)}"
   vpc_security_group_ids = ["${var.security_group_list}"]
   instance_type          = "${var.instance_type}"
   key_name               = "${var.key_pair}"
