@@ -229,6 +229,7 @@ resource "aws_ssm_parameter" "cwagentparam" {
 }
 
 resource "aws_ssm_association" "ssm_bootstrap_assoc" {
+  count               = "${var.instance_count == 0 ? 0 : 1}"
   name                = "${aws_ssm_document.ssm_bootstrap_doc.name}"
   schedule_expression = "${var.ssm_association_refresh_rate}"
 
