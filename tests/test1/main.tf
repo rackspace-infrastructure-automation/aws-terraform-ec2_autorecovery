@@ -397,3 +397,17 @@ module "unmanaged_ar" {
   alarm_notification_topic = "${module.sns.topic_arn}"
   rackspace_managed        = false
 }
+
+module "zero_count_ar" {
+  source = "../../module"
+
+  ec2_os                   = "centos7"
+  instance_count           = "0"
+  subnets                  = []
+  security_group_list      = ["${module.vpc.default_sg}"]
+  image_id                 = "${data.aws_ami.amazon_centos_7.image_id}"
+  instance_type            = "t2.micro"
+  resource_name            = "my_nonexistent_instance"
+  alarm_notification_topic = "${module.sns.topic_arn}"
+  rackspace_managed        = false
+}
