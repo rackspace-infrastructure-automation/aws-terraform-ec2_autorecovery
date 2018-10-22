@@ -1,3 +1,25 @@
+/**
+ * # aws-terraform-ec2_asg
+ *
+ *This module creates one or more autorecovery instances.
+ *
+ *## Basic Usage
+ *
+ *```
+ *module "ar" {
+ *  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.2"
+ *
+ *  ec2_os              = "amazon"
+ *  subnets             = ["${module.vpc.private_subnets}"]
+ *  image_id            = "${var.image_id}"
+ *  resource_name       = "my_ar_instance"
+ *  security_group_list = ["${module.sg.private_web_security_group_id}"]
+ *}
+ *```
+ *
+ * Full working references are available at [examples](examples)
+ */
+
 resource "random_string" "r_string" {
   length  = 16
   upper   = true
@@ -16,6 +38,7 @@ locals {
     centos7  = "rhel_centos_7_userdata.sh"
     ubuntu14 = "ubuntu_userdata.sh"
     ubuntu16 = "ubuntu_userdata.sh"
+    ubuntu18 = "ubuntu_userdata.sh"
     windows  = "windows_userdata.ps1"
   }
 
@@ -27,6 +50,7 @@ locals {
     windows  = "xvdf"
     ubuntu14 = "/dev/sdf"
     ubuntu16 = "/dev/sdf"
+    ubuntu18 = "/dev/sdf"
     amazon   = "/dev/sdf"
   }
 
