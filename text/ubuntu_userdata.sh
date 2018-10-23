@@ -9,12 +9,6 @@ export LC_ALL=C.UTF-8
 apt-get update
 apt-get -y install python-setuptools python-pip
 pip install awscli --upgrade
-mkdir -p aws-cfn-bootstrap-latest
-curl https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz | tar xz -C aws-cfn-bootstrap-latest --strip-components 1
-easy_install aws-cfn-bootstrap-latest
-cp -a aws-cfn-bootstrap-latest/init/ubuntu/cfn-hup /etc/init.d/cfn-hup
-chmod +x /etc/init.d/cfn-hup
-update-rc.d cfn-hup defaults
 ssm_running=$( ps -ef | grep [a]mazon-ssm-agent | wc -l )
 if [[ $ssm_running != "0" ]]; then
     echo -e "amazon-ssm-agent already running"
