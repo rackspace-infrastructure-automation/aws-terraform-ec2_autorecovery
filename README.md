@@ -74,4 +74,4 @@ Full working references are available at [examples](examples)
 | Name | Description |
 |------|-------------|
 | ar_instance_id_list | List of resulting Instance IDs |
-
+| ar_instance_ip_list | List of resulting Instance IP addresses |
