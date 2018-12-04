@@ -1,6 +1,5 @@
 provider "aws" {
-  # Temporary workaround for https://github.com/terraform-providers/terraform-provider-aws/issues/6203
-  version = "~> 1.2, < 1.41.0"
+  version = "~> 1.2"
   region  = "us-west-2"
 }
 
