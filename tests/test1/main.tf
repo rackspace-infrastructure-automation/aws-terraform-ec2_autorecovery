@@ -3,9 +3,17 @@ provider "aws" {
   region  = "us-west-2"
 }
 
+resource "random_string" "res_name" {
+  length  = 8
+  upper   = false
+  lower   = true
+  special = false
+  number  = false
+}
+
 module "vpc" {
   source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork//"
-  vpc_name = "EC2-AR-BaseNetwork-Test1"
+  vpc_name = "EC2-AR-BaseNetwork-Test1-${random_string.res_name.result}"
 }
 
 data "aws_region" "current_region" {}
@@ -25,7 +33,7 @@ resource "aws_eip" "test_eip_1" {
   vpc = true
 
   tags = {
-    Name = "Circle-CI-Test1-1"
+    Name = "Circle-CI-Test1-1-${random_string.res_name.result}"
   }
 }
 
@@ -38,7 +46,7 @@ module "ec2_ar_centos7_with_codedeploy" {
   image_id                            = "${data.aws_ami.amazon_centos_7.image_id}"
   key_pair                            = "CircleCI"
   instance_type                       = "t2.micro"
-  resource_name                       = "ec2_ar_centos7_with_codedeploy"
+  resource_name                       = "ar_centos7_codedeploy-${random_string.res_name.result}"
   install_codedeploy_agent            = true
   enable_ebs_optimization             = "False"
   tenancy                             = "default"
@@ -112,7 +120,7 @@ resource "aws_eip" "test_eip_2" {
   vpc = true
 
   tags = {
-    Name = "Circle-CI-Test1-2"
+    Name = "Circle-CI-Test1-2-${random_string.res_name.result}"
   }
 }
 
@@ -125,7 +133,7 @@ module "ec2_ar_centos7_no_codedeploy" {
   image_id                     = "${data.aws_ami.amazon_centos_7.image_id}"
   key_pair                     = "CircleCI"
   instance_type                = "t2.micro"
-  resource_name                = "ec2_ar_centos7_no_codedeploy"
+  resource_name                = "ar_centos7_noncodedeploy-${random_string.res_name.result}"
   install_codedeploy_agent     = false
   enable_ebs_optimization      = "False"
   tenancy                      = "default"
@@ -223,7 +231,7 @@ module "ec2_ar_windows_with_codedeploy" {
   image_id                            = "${data.aws_ami.amazon_windows_2016.image_id}"
   key_pair                            = "CircleCI"
   instance_type                       = "t2.micro"
-  resource_name                       = "ec2_ar_windows_with_codedeploy"
+  resource_name                       = "ar_windows_codedeploy-${random_string.res_name.result}"
   install_codedeploy_agent            = true
   enable_ebs_optimization             = "False"
   tenancy                             = "default"
@@ -304,7 +312,7 @@ module "ec2_ar_windows_no_codedeploy" {
   image_id                     = "${data.aws_ami.amazon_windows_2016.image_id}"
   key_pair                     = "CircleCI"
   instance_type                = "t2.micro"
-  resource_name                = "ec2_ar_windows_no_codedeploy"
+  resource_name                = "ar_windows_noncodedeploy-${random_string.res_name.result}"
   install_codedeploy_agent     = false
   enable_ebs_optimization      = "False"
   tenancy                      = "default"
@@ -380,7 +388,7 @@ EOF
 
 module "sns" {
   source     = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns//"
-  topic_name = "my-alarm-notification-topic"
+  topic_name = "my-alarm-notification-topic-${random_string.res_name.result}"
 }
 
 module "unmanaged_ar" {
@@ -392,7 +400,7 @@ module "unmanaged_ar" {
   security_group_list      = ["${module.vpc.default_sg}"]
   image_id                 = "${data.aws_ami.amazon_centos_7.image_id}"
   instance_type            = "t2.micro"
-  resource_name            = "my_unmanaged_instance"
+  resource_name            = "my_unmanaged_instance-${random_string.res_name.result}"
   alarm_notification_topic = "${module.sns.topic_arn}"
   rackspace_managed        = false
 }
@@ -406,7 +414,7 @@ module "zero_count_ar" {
   security_group_list      = ["${module.vpc.default_sg}"]
   image_id                 = "${data.aws_ami.amazon_centos_7.image_id}"
   instance_type            = "t2.micro"
-  resource_name            = "my_nonexistent_instance"
+  resource_name            = "my_nonexistent_instance-${random_string.res_name.result}"
   alarm_notification_topic = "${module.sns.topic_arn}"
   rackspace_managed        = false
 }
