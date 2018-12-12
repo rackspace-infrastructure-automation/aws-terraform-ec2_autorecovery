@@ -1,5 +1,5 @@
 /**
- * # aws-terraform-ec2_asg
+ * # aws-terraform-ec2_autorecovery
  *
  *This module creates one or more autorecovery instances.
  *
