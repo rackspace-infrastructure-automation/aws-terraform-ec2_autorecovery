@@ -18,7 +18,6 @@ module "ar" {
 
 Full working references are available at [examples](examples)
 
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |

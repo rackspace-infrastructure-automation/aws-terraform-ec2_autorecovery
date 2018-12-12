@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.1"
+  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.6"
   vpc_name = "EC2-AR-BaseNetwork-Test1"
 }
 
@@ -28,12 +28,12 @@ data "aws_ami" "amazon_centos_7" {
 }
 
 module "sns" {
-  source     = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns//?ref=v0.0.1"
+  source     = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns//?ref=v0.0.2"
   topic_name = "my-alarm-notification-topic"
 }
 
 module "unmanaged_ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.2"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.6"
 
   ec2_os                   = "centos7"
   instance_count           = "1"
