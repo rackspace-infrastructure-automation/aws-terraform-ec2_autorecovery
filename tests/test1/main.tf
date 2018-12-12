@@ -12,7 +12,7 @@ resource "random_string" "res_name" {
 }
 
 module "vpc" {
-  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork//"
+  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=master"
   vpc_name = "EC2-AR-BaseNetwork-Test1-${random_string.res_name.result}"
 }
 
@@ -387,7 +387,7 @@ EOF
 }
 
 module "sns" {
-  source     = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns//"
+  source     = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns?ref=master"
   topic_name = "my-alarm-notification-topic-${random_string.res_name.result}"
 }
 
