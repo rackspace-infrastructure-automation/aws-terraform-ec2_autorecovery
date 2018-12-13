@@ -22,8 +22,7 @@ jobs:
           command: cd ~ && ~/bin/create_s3.sh
       - run:
           name: plan master branch
-          # Temporary until `terraform-providers/terraform-provider-aws#6203` has been resolved
-          command: cd ~ && ~/bin/plan.sh || echo "Plan failed"
+          command: cd ~ && ~/bin/plan.sh
       - run:
           name: apply master branch
           command: cd ~ && ~/bin/apply.sh  || echo "Apply Failed"
