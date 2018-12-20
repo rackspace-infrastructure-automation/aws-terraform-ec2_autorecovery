@@ -18,6 +18,7 @@ module "ar" {
 
 Full working references are available at [examples](examples)
 
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -36,14 +37,14 @@ Full working references are available at [examples](examples)
 | detailed_monitoring | Enable Detailed Monitoring? true or false | string | `true` | no |
 | disable_api_termination | Specifies that an instance should not be able to be deleted via the API. true or false. This option must be toggled to false to allow Terraform to destroy the resource. | string | `false` | no |
 | ebs_volume_tags | (Optional) A mapping of tags to assign to the devices created by the instance at launch time. | map | `<map>` | no |
-| ec2_os | Intended Operating System/Distribution of Instance. Valid inputs are ('amazon', 'rhel6', 'rhel7', 'centos6', 'centos7', 'ubuntu14', 'ubuntu16', 'windows') | string | - | yes |
+| ec2_os | Intended Operating System/Distribution of Instance. Valid inputs are ('amazon', 'rhel6', 'rhel7', 'centos6', 'centos7', 'ubuntu14', 'ubuntu16', 'windows2008', 'windows2012R2', 'windows2016') | string | - | yes |
 | eip_allocation_id_count | A count of supplied eip allocation IDs in variable eip_allocation_id_list | string | `0` | no |
 | eip_allocation_id_list | A list of Allocation IDs of the EIPs you want to associate with the instance(s). This is one per instance. e.g. if you specify 2 for instance_count then you must supply two allocation ids  here. | list | `<list>` | no |
 | enable_ebs_optimization | Use EBS Optimized? true or false | string | `false` | no |
 | encrypt_secondary_ebs_volume | Encrypt EBS Volume? true or false | string | `false` | no |
 | environment | Application environment for which this network is being created. Preferred value are Development, Integration, PreProduction, Production, QA, Staging, or Test | string | `Development` | no |
 | final_userdata_commands | Commands to be given at the end of userdata for an instance. This should generally not include bootstrapping or ssm install. | string | `` | no |
-| image_id | The AMI ID to be used to build the EC2 Instance. | string | - | yes |
+| image_id | The AMI ID to be used to build the EC2 Instance. If not provided, an AMI ID will be queried with an OS specified in variable ec2_os. | string | `` | no |
 | initial_userdata_commands | Commands to be given at the start of userdata for an instance. This should generally not include bootstrapping or ssm install. | string | `` | no |
 | install_codedeploy_agent | Install codedeploy agent on instance(s)? true or false | string | `false` | no |
 | instance_count | Number of identical instances to deploy | string | `1` | no |
@@ -72,5 +73,7 @@ Full working references are available at [examples](examples)
 
 | Name | Description |
 |------|-------------|
+| ar_image_id | Image ID used for EC2 provisioning |
 | ar_instance_id_list | List of resulting Instance IDs |
 | ar_instance_ip_list | List of resulting Instance IP addresses |
+

@@ -30,28 +30,33 @@ resource "random_string" "r_string" {
 
 locals {
   user_data_map = {
-    amazon   = "amazon_linux_userdata.sh"
-    amazon2  = "amazon_linux_userdata.sh"
-    rhel6    = "rhel_centos_6_userdata.sh"
-    rhel7    = "rhel_centos_7_userdata.sh"
-    centos6  = "rhel_centos_6_userdata.sh"
-    centos7  = "rhel_centos_7_userdata.sh"
-    ubuntu14 = "ubuntu_userdata.sh"
-    ubuntu16 = "ubuntu_userdata.sh"
-    ubuntu18 = "ubuntu_userdata.sh"
-    windows  = "windows_userdata.ps1"
+    amazon        = "amazon_linux_userdata.sh"
+    amazon2       = "amazon_linux_userdata.sh"
+    rhel6         = "rhel_centos_6_userdata.sh"
+    rhel7         = "rhel_centos_7_userdata.sh"
+    centos6       = "rhel_centos_6_userdata.sh"
+    centos7       = "rhel_centos_7_userdata.sh"
+    ubuntu14      = "ubuntu_userdata.sh"
+    ubuntu16      = "ubuntu_userdata.sh"
+    ubuntu18      = "ubuntu_userdata.sh"
+    windows2008   = "windows_userdata.ps1"
+    windows2012R2 = "windows_userdata.ps1"
+    windows2016   = "windows_userdata.ps1"
   }
 
   ebs_device_map = {
-    rhel6    = "/dev/sdf"
-    rhel7    = "/dev/sdf"
-    centos6  = "/dev/sdf"
-    centos7  = "/dev/sdf"
-    windows  = "xvdf"
-    ubuntu14 = "/dev/sdf"
-    ubuntu16 = "/dev/sdf"
-    ubuntu18 = "/dev/sdf"
-    amazon   = "/dev/sdf"
+    rhel6         = "/dev/sdf"
+    rhel7         = "/dev/sdf"
+    centos6       = "/dev/sdf"
+    centos7       = "/dev/sdf"
+    windows2008   = "xvdf"
+    windows2012R2 = "xvdf"
+    windows2016   = "xvdf"
+    ubuntu14      = "/dev/sdf"
+    ubuntu16      = "/dev/sdf"
+    ubuntu18      = "/dev/sdf"
+    amazon        = "/dev/sdf"
+    amazon2       = "/dev/sdf"
   }
 
   cwagent_config = "${var.ec2_os != "windows" ? "linux_cw_agent_param.txt" : "windows_cw_agent_param.txt"}"
@@ -93,6 +98,210 @@ EOF
     managed   = "${local.alarm_emergency_ticket}"
     unmanaged = []
   }
+
+  ami_owner_mapping = {
+    amazon        = "137112412989"
+    amazon2       = "137112412989"
+    centos6       = "679593333241"
+    centos7       = "679593333241"
+    rhel6         = "309956199498"
+    rhel7         = "309956199498"
+    ubuntu14      = "099720109477"
+    ubuntu16      = "099720109477"
+    ubuntu18      = "099720109477"
+    windows2008   = "801119661308"
+    windows2012R2 = "801119661308"
+    windows2016   = "801119661308"
+  }
+
+  ami_filter_mapping = {
+    amazon = [
+      {
+        name   = "name"
+        values = ["amzn-ami-hvm-2018.03.0.*gp2"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+
+    amazon2 = [
+      {
+        name   = "name"
+        values = ["amzn2-ami-hvm-2.0.*-ebs"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+
+    centos6 = [
+      {
+        name   = "name"
+        values = ["CentOS Linux 6 x86_64 HVM EBS*"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+
+    centos7 = [
+      {
+        name   = "name"
+        values = ["CentOS Linux 7 x86_64 HVM EBS*"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+
+    rhel6 = [
+      {
+        name   = "name"
+        values = ["RHEL-6.*_HVM_GA-*x86_64*"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+
+    rhel7 = [
+      {
+        name   = "name"
+        values = ["RHEL-7.*_HVM_GA-*x86_64*"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+
+    ubuntu14 = [
+      {
+        name   = "name"
+        values = ["*ubuntu-trusty-14.04-amd64-server*"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+
+    ubuntu16 = [
+      {
+        name   = "name"
+        values = ["*ubuntu-xenial-16.04-amd64-server*"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+
+    ubuntu18 = [
+      {
+        name   = "name"
+        values = ["*ubuntu-bionic-18.04-amd64-server*"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+
+    windows2008 = [
+      {
+        name   = "name"
+        values = ["Windows_Server-2008-R2_SP1-English-64Bit-Base*"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+
+    windows2012R2 = [
+      {
+        name   = "name"
+        values = ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+
+    windows2016 = [
+      {
+        name   = "name"
+        values = ["Windows_Server-2016-English-Full-Base*"]
+      },
+      {
+        name   = "root-device-type"
+        values = ["ebs"]
+      },
+      {
+        name   = "virtualization-type"
+        values = ["hvm"]
+      },
+    ]
+  }
+}
+
+# Lookup the correct AMI based on the region specified
+data "aws_ami" "ar_ami" {
+  most_recent = true
+  owners      = ["${local.ami_owner_mapping[var.ec2_os]}"]
+  filter      = ["${local.ami_filter_mapping[var.ec2_os]}"]
 }
 
 data "template_file" "user_data" {
@@ -385,7 +594,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm_high" {
 #
 
 resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
-  ami                    = "${var.image_id}"
+  ami                    = "${var.image_id != "" ? var.image_id : data.aws_ami.ar_ami.image_id}"
   count                  = "${var.secondary_ebs_volume_size != "" ? 0 : var.instance_count}"
   subnet_id              = "${element(var.subnets, count.index)}"
   vpc_security_group_ids = ["${var.security_group_list}"]
@@ -425,7 +634,7 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
 }
 
 resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
-  ami                    = "${var.image_id}"
+  ami                    = "${var.image_id != "" ? var.image_id : data.aws_ami.ar_ami.image_id}"
   count                  = "${var.secondary_ebs_volume_size != "" ? var.instance_count : 0}"
   subnet_id              = "${element(var.subnets, count.index)}"
   vpc_security_group_ids = ["${var.security_group_list}"]

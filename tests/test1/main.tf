@@ -43,7 +43,6 @@ module "ec2_ar_centos7_with_codedeploy" {
   instance_count                      = "3"
   subnets                             = "${module.vpc.public_subnets}"
   security_group_list                 = ["${module.vpc.default_sg}"]
-  image_id                            = "${data.aws_ami.amazon_centos_7.image_id}"
   key_pair                            = "CircleCI"
   instance_type                       = "t2.micro"
   resource_name                       = "ar_centos7_codedeploy-${random_string.res_name.result}"
@@ -224,7 +223,7 @@ data "aws_ami" "amazon_windows_2016" {
 
 module "ec2_ar_windows_with_codedeploy" {
   source                              = "../../module"
-  ec2_os                              = "windows"
+  ec2_os                              = "windows2016"
   instance_count                      = "3"
   subnets                             = "${module.vpc.public_subnets}"
   security_group_list                 = ["${module.vpc.default_sg}"]
@@ -301,7 +300,7 @@ EOF
 
 module "ec2_ar_windows_no_codedeploy" {
   source         = "../../module"
-  ec2_os         = "windows"
+  ec2_os         = "windows2016"
   instance_count = "3"
   subnets        = "${module.vpc.public_subnets}"
 
