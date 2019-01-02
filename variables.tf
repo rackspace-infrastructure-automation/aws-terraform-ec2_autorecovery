@@ -21,13 +21,14 @@ variable "disable_api_termination" {
 }
 
 variable "ec2_os" {
-  description = "Intended Operating System/Distribution of Instance. Valid inputs are ('amazon', 'rhel6', 'rhel7', 'centos6', 'centos7', 'ubuntu14', 'ubuntu16', 'windows')"
+  description = "Intended Operating System/Distribution of Instance. Valid inputs are ('amazon', 'rhel6', 'rhel7', 'centos6', 'centos7', 'ubuntu14', 'ubuntu16', 'windows2008', 'windows2012R2', 'windows2016')"
   type        = "string"
 }
 
 variable "image_id" {
-  description = "The AMI ID to be used to build the EC2 Instance."
+  description = "The AMI ID to be used to build the EC2 Instance. If not provided, an AMI ID will be queried with an OS specified in variable ec2_os."
   type        = "string"
+  default     = ""
 }
 
 variable "install_codedeploy_agent" {
