@@ -417,3 +417,21 @@ module "zero_count_ar" {
   alarm_notification_topic = "${module.sns.topic_arn}"
   rackspace_managed        = false
 }
+
+module "ec2_nfs" {
+  source                    = "../../module"
+  ec2_os                    = "amazon2"
+  instance_count            = "1"
+  subnets                   = "${module.vpc.private_subnets}"
+  security_group_list       = ["${module.vpc.default_sg}"]
+  key_pair                  = "CircleCI"
+  instance_type             = "t2.micro"
+  resource_name             = "ar-nfs-${random_string.res_name.result}"
+  install_nfs               = true
+  primary_ebs_volume_size   = "60"
+  primary_ebs_volume_iops   = "0"
+  primary_ebs_volume_type   = "gp2"
+  secondary_ebs_volume_size = "60"
+  secondary_ebs_volume_iops = "0"
+  secondary_ebs_volume_type = "gp2"
+}
