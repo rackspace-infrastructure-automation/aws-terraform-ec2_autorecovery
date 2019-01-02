@@ -86,8 +86,12 @@ EOF
 
   codedeploy_install     = "${var.install_codedeploy_agent && var.rackspace_managed ? "enabled" : "disabled"}"
   alarm_sns_notification = "${compact(list(var.alarm_notification_topic))}"
-  alarm_emergency_ticket = ["arn:aws:sns:${data.aws_region.current_region.name}:${data.aws_caller_identity.current_account.account_id}:rackspace-support-emergency"]
-  recovery_action        = "${var.rackspace_managed ? "managed" : "unmanaged"}"
+
+  alarm_emergency_ticket = [
+    "arn:aws:sns:${data.aws_region.current_region.name}:${data.aws_caller_identity.current_account.account_id}:rackspace-support-emergency",
+  ]
+
+  recovery_action = "${var.rackspace_managed ? "managed" : "unmanaged"}"
 
   recovery_alarm_action = {
     managed   = "${local.alarm_emergency_ticket}"
@@ -114,186 +118,19 @@ EOF
     windows2016   = "801119661308"
   }
 
-  ami_filter_mapping = {
-    amazon = [
-      {
-        name   = "name"
-        values = ["amzn-ami-hvm-2018.03.0.*gp2"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
-
-    amazon2 = [
-      {
-        name   = "name"
-        values = ["amzn2-ami-hvm-2.0.*-ebs"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
-
-    centos6 = [
-      {
-        name   = "name"
-        values = ["CentOS Linux 6 x86_64 HVM EBS*"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
-
-    centos7 = [
-      {
-        name   = "name"
-        values = ["CentOS Linux 7 x86_64 HVM EBS*"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
-
-    rhel6 = [
-      {
-        name   = "name"
-        values = ["RHEL-6.*_HVM_GA-*x86_64*"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
-
-    rhel7 = [
-      {
-        name   = "name"
-        values = ["RHEL-7.*_HVM_GA-*x86_64*"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
-
-    ubuntu14 = [
-      {
-        name   = "name"
-        values = ["*ubuntu-trusty-14.04-amd64-server*"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
-
-    ubuntu16 = [
-      {
-        name   = "name"
-        values = ["*ubuntu-xenial-16.04-amd64-server*"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
-
-    ubuntu18 = [
-      {
-        name   = "name"
-        values = ["*ubuntu-bionic-18.04-amd64-server*"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
-
-    windows2008 = [
-      {
-        name   = "name"
-        values = ["Windows_Server-2008-R2_SP1-English-64Bit-Base*"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
-
-    windows2012R2 = [
-      {
-        name   = "name"
-        values = ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
-
-    windows2016 = [
-      {
-        name   = "name"
-        values = ["Windows_Server-2016-English-Full-Base*"]
-      },
-      {
-        name   = "root-device-type"
-        values = ["ebs"]
-      },
-      {
-        name   = "virtualization-type"
-        values = ["hvm"]
-      },
-    ]
+  ami_name_mapping = {
+    amazon        = "amzn-ami-hvm-2018.03.0.*gp2"
+    amazon2       = "amzn2-ami-hvm-2.0.*-ebs"
+    centos6       = "CentOS Linux 6 x86_64 HVM EBS*"
+    centos7       = "CentOS Linux 7 x86_64 HVM EBS*"
+    rhel6         = "RHEL-6.*_HVM_GA-*x86_64*"
+    rhel7         = "RHEL-7.*_HVM_GA-*x86_64*"
+    ubuntu14      = "*ubuntu-trusty-14.04-amd64-server*"
+    ubuntu16      = "*ubuntu-xenial-16.04-amd64-server*"
+    ubuntu18      = "*ubuntu-bionic-18.04-amd64-server*"
+    windows2008   = "Windows_Server-2008-R2_SP1-English-64Bit-Base*"
+    windows2012R2 = "Windows_Server-2012-R2_RTM-English-64Bit-Base*"
+    windows2016   = "Windows_Server-2016-English-Full-Base*"
   }
 }
 
@@ -301,7 +138,21 @@ EOF
 data "aws_ami" "ar_ami" {
   most_recent = true
   owners      = ["${local.ami_owner_mapping[var.ec2_os]}"]
-  filter      = ["${local.ami_filter_mapping[var.ec2_os]}"]
+
+  filter {
+    name   = "name"
+    values = ["${local.ami_name_mapping[var.ec2_os]}"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 }
 
 data "template_file" "user_data" {
