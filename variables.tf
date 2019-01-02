@@ -37,6 +37,12 @@ variable "install_codedeploy_agent" {
   default     = false
 }
 
+variable "install_nfs" {
+  description = "Install NFS service on instance(s)? true or false"
+  type        = "string"
+  default     = false
+}
+
 variable "instance_count" {
   description = "Number of identical instances to deploy"
   type        = "string"

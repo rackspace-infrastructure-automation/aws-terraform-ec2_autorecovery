@@ -84,7 +84,37 @@ EOF
     disabled = ""
   }
 
-  codedeploy_install     = "${var.install_codedeploy_agent && var.rackspace_managed ? "enabled" : "disabled"}"
+  codedeploy_install = "${var.install_codedeploy_agent && var.rackspace_managed ? "enabled" : "disabled"}"
+
+  nfs_install = "${var.install_nfs && var.rackspace_managed && lookup(local.nfs_packages, var.ec2_os, "") != "" ? "enabled" : "disabled"}"
+
+  nfs_packages = {
+    amazon   = "nfs-utils"
+    amazon2  = "nfs-utils"
+    centos7  = "nfs-utils"
+    ubuntu14 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+    ubuntu16 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+    ubuntu18 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+  }
+
+  ssm_nfs_include = {
+    enabled = <<EOF
+    {
+      "action": "aws:runDocument",
+      "inputs": {
+        "documentType": "SSMDocument",
+        "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package",
+        "documentParameters": {
+          "Packages": "${lookup(local.nfs_packages, var.ec2_os, "")}"
+        }
+      },
+      "name": "InstallNFS"
+    },
+EOF
+
+    disabled = ""
+  }
+
   alarm_sns_notification = "${compact(list(var.alarm_notification_topic))}"
 
   alarm_emergency_ticket = [
@@ -294,6 +324,7 @@ data "template_file" "ssm_bootstrap_template" {
     cw_agent_param      = "${aws_ssm_parameter.cwagentparam.name}"
     managed_ssm_docs    = "${var.rackspace_managed ? data.template_file.ssm_managed_commands.rendered : ""}"
     codedeploy_doc      = "${local.ssm_codedeploy_include[local.codedeploy_install]}"
+    nfs_doc             = "${local.ssm_nfs_include[local.nfs_install]}"
     additional_ssm_docs = "${join("\n", data.template_file.additional_ssm_docs.*.rendered)}"
   }
 }
