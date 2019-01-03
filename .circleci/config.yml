@@ -2,76 +2,16 @@ version: 2
 jobs:
   test:
     docker:
-      - image: hashicorp/terraform:0.11.8
+      - image: 891714082543.dkr.ecr.us-west-2.amazonaws.com/rackspace-tf-toolbox
+    working_directory: ~/
     steps:
-      - run: mkdir -p ~/branches/master
-      - run: cd ~/branches/master && GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=no' git clone $CIRCLE_REPOSITORY_URL .
+      - attach_workspace:
+          at: ~/workspace
       - checkout:
             path: ~/branches/${CIRCLE_BRANCH}
-      - run: mkdir -p ~/workspace/plan_results
-      - run: mkdir -p ~/workspace/artifacts
-      - run: ln -s ~/branches/${CIRCLE_BRANCH} ~/module
-      - run: cp -pr ~/module/.circleci/bin ~/bin
-      - run: chmod +x ~/bin/*.sh
       - run:
-          name: switch symlink to master branch
-          command: cd ~ && ~/bin/check_master_tests.sh
-      - run: cp -pr ~/module/tests/ ~/layers/ # Move tests into layers directory
-      - run:
-          name: create tf s3 backends
-          command: cd ~ && ~/bin/create_s3.sh
-      - run:
-          name: plan master branch
-          command: cd ~ && ~/bin/plan.sh
-      - run:
-          name: apply master branch
-          command: cd ~ && ~/bin/apply.sh  || echo "Apply Failed"
-      - run:
-          name: switch symlink to branch
-          command: |
-            rm -f ~/module
-            ln -s ~/branches/${CIRCLE_BRANCH} ~/module
-      - run:
-          name: set up directories
-          command: |
-            cd ~ && ~/bin/branch_test_setup.sh
-      - run:
-          name: create tf s3 backends
-          command: cd ~ && ~/bin/create_s3.sh
-      - run:
-          name: lint tests
-          command: cd ~ && ~/bin/lint.sh
-      - run:
-          name: prep examples
-          command: |
-            mkdir -p ~/example_lint/layers/
-            if [ -d ~/module/examples/ ]; then
-              echo "Moving examples directory"
-              mv ~/module/examples/ ~/example_lint/layers/ || echo "Cannot move examples directory"
-            fi
-            if [ -d ~/module/modules/ ]; then
-              SUBMODULES=$(find ~/module/modules/* -type d -maxdepth 0 -exec basename '{}' \; | sort -n)
-              for MODULE in $SUBMODULES; do
-                echo "Moving $MODULE examples directory"
-                mv ~/module/modules/$MODULE/examples/ ~/example_lint/layers/$MODULE/
-              done
-            fi
-      - run:
-          name: lint examples
-          command: cd ~/example_lint  && ~/bin/lint.sh
-      - run: mkdir -p ~/module_lint/layers/ && cp -pr ~/module/ ~/module_lint/layers/module/
-      - run:
-          name: lint module
-          command: cd ~/module_lint  && ~/bin/lint.sh
-      - run:
-          name: plan branch updates
-          command: cd ~ && ~/bin/plan.sh
-      - run:
-          name: write plan destroy results
-          command: cd ~ && ~/bin/plan_check.sh
-      - run:
-          name: apply branch updates
-          command: cd ~ && ~/bin/apply.sh
+          name: Run Test
+          command: MODULE_CI_JOB='test' python3 orchestrate.py
       - run:
           name: destroy
           command: cd ~ && ~/bin/destroy.sh && ~/bin/destroy_s3_buckets.sh # must succeed or we have something to clean up manually
@@ -83,17 +23,16 @@ jobs:
             - artifacts/*
   check_destruction:
     docker:
-      - image: hashicorp/terraform:0.11.8
+      - image: 891714082543.dkr.ecr.us-west-2.amazonaws.com/rackspace-tf-toolbox
+    working_directory: ~/
     steps:
       - attach_workspace:
           at: ~/workspace
       - checkout:
             path: ~/module
-      - run: cp -pr ~/module/.circleci/bin ~/bin
-      - run: chmod +x ~/bin/*.sh
       - run:
-          name: raise errors if destroy detected
-          command: cd ~ && ~/bin/raise.sh
+          name: Check Destruction
+          command: MODULE_CI_JOB='check_destruction' python3 orchestrate.py
       - store_artifacts:
           path: ~/workspace/artifacts
 
