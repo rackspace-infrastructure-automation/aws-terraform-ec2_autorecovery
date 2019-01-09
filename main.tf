@@ -59,7 +59,7 @@ locals {
     amazon2       = "/dev/sdf"
   }
 
-  cwagent_config = "${var.ec2_os != "windows" ? "linux_cw_agent_param.txt" : "windows_cw_agent_param.txt"}"
+  cwagent_config = "${var.ec2_os != "windows" ? "linux_cw_agent_param.json" : "windows_cw_agent_param.json"}"
 
   tags = {
     ServiceProvider = "Rackspace"
