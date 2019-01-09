@@ -71,14 +71,7 @@ locals {
 
   ssm_codedeploy_include = {
     enabled = <<EOF
-    {
-      "action": "aws:runDocument",
-      "inputs": {
-        "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_CodeDeploy",
-        "documentType": "SSMDocument"
-      },
-      "name": "InstallCodeDeployAgent"
-    },
+    {"action":"aws:runDocument","inputs":{"documentPath":"arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_CodeDeploy","documentType":"SSMDocument"},"name":"InstallCodeDeployAgent"},
 EOF
 
     disabled = ""
@@ -99,17 +92,7 @@ EOF
 
   ssm_nfs_include = {
     enabled = <<EOF
-    {
-      "action": "aws:runDocument",
-      "inputs": {
-        "documentType": "SSMDocument",
-        "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package",
-        "documentParameters": {
-          "Packages": "${lookup(local.nfs_packages, var.ec2_os, "")}"
-        }
-      },
-      "name": "InstallNFS"
-    },
+    {"action": "aws:runDocument","inputs": {"documentType": "SSMDocument","documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package","documentParameters": {"Packages": "${lookup(local.nfs_packages, var.ec2_os, "")}"}},"name": "InstallNFS"},
 EOF
 
     disabled = ""
