@@ -1,1 +1,45 @@
-{"schemaVersion": "2.2","description": "SSM Document for instance configuration.","parameters": {}, "mainSteps": [{"action": "aws:runDocument","inputs": {"documentPath": "AWS-ConfigureAWSPackage","documentParameters": {"action": "Install","name": "AmazonCloudWatchAgent"},"documentType": "SSMDocument"},"name": "InstallCWAgent","timeoutSeconds": 300}, {"action": "aws:runDocument","inputs":{"documentPath": "AmazonCloudWatch-ManageAgent","documentParameters": {"action": "configure","optionalConfigurationSource": "ssm","optionalConfigurationLocation": "${cw_agent_param}","optionalRestart": "yes","name": "AmazonCloudWatchAgent"},"documentType": "SSMDocument"},"name": "ConfigureCWAgent","timeoutSeconds": 300},${managed_ssm_docs}${codedeploy_doc}${nfs_doc}${additional_ssm_docs}{"action": "aws:runDocument","inputs":{"documentPath": "AWS-UpdateSSMAgent","documentType": "SSMDocument"},"name": "UpdateSSMAgent","timeoutSeconds": 300}]}
+{
+  "schemaVersion": "2.2",
+  "description": "SSM Document for instance configuration.",
+  "parameters": {},
+  "mainSteps": [
+    {
+      "action": "aws:runDocument",
+      "inputs": {
+        "documentPath": "AWS-ConfigureAWSPackage",
+        "documentParameters": {
+          "action": "Install",
+          "name": "AmazonCloudWatchAgent"
+        },
+        "documentType": "SSMDocument"
+      },
+      "name": "InstallCWAgent",
+      "timeoutSeconds": 300
+    },
+    {
+      "action": "aws:runDocument",
+      "inputs": {
+        "documentPath": "AmazonCloudWatch-ManageAgent",
+        "documentParameters": {
+          "action": "configure",
+          "optionalConfigurationSource": "ssm",
+          "optionalConfigurationLocation": "${cw_agent_param}",
+          "optionalRestart": "yes",
+          "name": "AmazonCloudWatchAgent"
+        },
+        "documentType": "SSMDocument"
+      },
+      "name": "ConfigureCWAgent",
+      "timeoutSeconds": 300
+    },${managed_ssm_docs}${codedeploy_doc}${nfs_doc}${additional_ssm_docs}
+    {
+      "action": "aws:runDocument",
+      "inputs": {
+        "documentPath": "AWS-UpdateSSMAgent",
+        "documentType": "SSMDocument"
+      },
+      "name": "UpdateSSMAgent",
+      "timeoutSeconds": 300
+    }
+  ]
+}

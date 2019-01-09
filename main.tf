@@ -59,7 +59,7 @@ locals {
     amazon2       = "/dev/sdf"
   }
 
-  cwagent_config = "${var.ec2_os != "windows" ? "linux_cw_agent_param.txt" : "windows_cw_agent_param.txt"}"
+  cwagent_config = "${var.ec2_os != "windows" ? "linux_cw_agent_param.json" : "windows_cw_agent_param.json"}"
 
   tags = {
     ServiceProvider = "Rackspace"
@@ -71,7 +71,14 @@ locals {
 
   ssm_codedeploy_include = {
     enabled = <<EOF
-    {"action":"aws:runDocument","inputs":{"documentPath":"arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_CodeDeploy","documentType":"SSMDocument"},"name":"InstallCodeDeployAgent"},
+    {
+      "action": "aws:runDocument",
+      "inputs": {
+        "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_CodeDeploy",
+        "documentType": "SSMDocument"
+      },
+      "name": "InstallCodeDeployAgent"
+    },
 EOF
 
     disabled = ""
@@ -92,7 +99,17 @@ EOF
 
   ssm_nfs_include = {
     enabled = <<EOF
-    {"action": "aws:runDocument","inputs": {"documentType": "SSMDocument","documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package","documentParameters": {"Packages": "${lookup(local.nfs_packages, var.ec2_os, "")}"}},"name": "InstallNFS"},
+    {
+      "action": "aws:runDocument",
+      "inputs": {
+        "documentType": "SSMDocument",
+        "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package",
+        "documentParameters": {
+          "Packages": "${lookup(local.nfs_packages, var.ec2_os, "")}"
+        }
+      },
+      "name": "InstallNFS"
+    },
 EOF
 
     disabled = ""
