@@ -29,6 +29,7 @@ Full working references are available at [examples](examples)
 | backup\_tag\_value | Value of the 'Backup' tag, used to assign te EBSSnapper configuration | string | `"False"` | no |
 | cloudwatch\_log\_retention | The number of days to retain Cloudwatch Logs for this instance. | string | `"30"` | no |
 | creation\_policy\_timeout | Time to wait for the number of signals for the creation policy. H/M/S Hours/Minutes/Seconds | string | `"20m"` | no |
+| custom\_cw\_agent\_config\_ssm\_param | SSM Parameter Store name that contains a custom CloudWatch agent configuration that you would like to use as an alternative to the default provided. | string | `""` | no |
 | cw\_cpu\_high\_evaluations | The number of periods over which data is compared to the specified threshold. | string | `"15"` | no |
 | cw\_cpu\_high\_operator | Math operator used by CloudWatch for alarms and triggers. | string | `"GreaterThanThreshold"` | no |
 | cw\_cpu\_high\_period | Time the specified statistic is applied. Must be in seconds that is also a multiple of 60. | string | `"60"` | no |
@@ -57,6 +58,7 @@ Full working references are available at [examples](examples)
 | primary\_ebs\_volume\_size | EBS Volume Size in GB | string | `"60"` | no |
 | primary\_ebs\_volume\_type | EBS Volume Type. e.g. gp2, io1, st1, sc1 | string | `"gp2"` | no |
 | private\_ip\_address | A list of static private IP addresses to be configured on the instance.  This IP should be in the assigned subnet and if the instance is replaced, a new IP would need to be assigned. If used, one private IP needs to be provided per instance. | list | `<list>` | no |
+| provide\_custom\_cw\_agent\_config | Set to true if a custom cloudwatch agent configuration has been provided in variable custom_cw_agent_config_ssm_param. | string | `"false"` | no |
 | rackspace\_managed | Boolean parameter controlling if instance will be fully managed by Rackspace support teams, created CloudWatch alarms that generate tickets, and utilize Rackspace managed SSM documents. | string | `"true"` | no |
 | resource\_name | Name to be used for the provisioned EC2 instance(s) and other resources provisioned in this module | string | n/a | yes |
 | secondary\_ebs\_volume\_iops | Iops value required for use with io1 EBS volumes. This value should be 3 times the EBS volume size | string | `"0"` | no |
