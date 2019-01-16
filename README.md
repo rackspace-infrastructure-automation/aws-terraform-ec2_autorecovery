@@ -49,6 +49,8 @@ Full working references are available at [examples](examples)
 | install\_codedeploy\_agent | Install codedeploy agent on instance(s)? true or false | string | `"false"` | no |
 | install\_nfs | Install NFS service on instance(s)? true or false | string | `"false"` | no |
 | instance\_count | Number of identical instances to deploy | string | `"1"` | no |
+| instance\_profile\_override | Optionally provide an instance profile. Any override profile should contain the permissions required for Rackspace support tooling to continue to function if required. | string | `"false"` | no |
+| instance\_profile\_override\_name | Provide an instance profile name. Any override profile should contain the permissions required for Rackspace support tooling to continue to function if required. To use this set `instance_profile_override` to `true`. | string | `""` | no |
 | instance\_role\_managed\_policy\_arn\_count | The number of policy ARNs provided/set in variable 'instance_role_managed_policy_arns' | string | `"0"` | no |
 | instance\_role\_managed\_policy\_arns | List of IAM policy ARNs for the InstanceRole IAM role. IAM ARNs can be found within the Policies section of the AWS IAM console. e.g. ['arn:aws:iam::aws:policy/AmazonEC2FullAccess', 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM', 'arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole'] | list | `<list>` | no |
 | instance\_type | EC2 Instance Type e.g. 't2.micro' | string | `"t2.micro"` | no |
