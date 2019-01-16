@@ -287,6 +287,18 @@ variable "custom_cw_agent_config_ssm_param" {
 # Roles and Policies
 #
 
+variable "instance_profile_override" {
+  description = "Optionally provide an instance profile. Any override profile should contain the permissions required for Rackspace support tooling to continue to function if required."
+  type        = "string"
+  default     = false
+}
+
+variable "instance_profile_override_name" {
+  description = "Provide an instance profile name. Any override profile should contain the permissions required for Rackspace support tooling to continue to function if required. To use this set `instance_profile_override` to `true`."
+  type        = "string"
+  default     = ""
+}
+
 variable "instance_role_managed_policy_arns" {
   description = "List of IAM policy ARNs for the InstanceRole IAM role. IAM ARNs can be found within the Policies section of the AWS IAM console. e.g. ['arn:aws:iam::aws:policy/AmazonEC2FullAccess', 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM', 'arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole']"
   type        = "list"
