@@ -235,7 +235,7 @@ variable "ssm_patching_group" {
 # CloudWatch and Logs
 #
 
-variable "alarm_notification_topic" {
+variable "notification_topic" {
   description = "SNS Topic ARN to notify if there are any alarms"
   type        = "string"
   default     = ""

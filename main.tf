@@ -7,7 +7,7 @@
  *
  *```
  *module "ar" {
- *  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.2"
+ *  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.10"
  *
  *  ec2_os              = "amazon"
  *  subnets             = ["${module.vpc.private_subnets}"]
@@ -19,14 +19,6 @@
  *
  * Full working references are available at [examples](examples)
  */
-
-resource "random_string" "r_string" {
-  length  = 16
-  upper   = true
-  lower   = false
-  number  = true
-  special = false
-}
 
 locals {
   user_data_map = {
@@ -113,24 +105,6 @@ EOF
 EOF
 
     disabled = ""
-  }
-
-  alarm_sns_notification = "${compact(list(var.alarm_notification_topic))}"
-
-  alarm_emergency_ticket = [
-    "arn:aws:sns:${data.aws_region.current_region.name}:${data.aws_caller_identity.current_account.account_id}:rackspace-support-emergency",
-  ]
-
-  recovery_action = "${var.rackspace_managed ? "managed" : "unmanaged"}"
-
-  recovery_alarm_action = {
-    managed   = "${local.alarm_emergency_ticket}"
-    unmanaged = "${local.alarm_sns_notification}"
-  }
-
-  recovery_ok_action = {
-    managed   = "${local.alarm_emergency_ticket}"
-    unmanaged = []
   }
 
   ami_owner_mapping = {
@@ -377,106 +351,108 @@ resource "aws_cloudwatch_log_group" "application_logs" {
   retention_in_days = "${var.cloudwatch_log_retention}"
 }
 
-resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_ticket" {
-  count               = "${var.instance_count}"
-  alarm_name          = "${join("-", list("StatusCheckFailedSystemAlarmTicket", var.resource_name, format("%03d",count.index+1)))}"
-  alarm_description   = "Status checks have failed for system, generating ticket."
-  namespace           = "AWS/EC2"
-  statistic           = "Minimum"
-  comparison_operator = "GreaterThanThreshold"
-  threshold           = "0"
-  unit                = "Count"
-  evaluation_periods  = "2"
-  period              = "60"
-  metric_name         = "StatusCheckFailed_System"
-  ok_actions          = ["${local.recovery_ok_action[local.recovery_action]}"]
-  alarm_actions       = ["${local.recovery_alarm_action[local.recovery_action]}"]
+data "null_data_source" "alarm_dimensions" {
+  count = "${var.instance_count}"
 
-  dimensions {
-    # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
+  inputs = {
     InstanceId = "${element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, aws_instance.mod_ec2_instance_no_secondary_ebs.*.id), count.index)}"
   }
+}
+
+module "status_check_failed_system_alarm_ticket" {
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.0.1"
+
+  alarm_count              = "${var.instance_count}"
+  alarm_description        = "Status checks have failed for system, generating ticket."
+  alarm_name               = "${join("-", list("StatusCheckFailedSystemAlarmTicket", var.resource_name))}"
+  comparison_operator      = "GreaterThanThreshold"
+  dimensions               = "${data.null_data_source.alarm_dimensions.*.outputs}"
+  evaluation_periods       = "2"
+  notification_topic       = ["${var.notification_topic}"]
+  metric_name              = "StatusCheckFailed_System"
+  rackspace_alarms_enabled = true
+  rackspace_managed        = "${var.rackspace_managed}"
+  namespace                = "AWS/EC2"
+  period                   = "60"
+  severity                 = "emergency"
+  statistic                = "Minimum"
+  threshold                = "0"
+  unit                     = "Count"
 }
 
 resource "aws_cloudwatch_metric_alarm" "status_check_failed_instance_alarm_reboot" {
   count               = "${var.enable_recovery_alarms ? var.instance_count : 0}"
-  alarm_name          = "${join("-", list("StatusCheckFailedInstanceAlarmReboot", var.resource_name, format("%03d",count.index+1)))}"
   alarm_description   = "Status checks have failed, rebooting system."
-  namespace           = "AWS/EC2"
-  statistic           = "Minimum"
+  alarm_name          = "${join("-", list("StatusCheckFailedInstanceAlarmReboot", var.resource_name, format("%03d",count.index+1)))}"
   comparison_operator = "GreaterThanThreshold"
+  dimensions          = "${data.null_data_source.alarm_dimensions.*.outputs[count.index]}"
+  evaluation_periods  = "5"
+  metric_name         = "StatusCheckFailed_Instance"
+  namespace           = "AWS/EC2"
+  period              = "60"
+  statistic           = "Minimum"
   threshold           = "0"
   unit                = "Count"
-  evaluation_periods  = "5"
-  period              = "60"
-  metric_name         = "StatusCheckFailed_Instance"
-  alarm_actions       = ["arn:aws:swf:${data.aws_region.current_region.name}:${data.aws_caller_identity.current_account.account_id}:action/actions/AWS_EC2.InstanceId.Reboot/1.0"]
 
-  dimensions {
-    # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-    InstanceId = "${element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, aws_instance.mod_ec2_instance_no_secondary_ebs.*.id), count.index)}"
-  }
+  alarm_actions = ["arn:aws:swf:${data.aws_region.current_region.name}:${data.aws_caller_identity.current_account.account_id}:action/actions/AWS_EC2.InstanceId.Reboot/1.0"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_recover" {
   count               = "${var.enable_recovery_alarms ? var.instance_count : 0}"
-  alarm_name          = "${join("-", list("StatusCheckFailedSystemAlarmRecover", var.resource_name, format("%03d",count.index+1)))}"
   alarm_description   = "Status checks have failed for system, recovering instance"
-  namespace           = "AWS/EC2"
-  statistic           = "Minimum"
+  alarm_name          = "${join("-", list("StatusCheckFailedSystemAlarmRecover", var.resource_name, format("%03d",count.index+1)))}"
   comparison_operator = "GreaterThanThreshold"
-  threshold           = "0"
-  unit                = "Count"
+  dimensions          = "${data.null_data_source.alarm_dimensions.*.outputs[count.index]}"
   evaluation_periods  = "2"
-  period              = "60"
   metric_name         = "StatusCheckFailed_System"
-  alarm_actions       = ["arn:aws:automate:${data.aws_region.current_region.name}:ec2:recover"]
-
-  dimensions {
-    # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-    InstanceId = "${element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, aws_instance.mod_ec2_instance_no_secondary_ebs.*.id), count.index)}"
-  }
-}
-
-resource "aws_cloudwatch_metric_alarm" "status_check_failed_instance_alarm_ticket" {
-  count               = "${var.instance_count}"
-  alarm_name          = "${join("-", list("StatusCheckFailedInstanceAlarmTicket", var.resource_name, format("%03d",count.index+1)))}"
-  alarm_description   = "Status checks have failed, generating ticket."
   namespace           = "AWS/EC2"
+  period              = "60"
   statistic           = "Minimum"
-  comparison_operator = "GreaterThanThreshold"
   threshold           = "0"
   unit                = "Count"
-  evaluation_periods  = "10"
-  period              = "60"
-  metric_name         = "StatusCheckFailed_Instance"
-  ok_actions          = ["${local.recovery_ok_action[local.recovery_action]}"]
-  alarm_actions       = ["${local.recovery_alarm_action[local.recovery_action]}"]
 
-  dimensions {
-    # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-    InstanceId = "${element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, aws_instance.mod_ec2_instance_no_secondary_ebs.*.id), count.index)}"
-  }
+  alarm_actions = ["arn:aws:automate:${data.aws_region.current_region.name}:ec2:recover"]
 }
 
-resource "aws_cloudwatch_metric_alarm" "cpu_alarm_high" {
-  count               = "${var.instance_count}"
-  alarm_name          = "${join("-", list("CPUAlarmHigh", var.resource_name, format("%03d",count.index+1)))}"
-  alarm_description   = "CPU Alarm ${var.cw_cpu_high_operator} ${var.cw_cpu_high_threshold}% for ${var.cw_cpu_high_period} seconds ${var.cw_cpu_high_evaluations} times."
-  namespace           = "AWS/EC2"
-  statistic           = "Average"
-  comparison_operator = "${var.cw_cpu_high_operator}"
-  threshold           = "${var.cw_cpu_high_threshold}"
-  evaluation_periods  = "${var.cw_cpu_high_evaluations}"
-  period              = "${var.cw_cpu_high_period}"
-  metric_name         = "CPUUtilization"
-  ok_actions          = []
-  alarm_actions       = ["${compact(list(var.alarm_notification_topic))}"]
+module "status_check_failed_instance_alarm_ticket" {
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.0.1"
 
-  dimensions {
-    # coalescelist and list("novalue") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-    InstanceId = "${element(coalescelist(aws_instance.mod_ec2_instance_with_secondary_ebs.*.id, aws_instance.mod_ec2_instance_no_secondary_ebs.*.id), count.index)}"
-  }
+  alarm_count              = "${var.instance_count}"
+  alarm_description        = "Status checks have failed, generating ticket."
+  alarm_name               = "${join("-", list("StatusCheckFailedInstanceAlarmTicket", var.resource_name))}"
+  comparison_operator      = "GreaterThanThreshold"
+  dimensions               = "${data.null_data_source.alarm_dimensions.*.outputs}"
+  evaluation_periods       = "10"
+  metric_name              = "StatusCheckFailed_Instance"
+  notification_topic       = ["${var.notification_topic}"]
+  namespace                = "AWS/EC2"
+  period                   = "60"
+  rackspace_alarms_enabled = true
+  rackspace_managed        = "${var.rackspace_managed}"
+  severity                 = "emergency"
+  statistic                = "Minimum"
+  threshold                = "0"
+  unit                     = "Count"
+}
+
+module "cpu_alarm_high" {
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.0.1"
+
+  alarm_count              = "${var.instance_count}"
+  alarm_description        = "CPU Alarm ${var.cw_cpu_high_operator} ${var.cw_cpu_high_threshold}% for ${var.cw_cpu_high_period} seconds ${var.cw_cpu_high_evaluations} times."
+  alarm_name               = "${join("-", list("CPUAlarmHigh", var.resource_name))}"
+  comparison_operator      = "${var.cw_cpu_high_operator}"
+  customer_alarms_enabled  = true
+  dimensions               = "${data.null_data_source.alarm_dimensions.*.outputs}"
+  evaluation_periods       = "${var.cw_cpu_high_evaluations}"
+  metric_name              = "CPUUtilization"
+  notification_topic       = ["${var.notification_topic}"]
+  namespace                = "AWS/EC2"
+  period                   = "${var.cw_cpu_high_period}"
+  rackspace_alarms_enabled = false
+  rackspace_managed        = "${var.rackspace_managed}"
+  statistic                = "Average"
+  threshold                = "${var.cw_cpu_high_threshold}"
 }
 
 #

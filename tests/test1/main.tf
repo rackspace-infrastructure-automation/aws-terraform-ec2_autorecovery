@@ -62,7 +62,7 @@ module "ec2_ar_centos7_with_codedeploy" {
   cloudwatch_log_retention            = "30"
   ssm_association_refresh_rate        = "rate(1 day)"
   additional_ssm_bootstrap_step_count = "2"
-  alarm_notification_topic            = ""
+  notification_topic                  = ""
   disable_api_termination             = "False"
   t2_unlimited_mode                   = "standard"
   creation_policy_timeout             = "20m"
@@ -159,7 +159,7 @@ module "ec2_ar_centos7_no_codedeploy" {
   cloudwatch_log_retention            = "30"
   ssm_association_refresh_rate        = "rate(1 day)"
   additional_ssm_bootstrap_step_count = "2"
-  alarm_notification_topic            = ""
+  notification_topic                  = ""
   disable_api_termination             = "False"
   t2_unlimited_mode                   = "standard"
   creation_policy_timeout             = "20m"
@@ -250,7 +250,7 @@ module "ec2_ar_windows_with_codedeploy" {
   cloudwatch_log_retention            = "30"
   ssm_association_refresh_rate        = "rate(1 day)"
   additional_ssm_bootstrap_step_count = "2"
-  alarm_notification_topic            = ""
+  notification_topic                  = ""
   disable_api_termination             = "False"
   t2_unlimited_mode                   = "standard"
   creation_policy_timeout             = "20m"
@@ -337,7 +337,7 @@ module "ec2_ar_windows_no_codedeploy" {
   cloudwatch_log_retention            = "30"
   ssm_association_refresh_rate        = "rate(1 day)"
   additional_ssm_bootstrap_step_count = "2"
-  alarm_notification_topic            = ""
+  notification_topic                  = ""
   disable_api_termination             = "False"
   t2_unlimited_mode                   = "standard"
   creation_policy_timeout             = "20m"
@@ -393,29 +393,29 @@ module "sns" {
 module "unmanaged_ar" {
   source = "../../module"
 
-  ec2_os                   = "centos7"
-  instance_count           = "1"
-  subnets                  = ["${element(module.vpc.private_subnets, 0)}"]
-  security_group_list      = ["${module.vpc.default_sg}"]
-  image_id                 = "${data.aws_ami.amazon_centos_7.image_id}"
-  instance_type            = "t2.micro"
-  resource_name            = "my_unmanaged_instance-${random_string.res_name.result}"
-  alarm_notification_topic = "${module.sns.topic_arn}"
-  rackspace_managed        = false
+  ec2_os              = "centos7"
+  instance_count      = "1"
+  subnets             = ["${element(module.vpc.private_subnets, 0)}"]
+  security_group_list = ["${module.vpc.default_sg}"]
+  image_id            = "${data.aws_ami.amazon_centos_7.image_id}"
+  instance_type       = "t2.micro"
+  resource_name       = "my_unmanaged_instance-${random_string.res_name.result}"
+  notification_topic  = "${module.sns.topic_arn}"
+  rackspace_managed   = false
 }
 
 module "zero_count_ar" {
   source = "../../module"
 
-  ec2_os                   = "centos7"
-  instance_count           = "0"
-  subnets                  = []
-  security_group_list      = ["${module.vpc.default_sg}"]
-  image_id                 = "${data.aws_ami.amazon_centos_7.image_id}"
-  instance_type            = "t2.micro"
-  resource_name            = "my_nonexistent_instance-${random_string.res_name.result}"
-  alarm_notification_topic = "${module.sns.topic_arn}"
-  rackspace_managed        = false
+  ec2_os              = "centos7"
+  instance_count      = "0"
+  subnets             = []
+  security_group_list = ["${module.vpc.default_sg}"]
+  image_id            = "${data.aws_ami.amazon_centos_7.image_id}"
+  instance_type       = "t2.micro"
+  resource_name       = "my_nonexistent_instance-${random_string.res_name.result}"
+  notification_topic  = "${module.sns.topic_arn}"
+  rackspace_managed   = false
 }
 
 module "ec2_nfs" {

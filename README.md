@@ -6,7 +6,7 @@ This module creates one or more autorecovery instances.
 
 ```
 module "ar" {
- source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.2"
+ source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.10"
 
  ec2_os              = "amazon"
  subnets             = ["${module.vpc.private_subnets}"]
@@ -25,7 +25,6 @@ Full working references are available at [examples](examples)
 | additional\_ssm\_bootstrap\_list | A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples. | list | `<list>` | no |
 | additional\_ssm\_bootstrap\_step\_count | Count of steps added for input 'additional_ssm_bootstrap_list'. This is required since 'additional_ssm_bootstrap_list' is a list of maps | string | `"0"` | no |
 | additional\_tags | Additional tags to be added to the EC2 instance Please see usage.tf.example in this repo for examples. | map | `<map>` | no |
-| alarm\_notification\_topic | SNS Topic ARN to notify if there are any alarms | string | `""` | no |
 | backup\_tag\_value | Value of the 'Backup' tag, used to assign te EBSSnapper configuration | string | `"False"` | no |
 | cloudwatch\_log\_retention | The number of days to retain Cloudwatch Logs for this instance. | string | `"30"` | no |
 | creation\_policy\_timeout | Time to wait for the number of signals for the creation policy. H/M/S Hours/Minutes/Seconds | string | `"20m"` | no |
@@ -56,6 +55,7 @@ Full working references are available at [examples](examples)
 | instance\_role\_managed\_policy\_arns | List of IAM policy ARNs for the InstanceRole IAM role. IAM ARNs can be found within the Policies section of the AWS IAM console. e.g. ['arn:aws:iam::aws:policy/AmazonEC2FullAccess', 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM', 'arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole'] | list | `<list>` | no |
 | instance\_type | EC2 Instance Type e.g. 't2.micro' | string | `"t2.micro"` | no |
 | key\_pair | Name of an existing EC2 KeyPair to enable SSH access to the instances. | string | `""` | no |
+| notification\_topic | SNS Topic ARN to notify if there are any alarms | string | `""` | no |
 | perform\_ssm\_inventory\_tag | Determines whether Instance is tracked via System Manager Inventory. | string | `"True"` | no |
 | primary\_ebs\_volume\_iops | Iops value required for use with io1 EBS volumes. This value should be 3 times the EBS volume size | string | `"0"` | no |
 | primary\_ebs\_volume\_size | EBS Volume Size in GB | string | `"60"` | no |
