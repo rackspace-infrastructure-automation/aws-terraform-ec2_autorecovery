@@ -41,6 +41,7 @@ Full working references are available at [examples](examples)
 | eip\_allocation\_id\_count | A count of supplied eip allocation IDs in variable eip_allocation_id_list | string | `"0"` | no |
 | eip\_allocation\_id\_list | A list of Allocation IDs of the EIPs you want to associate with the instance(s). This is one per instance. e.g. if you specify 2 for instance_count then you must supply two allocation ids  here. | list | `<list>` | no |
 | enable\_ebs\_optimization | Use EBS Optimized? true or false | string | `"false"` | no |
+| enable\_recovery\_alarms | Boolean parameter controlling if auto-recovery alarms should be created.  Recovery actions are not supported on all instance types and AMIs, especially those with ephemeral storage.  This parameter should be set to false for those cases. | string | `"true"` | no |
 | encrypt\_secondary\_ebs\_volume | Encrypt EBS Volume? true or false | string | `"false"` | no |
 | environment | Application environment for which this network is being created. Preferred value are Development, Integration, PreProduction, Production, QA, Staging, or Test | string | `"Development"` | no |
 | final\_userdata\_commands | Commands to be given at the end of userdata for an instance. This should generally not include bootstrapping or ssm install. | string | `""` | no |

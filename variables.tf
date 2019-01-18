@@ -271,6 +271,12 @@ variable "cw_cpu_high_threshold" {
   default     = "90"
 }
 
+variable "enable_recovery_alarms" {
+  description = "Boolean parameter controlling if auto-recovery alarms should be created.  Recovery actions are not supported on all instance types and AMIs, especially those with ephemeral storage.  This parameter should be set to false for those cases."
+  type        = "string"
+  default     = true
+}
+
 variable "provide_custom_cw_agent_config" {
   description = "Set to true if a custom cloudwatch agent configuration has been provided in variable custom_cw_agent_config_ssm_param."
   type        = "string"
