@@ -399,7 +399,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_ticket"
 }
 
 resource "aws_cloudwatch_metric_alarm" "status_check_failed_instance_alarm_reboot" {
-  count               = "${var.instance_count}"
+  count               = "${var.enable_recovery_alarms ? var.instance_count : 0}"
   alarm_name          = "${join("-", list("StatusCheckFailedInstanceAlarmReboot", var.resource_name, format("%03d",count.index+1)))}"
   alarm_description   = "Status checks have failed, rebooting system."
   namespace           = "AWS/EC2"
@@ -419,7 +419,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_instance_alarm_reboo
 }
 
 resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_recover" {
-  count               = "${var.instance_count}"
+  count               = "${var.enable_recovery_alarms ? var.instance_count : 0}"
   alarm_name          = "${join("-", list("StatusCheckFailedSystemAlarmRecover", var.resource_name, format("%03d",count.index+1)))}"
   alarm_description   = "Status checks have failed for system, recovering instance"
   namespace           = "AWS/EC2"
