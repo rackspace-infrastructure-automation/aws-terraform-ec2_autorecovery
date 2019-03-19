@@ -131,7 +131,7 @@ EOF
     rhel7         = "RHEL-7.*_HVM_GA-*x86_64*"
     ubuntu14      = "*ubuntu-trusty-14.04-amd64-server*"
     ubuntu16      = "*ubuntu-xenial-16.04-amd64-server*"
-    ubuntu18      = "*ubuntu-bionic-18.04-amd64-server*"
+    ubuntu18      = "ubuntu/images/hvm-ssd/*ubuntu-bionic-18.04-amd64-server*"
     windows2008   = "Windows_Server-2008-R2_SP1-English-64Bit-Base*"
     windows2012R2 = "Windows_Server-2012-R2_RTM-English-64Bit-Base*"
     windows2016   = "Windows_Server-2016-English-Full-Base*"
