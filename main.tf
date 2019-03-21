@@ -302,6 +302,7 @@ data "template_file" "ssm_bootstrap_template" {
   template = "${file("${path.module}/text/ssm_bootstrap_template.json")}"
 
   vars {
+    region              = "${data.aws_region.current_region.name}"
     cw_agent_param      = "${var.provide_custom_cw_agent_config ? var.custom_cw_agent_config_ssm_param : local.cw_config_parameter_name}"
     managed_ssm_docs    = "${var.rackspace_managed ? data.template_file.ssm_managed_commands.rendered : ""}"
     codedeploy_doc      = "${local.ssm_codedeploy_include[local.codedeploy_install]}"
