@@ -1,6 +1,13 @@
-##### Corresponding Issue(s) or trello card(s):
+##### Corresponding Issue(s):
+ - PRs should have a corresponding issue. If no issue exists, provide details in the **Reason for Change(s)** section
 
 ##### Summary of change(s):
+
+##### Reason for Change(s):
+
+- If a bug, describe error scenario, including expected behavior and actual behavior.
+
+- If an enhancement, describe the use case and the perceived benefit(s).
 
 ##### Will the change trigger resource destruction or replacement? If yes, please provide justification:
 
