@@ -137,6 +137,7 @@ EOF
     windows2016   = "Windows_Server-2016-English-Full-Base*"
   }
 
+  # Any custom AMI filters for a given OS can be added in this mapping
   image_filter = {
     amazon        = []
     amazon2       = []
@@ -149,6 +150,7 @@ EOF
     windows2012R2 = []
     windows2016   = []
 
+    # Added to ensure only AMIS under the official CentOS 6 product code are retrieved
     centos6 = [
       {
         name   = "product-code"
@@ -156,6 +158,7 @@ EOF
       },
     ]
 
+    # Added to ensure only AMIS under the official CentOS 7 product code are retrieved
     centos7 = [
       {
         name   = "product-code"
