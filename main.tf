@@ -7,7 +7,7 @@
  *
  *```
  *module "ar" {
- *  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.10"
+ *  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.14"
  *
  *  ec2_os              = "amazon"
  *  subnets             = ["${module.vpc.private_subnets}"]
@@ -137,6 +137,48 @@ EOF
     windows2016   = "Windows_Server-2016-English-Full-Base*"
   }
 
+  image_filter = {
+    amazon        = []
+    amazon2       = []
+    rhel6         = []
+    rhel7         = []
+    ubuntu14      = []
+    ubuntu16      = []
+    ubuntu18      = []
+    windows2008   = []
+    windows2012R2 = []
+    windows2016   = []
+
+    centos6 = [
+      {
+        name   = "product-code"
+        values = ["6x5jmcajty9edm3f211pqjfn2"]
+      },
+    ]
+
+    centos7 = [
+      {
+        name   = "product-code"
+        values = ["aw0evgkw8e5c1q413zgy5pjce"]
+      },
+    ]
+  }
+
+  standard_filters = [
+    {
+      name   = "virtualization-type"
+      values = ["hvm"]
+    },
+    {
+      name   = "root-device-type"
+      values = ["ebs"]
+    },
+    {
+      name   = "name"
+      values = ["${local.ami_name_mapping[var.ec2_os]}"]
+    },
+  ]
+
   cw_config_parameter_name = "CWAgent-${var.resource_name}"
 }
 
@@ -144,21 +186,7 @@ EOF
 data "aws_ami" "ar_ami" {
   most_recent = true
   owners      = ["${local.ami_owner_mapping[var.ec2_os]}"]
-
-  filter {
-    name   = "name"
-    values = ["${local.ami_name_mapping[var.ec2_os]}"]
-  }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
+  filter      = "${concat(local.standard_filters, local.image_filter[var.ec2_os])}"
 }
 
 data "template_file" "user_data" {
