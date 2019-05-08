@@ -18,17 +18,6 @@ module "vpc" {
 
 data "aws_region" "current_region" {}
 
-# Lookup the correct AMI based on the region specified
-data "aws_ami" "amazon_centos_7" {
-  most_recent = true
-  owners      = ["679593333241"]
-
-  filter {
-    name   = "name"
-    values = ["CentOS Linux 7 x86_64 HVM EBS*"]
-  }
-}
-
 resource "aws_eip" "test_eip_1" {
   vpc = true
 
@@ -129,7 +118,6 @@ module "ec2_ar_centos7_no_codedeploy" {
   instance_count               = "3"
   subnets                      = "${module.vpc.public_subnets}"
   security_group_list          = ["${module.vpc.default_sg}"]
-  image_id                     = "${data.aws_ami.amazon_centos_7.image_id}"
   key_pair                     = "CircleCI"
   instance_type                = "t2.micro"
   resource_name                = "ar_centos7_noncodedeploy-${random_string.res_name.result}"
@@ -212,22 +200,12 @@ EOF
   }
 }
 
-data "aws_ami" "amazon_windows_2016" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["Windows_Server-2016-English-Full-Base-*"]
-  }
-}
-
 module "ec2_ar_windows_with_codedeploy" {
   source                              = "../../module"
   ec2_os                              = "windows2016"
   instance_count                      = "3"
   subnets                             = "${module.vpc.public_subnets}"
   security_group_list                 = ["${module.vpc.default_sg}"]
-  image_id                            = "${data.aws_ami.amazon_windows_2016.image_id}"
   key_pair                            = "CircleCI"
   instance_type                       = "t2.micro"
   resource_name                       = "ar_windows_codedeploy-${random_string.res_name.result}"
@@ -308,7 +286,6 @@ module "ec2_ar_windows_no_codedeploy" {
     "${module.vpc.default_sg}",
   ]
 
-  image_id                     = "${data.aws_ami.amazon_windows_2016.image_id}"
   key_pair                     = "CircleCI"
   instance_type                = "t2.micro"
   resource_name                = "ar_windows_noncodedeploy-${random_string.res_name.result}"
@@ -397,7 +374,6 @@ module "unmanaged_ar" {
   instance_count      = "1"
   subnets             = ["${element(module.vpc.private_subnets, 0)}"]
   security_group_list = ["${module.vpc.default_sg}"]
-  image_id            = "${data.aws_ami.amazon_centos_7.image_id}"
   instance_type       = "t2.micro"
   resource_name       = "my_unmanaged_instance-${random_string.res_name.result}"
   notification_topic  = "${module.sns.topic_arn}"
@@ -411,7 +387,6 @@ module "zero_count_ar" {
   instance_count      = "0"
   subnets             = []
   security_group_list = ["${module.vpc.default_sg}"]
-  image_id            = "${data.aws_ami.amazon_centos_7.image_id}"
   instance_type       = "t2.micro"
   resource_name       = "my_nonexistent_instance-${random_string.res_name.result}"
   notification_topic  = "${module.sns.topic_arn}"
