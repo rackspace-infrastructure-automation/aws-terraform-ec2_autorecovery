@@ -13,7 +13,6 @@ pip install --upgrade awscli pystache argparse
 ssm_running=$( ps -ef | grep [a]mazon-ssm-agent | wc -l )
 if [[ $ssm_running != "0" ]]; then
     echo -e "amazon-ssm-agent already running"
-    exit 0
 else
     if [[ -r "/tmp/ssm_agent_install" ]]; then : ;
     else mkdir -p /tmp/ssm_agent_install; fi
