@@ -11,7 +11,7 @@ resource "random_string" "res_name" {
 }
 
 module "vpc" {
-  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.6"
+  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.9"
   vpc_name = "EC2-AR-BaseNetwork-Test1"
 }
 
@@ -44,7 +44,7 @@ module "ec2_ar_with_codedeploy" {
   perform_ssm_inventory_tag        = true
   cloudwatch_log_retention         = "30"
   ssm_association_refresh_rate     = "rate(1 day)"
-  alarm_notification_topic         = ""
+  notification_topic               = ""
   disable_api_termination          = false
   t2_unlimited_mode                = "standard"
   creation_policy_timeout          = "20m"
