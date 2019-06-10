@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.6"
+  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.9"
   vpc_name = "EC2-AR-BaseNetwork-Test1"
 }
 
@@ -95,7 +95,7 @@ EOF
   private_ip_address                  = ["10.0.1.131", "10.0.1.132", "10.0.1.133"]
   eip_allocation_id_list              = ["${aws_eip.my_eips.*.id}"]
   eip_allocation_id_count             = "3"
-  alarm_notification_topic            = ""
+  notification_topic                  = ""
   disable_api_termination             = "False"
   t2_unlimited_mode                   = "standard"
   creation_policy_timeout             = "20m"
