@@ -33,7 +33,7 @@ module "sns" {
 }
 
 module "unmanaged_ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.16"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.17"
 
   ec2_os              = "centos7"
   instance_count      = "1"
