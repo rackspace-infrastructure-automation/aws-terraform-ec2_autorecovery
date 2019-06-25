@@ -157,6 +157,18 @@ variable "primary_ebs_volume_type" {
   default     = "gp2"
 }
 
+variable "use_existing_ebs_snapshot" {
+  description = "Use an existing EBS Snapshot for the secondary volume instead of creating a new one."
+  type        = "string"
+  default     = false
+}
+
+variable "secondary_ebs_volume_existing_id" {
+  description = "The Snapshot ID of an existing EBS volume you want to use for the secondary volume. i.e. snap-0ad8580e3ac34a9f1"
+  type        = "string"
+  default     = ""
+}
+
 variable "secondary_ebs_volume_iops" {
   description = "Iops value required for use with io1 EBS volumes. This value should be 3 times the EBS volume size"
   type        = "string"

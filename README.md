@@ -17,6 +17,8 @@ module "ar" {
 ```
 
 Full working references are available at [examples](examples)
+Note: When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.
+
 ## Other TF Modules Used
 Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm) to create the following CloudWatch Alarms:
 	- status_check_failed_system_alarm_ticket
@@ -71,6 +73,7 @@ Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructu
 | provide\_custom\_cw\_agent\_config | Set to true if a custom cloudwatch agent configuration has been provided in variable custom_cw_agent_config_ssm_param. | string | `"false"` | no |
 | rackspace\_managed | Boolean parameter controlling if instance will be fully managed by Rackspace support teams, created CloudWatch alarms that generate tickets, and utilize Rackspace managed SSM documents. | string | `"true"` | no |
 | resource\_name | Name to be used for the provisioned EC2 instance(s) and other resources provisioned in this module | string | n/a | yes |
+| secondary\_ebs\_volume\_existing\_id | The Snapshot ID of an existing EBS volume you want to use for the secondary volume. i.e. snap-0ad8580e3ac34a9f1 | string | `""` | no |
 | secondary\_ebs\_volume\_iops | Iops value required for use with io1 EBS volumes. This value should be 3 times the EBS volume size | string | `"0"` | no |
 | secondary\_ebs\_volume\_size | EBS Volume Size in GB | string | `""` | no |
 | secondary\_ebs\_volume\_type | EBS Volume Type. e.g. gp2, io1, st1, sc1 | string | `"gp2"` | no |
@@ -80,6 +83,7 @@ Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructu
 | subnets | Subnet ID(s) for EC2 Instance(s). If multiple are provided, instances will be distributed amongst them. | list | `<list>` | no |
 | t2\_unlimited\_mode | Determines whether to enable the T2 Unlimited feature.  Only applicable on instance classes that support burstable CPU. | string | `"standard"` | no |
 | tenancy | The placement tenancy for EC2 devices. e.g. host, default, dedicated | string | `"default"` | no |
+| use\_existing\_ebs\_snapshot | Use an existing EBS Snapshot for the secondary volume instead of creating a new one. | string | `"false"` | no |
 
 ## Outputs
 
