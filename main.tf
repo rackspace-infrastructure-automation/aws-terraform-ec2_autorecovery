@@ -18,6 +18,8 @@
  *```
  *
  * Full working references are available at [examples](examples)
+ * Note: When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.
+ *
  * ## Other TF Modules Used
  * Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm) to create the following CloudWatch Alarms:
  * 	- status_check_failed_system_alarm_ticket
@@ -577,7 +579,8 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
     volume_type = "${var.secondary_ebs_volume_type}"
     volume_size = "${var.secondary_ebs_volume_size}"
     iops        = "${var.secondary_ebs_volume_iops}"
-    encrypted   = "${var.encrypt_secondary_ebs_volume}"
+    encrypted   = "${var.secondary_ebs_volume_existing_id == "" ? var.encrypt_secondary_ebs_volume: false}"
+    snapshot_id = "${var.secondary_ebs_volume_existing_id}"
   }
 
   timeouts {
