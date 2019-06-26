@@ -197,29 +197,6 @@ EOF
   ]
 
   cw_config_parameter_name = "CWAgent-${var.resource_name}"
-
-  secondary_ebs_options = {
-    # creating a new ebs volume
-    enabled = [{
-      device_name = "${lookup(local.ebs_device_map, var.ec2_os)}"
-      snapshot_id = "${var.secondary_ebs_volume_existing_id}"
-      volume_type = "${var.secondary_ebs_volume_type}"
-      volume_size = "${var.secondary_ebs_volume_size}"
-      iops        = "${var.secondary_ebs_volume_iops}"
-      encrypted   = false
-    }]
-
-    # using an existing ebs snapshot
-    disabled = [{
-      device_name = "${lookup(local.ebs_device_map, var.ec2_os)}"
-      volume_type = "${var.secondary_ebs_volume_type}"
-      volume_size = "${var.secondary_ebs_volume_size}"
-      iops        = "${var.secondary_ebs_volume_iops}"
-      encrypted   = "${var.encrypt_secondary_ebs_volume}"
-    }]
-  }
-
-  secondary_ebs_config = "${var.use_existing_ebs_snapshot ? "enabled":"disabled"}"
 }
 
 # Lookup the correct AMI based on the region specified
@@ -597,18 +574,19 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
 
   volume_tags = "${var.ebs_volume_tags}"
 
-  //  ebs_block_device {
-  //    device_name = "${lookup(local.ebs_device_map, var.ec2_os)}"
-  //    volume_type = "${var.secondary_ebs_volume_type}"
-  //    volume_size = "${var.secondary_ebs_volume_size}"
-  //    iops        = "${var.secondary_ebs_volume_iops}"
-  //    encrypted   = "${var.encrypt_secondary_ebs_volume}"
-  //  }
+  ebs_block_device {
+    device_name = "${lookup(local.ebs_device_map, var.ec2_os)}"
+    volume_type = "${var.secondary_ebs_volume_type}"
+    volume_size = "${var.secondary_ebs_volume_size}"
+    iops        = "${var.secondary_ebs_volume_iops}"
+    encrypted   = "${var.secondary_ebs_volume_existing_id == "" ? var.encrypt_secondary_ebs_volume: false}"
+    snapshot_id = "${var.secondary_ebs_volume_existing_id}"
+  }
 
-  ebs_block_device = "${local.secondary_ebs_options[local.secondary_ebs_config]}"
   timeouts {
     create = "${var.creation_policy_timeout}"
   }
+
   tags = "${merge(
     map("Name", "${var.resource_name}${var.instance_count > 1 ? format("-%03d",count.index+1) : ""}"),
     local.tags,

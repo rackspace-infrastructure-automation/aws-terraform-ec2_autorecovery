@@ -83,7 +83,6 @@ Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructu
 | subnets | Subnet ID(s) for EC2 Instance(s). If multiple are provided, instances will be distributed amongst them. | list | `<list>` | no |
 | t2\_unlimited\_mode | Determines whether to enable the T2 Unlimited feature.  Only applicable on instance classes that support burstable CPU. | string | `"standard"` | no |
 | tenancy | The placement tenancy for EC2 devices. e.g. host, default, dedicated | string | `"default"` | no |
-| use\_existing\_ebs\_snapshot | Use an existing EBS Snapshot for the secondary volume instead of creating a new one. | string | `"false"` | no |
 
 ## Outputs
 
