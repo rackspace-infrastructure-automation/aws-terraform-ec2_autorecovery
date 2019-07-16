@@ -21,7 +21,7 @@ variable "disable_api_termination" {
 }
 
 variable "ec2_os" {
-  description = "Intended Operating System/Distribution of Instance. Valid inputs are ('amazon', 'rhel6', 'rhel7', 'centos6', 'centos7', 'ubuntu14', 'ubuntu16', 'windows2008', 'windows2012R2', 'windows2016')"
+  description = "Intended Operating System/Distribution of Instance. Valid inputs are `amazon`, `amazon2`, `centos6`, `centos7`, `rhel6`, `rhel7`, `ubuntu14`, `ubuntu16`, `ubuntu18`, `windows2008`, `windows2012r2`, `windows2016`, `windows2019`"
   type        = "string"
 }
 

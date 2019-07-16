@@ -4,28 +4,28 @@ This module creates one or more autorecovery instances.
 
 ## Basic Usage
 
-```
+```HCL
 module "ar" {
- source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.17"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.20"
 
- ec2_os              = "amazon"
- subnets             = ["${module.vpc.private_subnets}"]
- image_id            = "${var.image_id}"
- resource_name       = "my_ar_instance"
- security_group_list = ["${module.sg.private_web_security_group_id}"]
+  ec2_os              = "amazon"
+  subnets             = ["${module.vpc.private_subnets}"]
+  image_id            = "${var.image_id}"
+  resource_name       = "my_ar_instance"
+  security_group_list = ["${module.sg.private_web_security_group_id}"]
 }
 ```
 
 Full working references are available at [examples](examples)
-Note: When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.
+_**Note**: When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level._
 
 ## Other TF Modules Used
 Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm) to create the following CloudWatch Alarms:
-	- status_check_failed_system_alarm_ticket
-	- status_check_failed_instance_alarm_reboot
-	- status_check_failed_system_alarm_recover
-	- status_check_failed_instance_alarm_ticket
-	- cpu_alarm_high
+- status_check_failed_system_alarm_ticket
+- status_check_failed_instance_alarm_reboot
+- status_check_failed_system_alarm_recover
+- status_check_failed_instance_alarm_ticket
+- cpu_alarm_high
 
 ## Inputs
 
@@ -45,7 +45,7 @@ Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructu
 | detailed\_monitoring | Enable Detailed Monitoring? true or false | string | `"true"` | no |
 | disable\_api\_termination | Specifies that an instance should not be able to be deleted via the API. true or false. This option must be toggled to false to allow Terraform to destroy the resource. | string | `"false"` | no |
 | ebs\_volume\_tags | (Optional) A mapping of tags to assign to the devices created by the instance at launch time. | map | `<map>` | no |
-| ec2\_os | Intended Operating System/Distribution of Instance. Valid inputs are ('amazon', 'rhel6', 'rhel7', 'centos6', 'centos7', 'ubuntu14', 'ubuntu16', 'windows2008', 'windows2012R2', 'windows2016') | string | n/a | yes |
+| ec2\_os | Intended Operating System/Distribution of Instance. Valid inputs are `amazon`, `amazon2`, `centos6`, `centos7`, `rhel6`, `rhel7`, `ubuntu14`, `ubuntu16`, `ubuntu18`, `windows2008`, `windows2012r2`, `windows2016`, `windows2019` | string | n/a | yes |
 | eip\_allocation\_id\_count | A count of supplied eip allocation IDs in variable eip_allocation_id_list | string | `"0"` | no |
 | eip\_allocation\_id\_list | A list of Allocation IDs of the EIPs you want to associate with the instance(s). This is one per instance. e.g. if you specify 2 for instance_count then you must supply two allocation ids  here. | list | `<list>` | no |
 | enable\_ebs\_optimization | Use EBS Optimized? true or false | string | `"false"` | no |

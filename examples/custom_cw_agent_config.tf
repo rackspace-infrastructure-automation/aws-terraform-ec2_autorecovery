@@ -11,14 +11,16 @@ resource "random_string" "res_name" {
 }
 
 module "vpc" {
-  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.9"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.9"
+
   vpc_name = "EC2-AR-BaseNetwork-Test1"
 }
 
 data "aws_region" "current_region" {}
 
 module "ec2_ar_with_codedeploy" {
-  source         = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.19"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.20"
+
   ec2_os         = "rhel6"
   instance_count = "1"
   subnets        = "${module.vpc.private_subnets}"
