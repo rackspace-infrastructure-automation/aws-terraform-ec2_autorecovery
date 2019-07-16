@@ -12,7 +12,8 @@ resource "random_string" "res_name" {
 }
 
 module "vpc" {
-  source   = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=master"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=master"
+
   vpc_name = "EC2-AR-BaseNetwork-Test1-${random_string.res_name.result}"
 }
 
@@ -27,7 +28,8 @@ resource "aws_eip" "test_eip_1" {
 }
 
 module "ec2_ar_centos7_with_codedeploy" {
-  source                              = "../../module"
+  source = "../../module"
+
   ec2_os                              = "centos7"
   instance_count                      = "3"
   subnets                             = "${module.vpc.public_subnets}"
@@ -113,7 +115,8 @@ resource "aws_eip" "test_eip_2" {
 }
 
 module "ec2_ar_centos7_no_codedeploy" {
-  source                       = "../../module"
+  source = "../../module"
+
   ec2_os                       = "centos7"
   instance_count               = "3"
   subnets                      = "${module.vpc.public_subnets}"
@@ -201,7 +204,8 @@ EOF
 }
 
 module "ec2_ar_windows_with_codedeploy" {
-  source                              = "../../module"
+  source = "../../module"
+
   ec2_os                              = "windows2016"
   instance_count                      = "3"
   subnets                             = "${module.vpc.public_subnets}"
@@ -277,7 +281,8 @@ EOF
 }
 
 module "ec2_ar_windows_no_codedeploy" {
-  source         = "../../module"
+  source = "../../module"
+
   ec2_os         = "windows2016"
   instance_count = "3"
   subnets        = "${module.vpc.public_subnets}"
@@ -363,7 +368,8 @@ EOF
 }
 
 module "sns" {
-  source     = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns?ref=master"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns?ref=master"
+
   topic_name = "my-alarm-notification-topic-${random_string.res_name.result}"
 }
 
