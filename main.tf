@@ -281,6 +281,32 @@ data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
   }
 
   statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:GetEncryptionConfiguration",
+      "s3:AbortMultipartUpload",
+      "s3:ListMultipartUploadParts",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:GetBucketLocation",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
     effect    = "Allow"
     actions   = ["ec2:DescribeTags"]
     resources = ["*"]
@@ -303,11 +329,25 @@ resource "aws_iam_role" "mod_ec2_instance_role" {
   assume_role_policy = "${data.aws_iam_policy_document.mod_ec2_assume_role_policy_doc.json}"
 }
 
-resource "aws_iam_role_policy_attachment" "attach_ssm_policy" {
+resource "aws_iam_role_policy_attachment" "attach_core_ssm_policy" {
   count = "${var.instance_profile_override ? 0 : 1}"
 
   role       = "${aws_iam_role.mod_ec2_instance_role.name}"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "attach_cw_ssm_policy" {
+  count = "${var.instance_profile_override ? 0 : 1}"
+
+  role       = "${aws_iam_role.mod_ec2_instance_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "attach_ad_ssm_policy" {
+  count = "${var.instance_profile_override ? 0 : 1}"
+
+  role       = "${aws_iam_role.mod_ec2_instance_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess"
 }
 
 resource "aws_iam_role_policy_attachment" "attach_codedeploy_policy" {
