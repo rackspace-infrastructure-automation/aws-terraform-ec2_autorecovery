@@ -40,7 +40,7 @@
       },
       "name": "ConfigureCWAgent",
       "timeoutSeconds": 300
-    },${managed_ssm_docs}${codedeploy_doc}${nfs_doc}${additional_ssm_docs}
+    },${managed_ssm_docs}${codedeploy_doc}${scaleft_doc}${nfs_doc}${additional_ssm_docs}
     {
       "action": "aws:runDocument",
       "inputs": {

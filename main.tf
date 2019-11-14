@@ -94,7 +94,24 @@ EOF
     disabled = ""
   }
 
+  ssm_scaleft_include = {
+    enabled = <<EOF
+    {
+      "action": "aws:runDocument",
+      "inputs": {
+        "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_ScaleFT",
+        "documentType": "SSMDocument"
+      },
+      "name": "SetupPassport",
+      "timeoutSeconds": 300
+    },
+EOF
+
+    disabled = ""
+  }
+
   codedeploy_install = "${var.install_codedeploy_agent && var.rackspace_managed ? "enabled" : "disabled"}"
+  scaleft_install    = "${var.install_scaleft_agent && var.rackspace_managed ? "enabled" : "disabled"}"
 
   nfs_install = "${var.install_nfs && var.rackspace_managed && lookup(local.nfs_packages, local.ec2_os, "") != "" ? "enabled" : "disabled"}"
 
@@ -409,6 +426,7 @@ data "template_file" "ssm_bootstrap_template" {
     cw_agent_param      = "${var.provide_custom_cw_agent_config ? var.custom_cw_agent_config_ssm_param : local.cw_config_parameter_name}"
     managed_ssm_docs    = "${var.rackspace_managed ? data.template_file.ssm_managed_commands.rendered : ""}"
     codedeploy_doc      = "${local.ssm_codedeploy_include[local.codedeploy_install]}"
+    scaleft_doc         = "${local.ssm_scaleft_include[local.scaleft_install]}"
     nfs_doc             = "${local.ssm_nfs_include[local.nfs_install]}"
     additional_ssm_docs = "${join("\n", data.template_file.additional_ssm_docs.*.rendered)}"
   }
