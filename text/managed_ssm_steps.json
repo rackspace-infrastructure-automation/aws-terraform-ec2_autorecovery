@@ -10,15 +10,6 @@
     {
       "action": "aws:runDocument",
       "inputs": {
-      "documentPath": "arn:aws:ssm:${region}:507897595701:document/Rack-Install_ScaleFT",
-      "documentType": "SSMDocument"
-      },
-      "name": "SetupPassport",
-      "timeoutSeconds": 300
-    },
-    {
-      "action": "aws:runDocument",
-      "inputs": {
       "documentPath": "arn:aws:ssm:${region}:507897595701:document/Rack-Install_Package",
       "documentParameters": {
         "Packages": "sysstat ltrace strace iptraf tcpdump"
