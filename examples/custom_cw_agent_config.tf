@@ -1,5 +1,6 @@
 provider "aws" {
-  region = "us-west-2"
+  version = "~> 2.2"
+  region  = "us-west-2"
 }
 
 resource "random_string" "res_name" {
@@ -16,17 +17,18 @@ module "vpc" {
   vpc_name = "EC2-AR-BaseNetwork-Test1"
 }
 
-data "aws_region" "current_region" {}
+data "aws_region" "current_region" {
+}
 
 module "ec2_ar_with_codedeploy" {
   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.20"
 
   ec2_os         = "rhel6"
   instance_count = "1"
-  subnets        = "${module.vpc.private_subnets}"
+  subnets        = module.vpc.private_subnets
 
   security_group_list = [
-    "${module.vpc.default_sg}",
+    module.vpc.default_sg,
   ]
 
   key_pair                         = "CircleCI"
@@ -55,21 +57,22 @@ module "ec2_ar_with_codedeploy" {
   cw_cpu_high_evaluations          = "15"
   cw_cpu_high_period               = "60"
   provide_custom_cw_agent_config   = true
-  custom_cw_agent_config_ssm_param = "${aws_ssm_parameter.custom_cwagentparam.name}"
+  custom_cw_agent_config_ssm_param = aws_ssm_parameter.custom_cwagentparam.name
 }
 
 resource "aws_ssm_parameter" "custom_cwagentparam" {
   name        = "custom_cw_param-${random_string.res_name.result}"
   description = "Custom Cloudwatch Agent configuration"
   type        = "String"
-  value       = "${data.template_file.custom_cwagentparam.rendered}"
+  value       = data.template_file.custom_cwagentparam.rendered
 }
 
 data "template_file" "custom_cwagentparam" {
-  template = "${file("./text/linux_cw_agent_param.json")}"
+  template = file("./text/linux_cw_agent_param.json")
 
-  vars {
+  vars = {
     application_log_group_name = "custom_app_log_group_name"
     system_log_group_name      = "custom_system_log_group_name"
   }
 }
+

@@ -1,5 +1,5 @@
 provider "aws" {
-  version = "~> 1.2"
+  version = "~> 2.2"
   region  = "us-west-2"
 }
 
@@ -17,7 +17,8 @@ module "vpc" {
   vpc_name = "EC2-AR-BaseNetwork-Test1-${random_string.res_name.result}"
 }
 
-data "aws_region" "current_region" {}
+data "aws_region" "current_region" {
+}
 
 resource "aws_eip" "test_eip_1" {
   vpc = true
@@ -28,12 +29,12 @@ resource "aws_eip" "test_eip_1" {
 }
 
 module "ec2_ar_centos7_with_codedeploy" {
-  source = "../../module"
+  source = "../../"
 
   ec2_os                              = "centos7"
   instance_count                      = "3"
-  subnets                             = "${module.vpc.public_subnets}"
-  security_group_list                 = ["${module.vpc.default_sg}"]
+  subnets                             = module.vpc.public_subnets
+  security_group_list                 = [module.vpc.default_sg]
   key_pair                            = "CircleCI"
   instance_type                       = "t2.micro"
   resource_name                       = "ar_centos7_codedeploy-${random_string.res_name.result}"
@@ -62,7 +63,7 @@ module "ec2_ar_centos7_with_codedeploy" {
   cw_cpu_high_evaluations             = "15"
   cw_cpu_high_period                  = "60"
   eip_allocation_id_count             = "1"
-  eip_allocation_id_list              = ["${aws_eip.test_eip_1.id}"]
+  eip_allocation_id_list              = [aws_eip.test_eip_1.id]
 
   additional_ssm_bootstrap_list = [
     {
@@ -80,6 +81,7 @@ module "ec2_ar_centos7_with_codedeploy" {
         "timeoutSeconds": 300
       }
 EOF
+
     },
     {
       ssm_add_step = <<EOF
@@ -96,6 +98,7 @@ EOF
         "timeoutSeconds": 300
       }
 EOF
+
     },
   ]
 
@@ -115,12 +118,12 @@ resource "aws_eip" "test_eip_2" {
 }
 
 module "ec2_ar_centos7_no_codedeploy" {
-  source = "../../module"
+  source = "../../"
 
   ec2_os                       = "centos7"
   instance_count               = "3"
-  subnets                      = "${module.vpc.public_subnets}"
-  security_group_list          = ["${module.vpc.default_sg}"]
+  subnets                      = module.vpc.public_subnets
+  security_group_list          = [module.vpc.default_sg]
   key_pair                     = "CircleCI"
   instance_type                = "t2.micro"
   resource_name                = "ar_centos7_noncodedeploy-${random_string.res_name.result}"
@@ -159,7 +162,7 @@ module "ec2_ar_centos7_no_codedeploy" {
   cw_cpu_high_evaluations             = "15"
   cw_cpu_high_period                  = "60"
   eip_allocation_id_count             = "1"
-  eip_allocation_id_list              = ["${aws_eip.test_eip_2.id}"]
+  eip_allocation_id_list              = [aws_eip.test_eip_2.id]
 
   additional_ssm_bootstrap_list = [
     {
@@ -177,6 +180,7 @@ module "ec2_ar_centos7_no_codedeploy" {
         "timeoutSeconds": 300
       }
 EOF
+
     },
     {
       ssm_add_step = <<EOF
@@ -193,6 +197,7 @@ EOF
         "timeoutSeconds": 300
       }
 EOF
+
     },
   ]
 
@@ -204,12 +209,12 @@ EOF
 }
 
 module "ec2_ar_centos7_no_scaleft" {
-  source = "../../module"
+  source = "../../"
 
   ec2_os                       = "centos7"
   instance_count               = "3"
-  subnets                      = "${module.vpc.public_subnets}"
-  security_group_list          = ["${module.vpc.default_sg}"]
+  subnets                      = module.vpc.public_subnets
+  security_group_list          = [module.vpc.default_sg]
   key_pair                     = "CircleCI"
   instance_type                = "t2.micro"
   resource_name                = "ar_centos7_nonscaleft-${random_string.res_name.result}"
@@ -249,7 +254,7 @@ module "ec2_ar_centos7_no_scaleft" {
   cw_cpu_high_evaluations             = "15"
   cw_cpu_high_period                  = "60"
   eip_allocation_id_count             = "1"
-  eip_allocation_id_list              = ["${aws_eip.test_eip_2.id}"]
+  eip_allocation_id_list              = [aws_eip.test_eip_2.id]
 
   additional_ssm_bootstrap_list = [
     {
@@ -267,6 +272,7 @@ module "ec2_ar_centos7_no_scaleft" {
         "timeoutSeconds": 300
       }
 EOF
+
     },
     {
       ssm_add_step = <<EOF
@@ -283,6 +289,7 @@ EOF
         "timeoutSeconds": 300
       }
 EOF
+
     },
   ]
 
@@ -294,12 +301,12 @@ EOF
 }
 
 module "ec2_ar_windows_with_codedeploy" {
-  source = "../../module"
+  source = "../../"
 
   ec2_os                              = "windows2016"
   instance_count                      = "3"
-  subnets                             = "${module.vpc.public_subnets}"
-  security_group_list                 = ["${module.vpc.default_sg}"]
+  subnets                             = module.vpc.public_subnets
+  security_group_list                 = [module.vpc.default_sg]
   key_pair                            = "CircleCI"
   instance_type                       = "t2.micro"
   resource_name                       = "ar_windows_codedeploy-${random_string.res_name.result}"
@@ -344,6 +351,7 @@ module "ec2_ar_windows_with_codedeploy" {
         "timeoutSeconds": 300
       }
 EOF
+
     },
     {
       ssm_add_step = <<EOF
@@ -360,6 +368,7 @@ EOF
         "timeoutSeconds": 300
       }
 EOF
+
     },
   ]
 
@@ -371,14 +380,14 @@ EOF
 }
 
 module "ec2_ar_windows_no_codedeploy" {
-  source = "../../module"
+  source = "../../"
 
   ec2_os         = "windows2016"
   instance_count = "3"
-  subnets        = "${module.vpc.public_subnets}"
+  subnets        = module.vpc.public_subnets
 
   security_group_list = [
-    "${module.vpc.default_sg}",
+    module.vpc.default_sg,
   ]
 
   key_pair                     = "CircleCI"
@@ -431,6 +440,7 @@ module "ec2_ar_windows_no_codedeploy" {
         "timeoutSeconds": 300
       }
 EOF
+
     },
     {
       ssm_add_step = <<EOF
@@ -447,6 +457,7 @@ EOF
         "timeoutSeconds": 300
       }
 EOF
+
     },
   ]
 
@@ -458,14 +469,14 @@ EOF
 }
 
 module "ec2_ar_windows_no_scaleft" {
-  source = "../../module"
+  source = "../../"
 
   ec2_os         = "windows2016"
   instance_count = "3"
-  subnets        = "${module.vpc.public_subnets}"
+  subnets        = module.vpc.public_subnets
 
   security_group_list = [
-    "${module.vpc.default_sg}",
+    module.vpc.default_sg,
   ]
 
   key_pair                     = "CircleCI"
@@ -519,6 +530,7 @@ module "ec2_ar_windows_no_scaleft" {
         "timeoutSeconds": 300
       }
 EOF
+
     },
     {
       ssm_add_step = <<EOF
@@ -535,6 +547,7 @@ EOF
         "timeoutSeconds": 300
       }
 EOF
+
     },
   ]
 
@@ -552,37 +565,37 @@ module "sns" {
 }
 
 module "unmanaged_ar" {
-  source = "../../module"
+  source = "../../"
 
   ec2_os              = "centos7"
   instance_count      = "1"
-  subnets             = ["${element(module.vpc.private_subnets, 0)}"]
-  security_group_list = ["${module.vpc.default_sg}"]
+  subnets             = [element(module.vpc.private_subnets, 0)]
+  security_group_list = [module.vpc.default_sg]
   instance_type       = "t2.micro"
   resource_name       = "my_unmanaged_instance-${random_string.res_name.result}"
-  notification_topic  = "${module.sns.topic_arn}"
+  notification_topic  = module.sns.topic_arn
   rackspace_managed   = false
 }
 
 module "zero_count_ar" {
-  source = "../../module"
+  source = "../../"
 
   ec2_os              = "centos7"
   instance_count      = "0"
   subnets             = []
-  security_group_list = ["${module.vpc.default_sg}"]
+  security_group_list = [module.vpc.default_sg]
   instance_type       = "t2.micro"
   resource_name       = "my_nonexistent_instance-${random_string.res_name.result}"
-  notification_topic  = "${module.sns.topic_arn}"
+  notification_topic  = module.sns.topic_arn
   rackspace_managed   = false
 }
 
 module "ec2_nfs" {
-  source                    = "../../module"
+  source                    = "../../"
   ec2_os                    = "amazon2"
   instance_count            = "1"
-  subnets                   = "${module.vpc.private_subnets}"
-  security_group_list       = ["${module.vpc.default_sg}"]
+  subnets                   = module.vpc.private_subnets
+  security_group_list       = [module.vpc.default_sg]
   key_pair                  = "CircleCI"
   instance_type             = "t2.micro"
   resource_name             = "ar-nfs-${random_string.res_name.result}"
@@ -594,3 +607,4 @@ module "ec2_nfs" {
   secondary_ebs_volume_iops = "0"
   secondary_ebs_volume_type = "gp2"
 }
+

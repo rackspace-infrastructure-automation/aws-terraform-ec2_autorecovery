@@ -1,5 +1,5 @@
 provider "aws" {
-  version = "~> 1.2"
+  version = "~> 2.2"
   region  = "us-west-2"
 }
 
@@ -9,7 +9,8 @@ module "vpc" {
   vpc_name = "EC2-AR-BaseNetwork-Test1"
 }
 
-data "aws_region" "current_region" {}
+data "aws_region" "current_region" {
+}
 
 # Lookup the correct AMI based on the region specified
 data "aws_ami" "amazon_centos_7" {
@@ -33,9 +34,9 @@ module "ec2_ar" {
 
   ec2_os                       = "centos7"
   instance_count               = "3"
-  subnets                      = "${module.vpc.public_subnets}"
-  security_group_list          = ["${module.vpc.default_sg}"]
-  image_id                     = "${data.aws_ami.amazon_centos_7.image_id}"
+  subnets                      = module.vpc.public_subnets
+  security_group_list          = [module.vpc.default_sg]
+  image_id                     = data.aws_ami.amazon_centos_7.image_id
   key_pair                     = "mcardenas_testing"
   instance_type                = "t2.micro"
   resource_name                = "my_test_instance"
@@ -79,6 +80,7 @@ module "ec2_ar" {
         "timeoutSeconds": 300
       }
 EOF
+
     },
     {
       ssm_add_step = <<EOF
@@ -95,12 +97,13 @@ EOF
         "timeoutSeconds": 300
       }
 EOF
+
     },
   ]
 
   additional_ssm_bootstrap_step_count = "1"
   private_ip_address                  = ["10.0.1.131", "10.0.1.132", "10.0.1.133"]
-  eip_allocation_id_list              = ["${aws_eip.my_eips.*.id}"]
+  eip_allocation_id_list              = [aws_eip.my_eips.*.id]
   eip_allocation_id_count             = "3"
   notification_topic                  = ""
   disable_api_termination             = "False"
@@ -117,3 +120,4 @@ EOF
     MyTag3 = "MyValue3"
   }
 }
+
