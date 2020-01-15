@@ -250,8 +250,8 @@ data "template_file" "user_data" {
   template = file("${path.module}/text/${local.user_data_map[local.ec2_os]}")
 
   vars = {
-    initial_commands = var.initial_userdata_commands != "" ? var.initial_userdata_commands : ""
-    final_commands   = var.final_userdata_commands != "" ? var.final_userdata_commands : ""
+    initial_commands = var.initial_userdata_commands
+    final_commands   = var.final_userdata_commands
   }
 }
 
@@ -265,37 +265,33 @@ data "aws_caller_identity" "current_account" {}
 
 data "aws_iam_policy_document" "mod_ec2_assume_role_policy_doc" {
   statement {
-    effect  = "Allow"
     actions = ["sts:AssumeRole"]
+    effect  = "Allow"
 
     principals {
-      type        = "Service"
       identifiers = ["ec2.amazonaws.com"]
+      type        = "Service"
     }
   }
 }
 
 data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
   statement {
-    effect    = "Allow"
     actions   = ["cloudformation:Describe"]
+    effect    = "Allow"
     resources = ["*"]
   }
 
   statement {
-    effect = "Allow"
-
     actions = [
       "ssm:CreateAssociation",
       "ssm:DescribeInstanceInformation",
     ]
-
+    effect = "Allow"
     resources = ["*"]
   }
 
   statement {
-    effect = "Allow"
-
     actions = [
       "cloudwatch:GetMetricStatistics",
       "cloudwatch:ListMetrics",
@@ -307,13 +303,11 @@ data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
       "logs:PutLogEvents",
       "ssm:GetParameter",
     ]
-
+    effect = "Allow"
     resources = ["*"]
   }
 
   statement {
-    effect = "Allow"
-
     actions = [
       "s3:PutObject",
       "s3:GetObject",
@@ -323,23 +317,21 @@ data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
       "s3:ListBucket",
       "s3:ListBucketMultipartUploads",
     ]
-
+    effect = "Allow"
     resources = ["*"]
   }
 
   statement {
-    effect = "Allow"
-
     actions = [
       "s3:GetBucketLocation",
     ]
-
+    effect = "Allow"
     resources = ["*"]
   }
 
   statement {
-    effect    = "Allow"
     actions   = ["ec2:DescribeTags"]
+    effect    = "Allow"
     resources = ["*"]
   }
 }
@@ -347,67 +339,67 @@ data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
 resource "aws_iam_policy" "create_instance_role_policy" {
   count = var.instance_profile_override ? 0 : 1
 
-  name        = "InstanceRolePolicy-${var.resource_name}"
   description = "Rackspace Instance Role Policies for EC2"
+  name        = "InstanceRolePolicy-${var.resource_name}"
   policy      = data.aws_iam_policy_document.mod_ec2_instance_role_policies.json
 }
 
 resource "aws_iam_role" "mod_ec2_instance_role" {
   count = var.instance_profile_override ? 0 : 1
 
+  assume_role_policy = data.aws_iam_policy_document.mod_ec2_assume_role_policy_doc.json
   name               = "InstanceRole-${var.resource_name}"
   path               = "/"
-  assume_role_policy = data.aws_iam_policy_document.mod_ec2_assume_role_policy_doc.json
 }
 
 resource "aws_iam_role_policy_attachment" "attach_core_ssm_policy" {
   count = var.instance_profile_override ? 0 : 1
 
-  role       = aws_iam_role.mod_ec2_instance_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.mod_ec2_instance_role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "attach_cw_ssm_policy" {
   count = var.instance_profile_override ? 0 : 1
 
-  role       = aws_iam_role.mod_ec2_instance_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  role       = aws_iam_role.mod_ec2_instance_role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "attach_ad_ssm_policy" {
   count = var.instance_profile_override ? 0 : 1
 
-  role       = aws_iam_role.mod_ec2_instance_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess"
+  role       = aws_iam_role.mod_ec2_instance_role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "attach_codedeploy_policy" {
   count = var.install_codedeploy_agent && var.instance_profile_override != true ? 1 : 0
 
-  role       = aws_iam_role.mod_ec2_instance_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy"
+  role       = aws_iam_role.mod_ec2_instance_role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "attach_instance_role_policy" {
   count = var.instance_profile_override ? 0 : 1
 
-  role       = aws_iam_role.mod_ec2_instance_role[0].name
   policy_arn = aws_iam_policy.create_instance_role_policy[0].arn
+  role       = aws_iam_role.mod_ec2_instance_role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "attach_additonal_policies" {
   count = var.instance_profile_override ? 0 : var.instance_role_managed_policy_arn_count
 
-  role       = aws_iam_role.mod_ec2_instance_role[0].name
   policy_arn = element(var.instance_role_managed_policy_arns, count.index)
+  role       = aws_iam_role.mod_ec2_instance_role[0].name
 }
 
 resource "aws_iam_instance_profile" "instance_role_instance_profile" {
   count = var.instance_profile_override ? 0 : 1
 
   name = "InstanceRoleInstanceProfile-${var.resource_name}"
-  role = aws_iam_role.mod_ec2_instance_role[0].name
   path = "/"
+  role = aws_iam_role.mod_ec2_instance_role[0].name
 }
 
 #
@@ -648,18 +640,12 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   ebs_optimized          = var.enable_ebs_optimization
   tenancy                = var.tenancy
   monitoring             = var.detailed_monitoring
-  iam_instance_profile = element(
-    coalescelist(
-      aws_iam_instance_profile.instance_role_instance_profile.*.name,
-      [var.instance_profile_override_name],
-    ),
-    0,
-  )
   user_data_base64 = base64encode(data.template_file.user_data.rendered)
 
   # coalescelist and list("") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
   private_ip              = element(coalescelist(var.private_ip_address, [""]), count.index)
   disable_api_termination = var.disable_api_termination
+  volume_tags = var.ebs_volume_tags
 
   credit_specification {
     cpu_credits = var.t2_unlimited_mode
@@ -671,11 +657,17 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
     iops        = var.primary_ebs_volume_iops
   }
 
-  volume_tags = var.ebs_volume_tags
-
   timeouts {
     create = var.creation_policy_timeout
   }
+
+  iam_instance_profile = element(
+    coalescelist(
+      aws_iam_instance_profile.instance_role_instance_profile.*.name,
+      [var.instance_profile_override_name],
+    ),
+    0,
+  )
 
   tags = merge(
     {
@@ -697,13 +689,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   ebs_optimized          = var.enable_ebs_optimization
   tenancy                = var.tenancy
   monitoring             = var.detailed_monitoring
-  iam_instance_profile = element(
-    coalescelist(
-      aws_iam_instance_profile.instance_role_instance_profile.*.name,
-      [var.instance_profile_override_name],
-    ),
-    0,
-  )
+  volume_tags = var.ebs_volume_tags
   user_data_base64 = base64encode(data.template_file.user_data.rendered)
 
   # coalescelist and list("") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
@@ -720,8 +706,6 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
     iops        = var.primary_ebs_volume_iops
   }
 
-  volume_tags = var.ebs_volume_tags
-
   ebs_block_device {
     device_name = local.ebs_device_map[local.ec2_os]
     volume_type = var.secondary_ebs_volume_type
@@ -734,6 +718,14 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   timeouts {
     create = var.creation_policy_timeout
   }
+
+  iam_instance_profile = element(
+    coalescelist(
+      aws_iam_instance_profile.instance_role_instance_profile.*.name,
+      [var.instance_profile_override_name],
+    ),
+    0,
+  )
 
   tags = merge(
     {
