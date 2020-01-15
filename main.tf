@@ -31,7 +31,7 @@
 
 terraform {
   required_version = ">= 0.12"
-  
+
   required_providers {
     aws = ">= 2.0.0"
   }
@@ -235,23 +235,11 @@ EOF
 # Lookup the correct AMI based on the region specified
 data "aws_ami" "ar_ami" {
   most_recent = true
-  # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
-  # force an interpolation expression to be interpreted as a list by wrapping it
-  # in an extra set of list brackets. That form was supported for compatibility in
-  # v0.11, but is no longer supported in Terraform v0.12.
-  #
-  # If the expression in the following list itself returns a list, remove the
-  # brackets to avoid interpretation as a list of lists. If the expression
-  # returns a single list item then leave it as-is and remove this TODO comment.
   owners = [local.ami_owner_mapping[local.ec2_os]]
+
   dynamic "filter" {
     for_each = concat(local.standard_filters, local.image_filter[local.ec2_os])
     content {
-      # TF-UPGRADE-TODO: The automatic upgrade tool can't predict
-      # which keys might be set in maps assigned here, so it has
-      # produced a comprehensive set here. Consider simplifying
-      # this after confirming which keys can be set in practice.
-
       name   = filter.value.name
       values = filter.value.values
     }
@@ -267,11 +255,9 @@ data "template_file" "user_data" {
   }
 }
 
-data "aws_region" "current_region" {
-}
+data "aws_region" "current_region" {}
 
-data "aws_caller_identity" "current_account" {
-}
+data "aws_caller_identity" "current_account" {}
 
 #
 # IAM Policies
@@ -494,15 +480,6 @@ resource "aws_ssm_association" "ssm_bootstrap_assoc" {
 
   targets {
     key = "InstanceIds"
-
-    # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
-    # force an interpolation expression to be interpreted as a list by wrapping it
-    # in an extra set of list brackets. That form was supported for compatibility in
-    # v0.11, but is no longer supported in Terraform v0.12.
-    #
-    # If the expression in the following list itself returns a list, remove the
-    # brackets to avoid interpretation as a list of lists. If the expression
-    # returns a single list item then leave it as-is and remove this TODO comment.
     values = [coalescelist(
       aws_instance.mod_ec2_instance_no_secondary_ebs.*.id,
       aws_instance.mod_ec2_instance_with_secondary_ebs.*.id,
@@ -539,7 +516,7 @@ data "null_data_source" "alarm_dimensions" {
 }
 
 module "status_check_failed_system_alarm_ticket" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.0.1"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=MPCSUPENG-864"
 
   alarm_count       = var.instance_count
   alarm_description = "Status checks have failed for system, generating ticket."
