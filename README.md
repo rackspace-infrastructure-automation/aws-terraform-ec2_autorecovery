@@ -6,7 +6,7 @@ This module creates one or more autorecovery instances.
 
 ```HCL
 module "ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.20"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.23"
 
   ec2_os              = "amazon"
   subnets             = ["${module.vpc.private_subnets}"]
@@ -26,6 +26,18 @@ Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructu
 - status_check_failed_system_alarm_recover
 - status_check_failed_instance_alarm_ticket
 - cpu_alarm_high
+
+## Terraform 0.12 upgrade
+
+Several changes were required while adding terraform 0.12 compatibility.  The following changes should
+made when upgrading from a previous release to version 0.12.0 or higher.
+
+### Module variables
+
+The following module variables were updated to better meet current Rackspace style guides:
+
+- `security_group_list` -> `security_groups`
+- `resource_name` -> `name`
 
 ## Inputs
 
@@ -65,6 +77,7 @@ Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructu
 | instance\_role\_managed\_policy\_arns | List of IAM policy ARNs for the InstanceRole IAM role. IAM ARNs can be found within the Policies section of the AWS IAM console. e.g. ['arn:aws:iam::aws:policy/AmazonEC2FullAccess', 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM', 'arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole'] | list | `<list>` | no |
 | instance\_type | EC2 Instance Type e.g. 't2.micro' | string | `"t2.micro"` | no |
 | key\_pair | Name of an existing EC2 KeyPair to enable SSH access to the instances. | string | `""` | no |
+| name | Name to be used for the provisioned EC2 instance(s) and other resources provisioned in this module | string | n/a | yes |
 | notification\_topic | SNS Topic ARN to notify if there are any alarms | string | `""` | no |
 | perform\_ssm\_inventory\_tag | Determines whether Instance is tracked via System Manager Inventory. | string | `"True"` | no |
 | primary\_ebs\_volume\_iops | Iops value required for use with io1 EBS volumes. This value should be 3 times the EBS volume size | string | `"0"` | no |
@@ -73,12 +86,11 @@ Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructu
 | private\_ip\_address | A list of static private IP addresses to be configured on the instance.  This IP should be in the assigned subnet and if the instance is replaced, a new IP would need to be assigned. If used, one private IP needs to be provided per instance. | list | `<list>` | no |
 | provide\_custom\_cw\_agent\_config | Set to true if a custom cloudwatch agent configuration has been provided in variable custom_cw_agent_config_ssm_param. | string | `"false"` | no |
 | rackspace\_managed | Boolean parameter controlling if instance will be fully managed by Rackspace support teams, created CloudWatch alarms that generate tickets, and utilize Rackspace managed SSM documents. | string | `"true"` | no |
-| resource\_name | Name to be used for the provisioned EC2 instance(s) and other resources provisioned in this module | string | n/a | yes |
 | secondary\_ebs\_volume\_existing\_id | The Snapshot ID of an existing EBS volume you want to use for the secondary volume. i.e. snap-0ad8580e3ac34a9f1 | string | `""` | no |
 | secondary\_ebs\_volume\_iops | Iops value required for use with io1 EBS volumes. This value should be 3 times the EBS volume size | string | `"0"` | no |
 | secondary\_ebs\_volume\_size | EBS Volume Size in GB | string | `""` | no |
 | secondary\_ebs\_volume\_type | EBS Volume Type. e.g. gp2, io1, st1, sc1 | string | `"gp2"` | no |
-| security\_group\_list | A list of security group IDs to assign to this resource. e.g. ['sg-00e88e6a', 'sg-0943cd61', 'sg-2f46c847'] | list | n/a | yes |
+| security\_groups | A list of security group IDs to assign to this resource. e.g. ['sg-00e88e6a', 'sg-0943cd61', 'sg-2f46c847'] | list | n/a | yes |
 | ssm\_association\_refresh\_rate | A cron or rate pattern to define the SSM Association refresh schedule, defaulting to once per day. See https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-cron.html for more details. Schedule can be disabled by providing an empty string. | string | `"rate(1 day)"` | no |
 | ssm\_patching\_group | Group ID to be used by System Manager for Patching. This is the value to be used for tag 'Patch Group' | string | `""` | no |
 | subnets | Subnet ID(s) for EC2 Instance(s). If multiple are provided, instances will be distributed amongst them. | list | `<list>` | no |
@@ -92,4 +104,3 @@ Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructu
 | ar\_image\_id | Image ID used for EC2 provisioning |
 | ar\_instance\_id\_list | List of resulting Instance IDs |
 | ar\_instance\_ip\_list | List of resulting Instance IP addresses |
-

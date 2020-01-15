@@ -12,8 +12,8 @@
  *   ec2_os              = "amazon"
  *   subnets             = ["${module.vpc.private_subnets}"]
  *   image_id            = "${var.image_id}"
- *   resource_name       = "my_ar_instance"
- *   security_group_list = ["${module.sg.private_web_security_group_id}"]
+ *   name       = "my_ar_instance"
+ *   security_groups = ["${module.sg.private_web_security_group_id}"]
  * }
  * ```
  *
@@ -27,6 +27,20 @@
  * - status_check_failed_system_alarm_recover
  * - status_check_failed_instance_alarm_ticket
  * - cpu_alarm_high
+ *
+ * ## Terraform 0.12 upgrade
+*
+* Several changes were required while adding terraform 0.12 compatibility.  The following changes should
+* made when upgrading from a previous release to version 0.12.0 or higher.
+*
+* ### Module variables
+*
+* The following module variables were updated to better meet current Rackspace style guides:
+*
+* - `security_group_list` -> `security_groups`
+* - `resource_name` -> `name`
+*
+* Additionally, new variables `tags` and `tags_asg` were added to replace the functionality of the `additional_tags` variable.  `tags` allows setting tags on all resources, while `tags_asg` sets tags only on the ASG itself.  `additional_tags` will continue to work as expected, but will be removed in a future release.
  */
 
 terraform {
@@ -229,7 +243,7 @@ EOF
     },
   ]
 
-  cw_config_parameter_name = "CWAgent-${var.resource_name}"
+  cw_config_parameter_name = "CWAgent-${var.name}"
 }
 
 # Lookup the correct AMI based on the region specified
@@ -340,7 +354,7 @@ resource "aws_iam_policy" "create_instance_role_policy" {
   count = var.instance_profile_override ? 0 : 1
 
   description = "Rackspace Instance Role Policies for EC2"
-  name        = "InstanceRolePolicy-${var.resource_name}"
+  name        = "InstanceRolePolicy-${var.name}"
   policy      = data.aws_iam_policy_document.mod_ec2_instance_role_policies.json
 }
 
@@ -348,7 +362,7 @@ resource "aws_iam_role" "mod_ec2_instance_role" {
   count = var.instance_profile_override ? 0 : 1
 
   assume_role_policy = data.aws_iam_policy_document.mod_ec2_assume_role_policy_doc.json
-  name               = "InstanceRole-${var.resource_name}"
+  name               = "InstanceRole-${var.name}"
   path               = "/"
 }
 
@@ -397,7 +411,7 @@ resource "aws_iam_role_policy_attachment" "attach_additonal_policies" {
 resource "aws_iam_instance_profile" "instance_role_instance_profile" {
   count = var.instance_profile_override ? 0 : 1
 
-  name = "InstanceRoleInstanceProfile-${var.resource_name}"
+  name = "InstanceRoleInstanceProfile-${var.name}"
   path = "/"
   role = aws_iam_role.mod_ec2_instance_role[0].name
 }
@@ -441,7 +455,7 @@ data "template_file" "ssm_bootstrap_template" {
 }
 
 resource "aws_ssm_document" "ssm_bootstrap_doc" {
-  name            = "SSMDocument-${var.resource_name}"
+  name            = "SSMDocument-${var.name}"
   document_type   = "Command"
   document_format = "JSON"
   content         = data.template_file.ssm_bootstrap_template.rendered
@@ -451,7 +465,7 @@ resource "aws_ssm_parameter" "cwagentparam" {
   count = var.provide_custom_cw_agent_config ? 0 : 1
 
   name        = local.cw_config_parameter_name
-  description = "${var.resource_name} Cloudwatch Agent configuration"
+  description = "${var.name} Cloudwatch Agent configuration"
   type        = "String"
   value = replace(
     replace(
@@ -484,12 +498,12 @@ resource "aws_ssm_association" "ssm_bootstrap_assoc" {
 #
 
 resource "aws_cloudwatch_log_group" "system_logs" {
-  name              = "${var.resource_name}-SystemLogs"
+  name              = "${var.name}-SystemLogs"
   retention_in_days = var.cloudwatch_log_retention
 }
 
 resource "aws_cloudwatch_log_group" "application_logs" {
-  name              = "${var.resource_name}-ApplicationLogs"
+  name              = "${var.name}-ApplicationLogs"
   retention_in_days = var.cloudwatch_log_retention
 }
 
@@ -514,7 +528,7 @@ module "status_check_failed_system_alarm_ticket" {
   alarm_description = "Status checks have failed for system, generating ticket."
   alarm_name = join(
     "-",
-    ["StatusCheckFailedSystemAlarmTicket", var.resource_name],
+    ["StatusCheckFailedSystemAlarmTicket", var.name],
   )
   comparison_operator      = "GreaterThanThreshold"
   dimensions               = data.null_data_source.alarm_dimensions.*.outputs
@@ -539,7 +553,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_instance_alarm_reboo
     "-",
     [
       "StatusCheckFailedInstanceAlarmReboot",
-      var.resource_name,
+      var.name,
       format("%03d", count.index + 1),
     ],
   )
@@ -564,7 +578,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_recover
     "-",
     [
       "StatusCheckFailedSystemAlarmRecover",
-      var.resource_name,
+      var.name,
       format("%03d", count.index + 1),
     ],
   )
@@ -588,7 +602,7 @@ module "status_check_failed_instance_alarm_ticket" {
   alarm_description = "Status checks have failed, generating ticket."
   alarm_name = join(
     "-",
-    ["StatusCheckFailedInstanceAlarmTicket", var.resource_name],
+    ["StatusCheckFailedInstanceAlarmTicket", var.name],
   )
   comparison_operator      = "GreaterThanThreshold"
   dimensions               = data.null_data_source.alarm_dimensions.*.outputs
@@ -610,7 +624,7 @@ module "cpu_alarm_high" {
 
   alarm_count              = var.instance_count
   alarm_description        = "CPU Alarm ${var.cw_cpu_high_operator} ${var.cw_cpu_high_threshold}% for ${var.cw_cpu_high_period} seconds ${var.cw_cpu_high_evaluations} times."
-  alarm_name               = join("-", ["CPUAlarmHigh", var.resource_name])
+  alarm_name               = join("-", ["CPUAlarmHigh", var.name])
   comparison_operator      = var.cw_cpu_high_operator
   customer_alarms_enabled  = true
   dimensions               = data.null_data_source.alarm_dimensions.*.outputs
@@ -634,7 +648,7 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
 
   ami                    = var.image_id != "" ? var.image_id : data.aws_ami.ar_ami.image_id
   subnet_id              = element(var.subnets, count.index)
-  vpc_security_group_ids = var.security_group_list
+  vpc_security_group_ids = var.security_groups
   instance_type          = var.instance_type
   key_name               = var.key_pair
   ebs_optimized          = var.enable_ebs_optimization
@@ -671,7 +685,7 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
 
   tags = merge(
     {
-      "Name" = "${var.resource_name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}"
+      "Name" = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}"
     },
     local.tags,
     var.additional_tags,
@@ -683,7 +697,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
 
   ami                    = var.image_id != "" ? var.image_id : data.aws_ami.ar_ami.image_id
   subnet_id              = element(var.subnets, count.index)
-  vpc_security_group_ids = var.security_group_list
+  vpc_security_group_ids = var.security_groups
   instance_type          = var.instance_type
   key_name               = var.key_pair
   ebs_optimized          = var.enable_ebs_optimization
@@ -729,7 +743,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
 
   tags = merge(
     {
-      "Name" = "${var.resource_name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}"
+      "Name" = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}"
     },
     local.tags,
     var.additional_tags,
