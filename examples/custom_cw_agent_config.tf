@@ -12,52 +12,50 @@ resource "random_string" "res_name" {
 }
 
 module "vpc" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.9"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.0"
 
-  vpc_name = "EC2-AR-BaseNetwork-Test1"
+  name = "EC2-AR-BaseNetwork-Test1"
 }
 
 data "aws_region" "current_region" {
 }
 
 module "ec2_ar_with_codedeploy" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.20"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.0"
 
   ec2_os         = "rhel6"
   instance_count = "1"
   subnets        = module.vpc.private_subnets
 
-  security_group_list = [
-    module.vpc.default_sg,
-  ]
+  security_groups = [module.vpc.default_sg]
 
-  key_pair                         = "CircleCI"
-  instance_type                    = "t2.micro"
-  resource_name                    = "ar_ec2_codedeploy-${random_string.res_name.result}"
-  install_codedeploy_agent         = true
-  enable_ebs_optimization          = false
-  tenancy                          = "default"
   backup_tag_value                 = "False"
+  cloudwatch_log_retention         = "30"
+  creation_policy_timeout          = "20m"
+  custom_cw_agent_config_ssm_param = aws_ssm_parameter.custom_cwagentparam.name
+  cw_cpu_high_evaluations          = "15"
+  cw_cpu_high_operator             = "GreaterThanThreshold"
+  cw_cpu_high_period               = "60"
+  cw_cpu_high_threshold            = "90"
   detailed_monitoring              = true
-  ssm_patching_group               = "Group1Patching"
-  primary_ebs_volume_size          = "60"
-  primary_ebs_volume_iops          = "0"
-  primary_ebs_volume_type          = "gp2"
+  disable_api_termination          = false
+  enable_ebs_optimization          = false
   encrypt_secondary_ebs_volume     = "False"
   environment                      = "Development"
-  perform_ssm_inventory_tag        = true
-  cloudwatch_log_retention         = "30"
-  ssm_association_refresh_rate     = "rate(1 day)"
+  install_codedeploy_agent         = true
+  instance_type                    = "t2.micro"
+  key_pair                         = "CircleCI"
+  name                             = "ar_ec2_codedeploy-${random_string.res_name.result}"
   notification_topic               = ""
-  disable_api_termination          = false
-  t2_unlimited_mode                = "standard"
-  creation_policy_timeout          = "20m"
-  cw_cpu_high_operator             = "GreaterThanThreshold"
-  cw_cpu_high_threshold            = "90"
-  cw_cpu_high_evaluations          = "15"
-  cw_cpu_high_period               = "60"
+  perform_ssm_inventory_tag        = true
+  primary_ebs_volume_iops          = "0"
+  primary_ebs_volume_size          = "60"
+  primary_ebs_volume_type          = "gp2"
   provide_custom_cw_agent_config   = true
-  custom_cw_agent_config_ssm_param = aws_ssm_parameter.custom_cwagentparam.name
+  ssm_association_refresh_rate     = "rate(1 day)"
+  ssm_patching_group               = "Group1Patching"
+  t2_unlimited_mode                = "standard"
+  tenancy                          = "default"
 }
 
 resource "aws_ssm_parameter" "custom_cwagentparam" {
@@ -75,4 +73,3 @@ data "template_file" "custom_cwagentparam" {
     system_log_group_name      = "custom_system_log_group_name"
   }
 }
-

@@ -1,19 +1,7 @@
-variable "additional_tags" {
-  description = "Additional tags to be added to the EC2 instance Please see usage.tf.example in this repo for examples."
-  type        = map(string)
-  default     = {}
-}
-
 variable "additional_ssm_bootstrap_list" {
-  description = "A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples."
-  type        = list(string)
+  description = "A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples.<br><br>(DEPRECATED) This variable will be removed in future releases in favor of the `ssm_bootstrap_list` variable."
+  type        = list(map(string))
   default     = []
-}
-
-variable "additional_ssm_bootstrap_step_count" {
-  description = "Count of steps added for input 'additional_ssm_bootstrap_list'. This is required since 'additional_ssm_bootstrap_list' is a list of maps"
-  type        = string
-  default     = "0"
 }
 
 variable "backup_tag_value" {
@@ -30,14 +18,14 @@ variable "creation_policy_timeout" {
 
 variable "cloudwatch_log_retention" {
   description = "The number of days to retain Cloudwatch Logs for this instance."
-  type        = string
-  default     = "30"
+  type        = number
+  default     = 30
 }
 
 variable "cw_cpu_high_evaluations" {
   description = "The number of periods over which data is compared to the specified threshold."
-  type        = string
-  default     = "15"
+  type        = number
+  default     = 15
 }
 
 variable "cw_cpu_high_operator" {
@@ -48,14 +36,14 @@ variable "cw_cpu_high_operator" {
 
 variable "cw_cpu_high_period" {
   description = "Time the specified statistic is applied. Must be in seconds that is also a multiple of 60."
-  type        = string
-  default     = "60"
+  type        = number
+  default     = 60
 }
 
 variable "cw_cpu_high_threshold" {
   description = "The value against which the specified statistic is compared."
-  type        = string
-  default     = "90"
+  type        = number
+  default     = 90
 }
 
 variable "custom_cw_agent_config_ssm_param" {
@@ -66,13 +54,13 @@ variable "custom_cw_agent_config_ssm_param" {
 
 variable "detailed_monitoring" {
   description = "Enable Detailed Monitoring? true or false"
-  type        = string
+  type        = bool
   default     = true
 }
 
 variable "disable_api_termination" {
   description = "Specifies that an instance should not be able to be deleted via the API. true or false. This option must be toggled to false to allow Terraform to destroy the resource."
-  type        = string
+  type        = bool
   default     = false
 }
 
@@ -84,13 +72,13 @@ variable "ebs_volume_tags" {
 
 variable "enable_ebs_optimization" {
   description = "Use EBS Optimized? true or false"
-  type        = string
+  type        = bool
   default     = false
 }
 
 variable "encrypt_secondary_ebs_volume" {
   description = "Encrypt EBS Volume? true or false"
-  type        = string
+  type        = bool
   default     = false
 }
 
@@ -101,8 +89,8 @@ variable "ec2_os" {
 
 variable "eip_allocation_id_count" {
   description = "A count of supplied eip allocation IDs in variable eip_allocation_id_list"
-  type        = string
-  default     = "0"
+  type        = number
+  default     = 0
 }
 
 variable "eip_allocation_id_list" {
@@ -113,7 +101,7 @@ variable "eip_allocation_id_list" {
 
 variable "enable_recovery_alarms" {
   description = "Boolean parameter controlling if auto-recovery alarms should be created.  Recovery actions are not supported on all instance types and AMIs, especially those with ephemeral storage.  This parameter should be set to false for those cases."
-  type        = string
+  type        = bool
   default     = true
 }
 
@@ -137,26 +125,26 @@ variable "image_id" {
 
 variable "install_codedeploy_agent" {
   description = "Install codedeploy agent on instance(s)? true or false"
-  type        = string
+  type        = bool
   default     = false
 }
 
 variable "install_scaleft_agent" {
   description = "Install scaleft agent on instance(s)? true or false"
-  type        = string
+  type        = bool
   default     = true
 }
 
 variable "install_nfs" {
   description = "Install NFS service on instance(s)? true or false"
-  type        = string
+  type        = bool
   default     = false
 }
 
 variable "instance_count" {
   description = "Number of identical instances to deploy"
-  type        = string
-  default     = "1"
+  type        = number
+  default     = 1
 }
 
 variable "instance_type" {
@@ -169,6 +157,11 @@ variable "key_pair" {
   description = "Name of an existing EC2 KeyPair to enable SSH access to the instances."
   type        = string
   default     = ""
+}
+
+variable "name" {
+  description = "Name to be used for the provisioned EC2 instance(s) and other resources provisioned in this module"
+  type        = string
 }
 
 variable "notification_topic" {
@@ -185,14 +178,14 @@ variable "private_ip_address" {
 
 variable "primary_ebs_volume_iops" {
   description = "Iops value required for use with io1 EBS volumes. This value should be 3 times the EBS volume size"
-  type        = string
-  default     = "0"
+  type        = number
+  default     = 0
 }
 
 variable "primary_ebs_volume_size" {
   description = "EBS Volume Size in GB"
-  type        = string
-  default     = "60"
+  type        = number
+  default     = 60
 }
 
 variable "primary_ebs_volume_type" {
@@ -203,16 +196,11 @@ variable "primary_ebs_volume_type" {
 
 variable "rackspace_managed" {
   description = "Boolean parameter controlling if instance will be fully managed by Rackspace support teams, created CloudWatch alarms that generate tickets, and utilize Rackspace managed SSM documents."
-  type        = string
+  type        = bool
   default     = true
 }
 
-variable "resource_name" {
-  description = "Name to be used for the provisioned EC2 instance(s) and other resources provisioned in this module"
-  type        = string
-}
-
-variable "security_group_list" {
+variable "security_groups" {
   description = "A list of security group IDs to assign to this resource. e.g. ['sg-00e88e6a', 'sg-0943cd61', 'sg-2f46c847']"
   type        = list(string)
 }
@@ -225,8 +213,8 @@ variable "secondary_ebs_volume_existing_id" {
 
 variable "secondary_ebs_volume_iops" {
   description = "Iops value required for use with io1 EBS volumes. This value should be 3 times the EBS volume size"
-  type        = string
-  default     = "0"
+  type        = number
+  default     = 0
 }
 
 variable "secondary_ebs_volume_size" {
@@ -253,10 +241,22 @@ variable "ssm_association_refresh_rate" {
   default     = "rate(1 day)"
 }
 
+variable "ssm_bootstrap_list" {
+  description = "A list of objects consisting of actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples."
+  type        = any
+  default     = []
+}
+
 variable "ssm_patching_group" {
   description = "Group ID to be used by System Manager for Patching. This is the value to be used for tag 'Patch Group'"
   type        = string
   default     = ""
+}
+
+variable "tags" {
+  description = "A map of tags to apply to all resources."
+  type        = map(string)
+  default     = {}
 }
 
 variable "t2_unlimited_mode" {
@@ -273,19 +273,19 @@ variable "tenancy" {
 
 variable "perform_ssm_inventory_tag" {
   description = "Determines whether Instance is tracked via System Manager Inventory."
-  type        = string
-  default     = "True"
+  type        = bool
+  default     = true
 }
 
 variable "provide_custom_cw_agent_config" {
   description = "Set to true if a custom cloudwatch agent configuration has been provided in variable custom_cw_agent_config_ssm_param."
-  type        = string
+  type        = bool
   default     = false
 }
 
 variable "instance_profile_override" {
   description = "Optionally provide an instance profile. Any override profile should contain the permissions required for Rackspace support tooling to continue to function if required."
-  type        = string
+  type        = bool
   default     = false
 }
 
@@ -303,8 +303,8 @@ variable "instance_role_managed_policy_arns" {
 
 variable "instance_role_managed_policy_arn_count" {
   description = "The number of policy ARNs provided/set in variable 'instance_role_managed_policy_arns'"
-  type        = string
-  default     = "0"
+  type        = number
+  default     = 0
 }
 
 variable "initial_userdata_commands" {

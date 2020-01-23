@@ -7,18 +7,17 @@
  *
  * ```HCL
  * module "ar" {
- *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.20"
+ *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.0"
  *
  *   ec2_os              = "amazon"
  *   subnets             = ["${module.vpc.private_subnets}"]
  *   image_id            = "${var.image_id}"
- *   name       = "my_ar_instance"
+ *   name                = "my_ar_instance"
  *   security_groups = ["${module.sg.private_web_security_group_id}"]
  * }
- * ```
- *
+ *```
  * Full working references are available at [examples](examples)
- * _**Note**: When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level._
+ * **Note** When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level._
  *
  * ## Other TF Modules Used
  * Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm) to create the following CloudWatch Alarms:
@@ -29,25 +28,30 @@
  * - cpu_alarm_high
  *
  * ## Terraform 0.12 upgrade
-*
-* Several changes were required while adding terraform 0.12 compatibility.  The following changes should
-* made when upgrading from a previous release to version 0.12.0 or higher.
-*
-* ### Module variables
-*
-* The following module variables were updated to better meet current Rackspace style guides:
-*
-* - `security_group_list` -> `security_groups`
-* - `resource_name` -> `name`
-*
-* Additionally, new variables `tags` and `tags_asg` were added to replace the functionality of the `additional_tags` variable.  `tags` allows setting tags on all resources, while `tags_asg` sets tags only on the ASG itself.  `additional_tags` will continue to work as expected, but will be removed in a future release.
+ *
+ * Several changes were required while adding terraform 0.12 compatibility.  The following changes should
+ * made when upgrading from a previous release to version 0.12.0 or higher.
+ *
+ * ### Module variables
+ *
+ * The following module variables were updated to better meet current Rackspace style guides:
+ *
+ * - `security_group_list` -> `security_groups`
+ * - `resource_name` -> `name`
+ * - `additional_tags` -> `tags`
+ *
+ * The following variables are no longer neccessary and were removed
+ *
+ * - `additional_ssm_bootstrap_step_count`
+ *
+ * New variable `ssm_bootstrap_list` was added to allow setting the SSM association steps using objects instead of strings, allowing easier linting and formatting of these lines.  The `additional_ssm_bootstrap_list` variable will continue to work, but will be deprecated in a future release.
  */
 
 terraform {
   required_version = ">= 0.12"
 
   required_providers {
-    aws = ">= 2.0.0"
+    aws = ">= 2.1.0"
   }
 }
 
@@ -56,6 +60,144 @@ locals {
 
   ec2_os_windows_length_test = length(local.ec2_os) >= 7 ? 7 : length(local.ec2_os)
   ec2_os_windows             = substr(local.ec2_os, 0, local.ec2_os_windows_length_test) == "windows" ? true : false
+
+  cw_config_parameter_name = "CWAgent-${var.name}"
+
+  cwagent_config = local.ec2_os_windows ? "windows_cw_agent_param.json" : "linux_cw_agent_param.json"
+
+  ssm_doc_content = {
+    schemaVersion = "2.2"
+    description   = "SSM Document for instance configuration."
+    parameters    = {}
+    mainSteps     = local.ssm_command_list
+  }
+
+  ssm_command_list = concat(
+    local.default_ssm_cmd_list,
+    local.ssm_codedeploy_include[var.install_codedeploy_agent],
+    local.ssm_scaleft_include[var.install_scaleft_agent],
+    [for s in var.additional_ssm_bootstrap_list : jsondecode(s.ssm_add_step)],
+    var.ssm_bootstrap_list,
+    local.ssm_update_agent
+  )
+
+  # This is a list of ssm main steps
+  default_ssm_cmd_list = [
+    {
+      action = "aws:runDocument",
+      inputs = {
+        documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-BusyWait",
+        documentType = "SSMDocument"
+      },
+      name           = "BusyWait",
+      timeoutSeconds = 300
+    },
+    {
+      action = "aws:runDocument",
+      inputs = {
+        documentPath = "AWS-ConfigureAWSPackage",
+        documentParameters = {
+          action = "Install",
+          name   = "AmazonCloudWatchAgent"
+        },
+        documentType = "SSMDocument"
+      },
+      name           = "InstallCWAgent",
+      timeoutSeconds = 300
+    },
+    {
+      action = "aws:runDocument",
+      inputs = {
+        documentPath = "AmazonCloudWatch-ManageAgent",
+        documentParameters = {
+          action                        = "configure",
+          optionalConfigurationSource   = "ssm",
+          optionalConfigurationLocation = "${var.provide_custom_cw_agent_config ? var.custom_cw_agent_config_ssm_param : local.cw_config_parameter_name}",
+          optionalRestart               = "yes",
+          name                          = "AmazonCloudWatchAgent"
+        },
+        documentType = "SSMDocument"
+      },
+      name           = "ConfigureCWAgent",
+      timeoutSeconds = 300
+    },
+    {
+      action = "aws:runDocument",
+      inputs = {
+        documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-ConfigureAWSTimeSync",
+        documentType = "SSMDocument"
+      },
+      name           = "SetupTimeSync",
+      timeoutSeconds = 300
+    },
+    {
+      action = "aws:runDocument",
+      inputs = {
+        documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package",
+        documentParameters = {
+          Packages = "sysstat ltrace strace iptraf tcpdump"
+        },
+        documentType = "SSMDocument"
+      },
+      name           = "DiagnosticTools",
+      timeoutSeconds = 300
+    },
+    {
+      action = "aws:runDocument",
+      inputs = {
+        documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-SetMotd",
+        documentType = "SSMDocument"
+      },
+      name           = "SetMotd",
+      timeoutSeconds = 300
+    },
+  ]
+
+  codedeploy_install = var.install_codedeploy_agent && var.rackspace_managed ? "enabled" : "disabled"
+  scaleft_install    = var.install_scaleft_agent && var.rackspace_managed ? "enabled" : "disabled"
+
+  ssm_codedeploy_include = {
+    true = [
+      {
+        action = "aws:runDocument",
+        inputs = {
+          documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_CodeDeploy",
+          documentType = "SSMDocument"
+        },
+        name = "InstallCodeDeployAgent"
+      }
+    ]
+
+    false = []
+  }
+
+  ssm_scaleft_include = {
+    true = [
+      {
+        action = "aws:runDocument",
+        inputs = {
+          documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_ScaleFT",
+          documentType = "SSMDocument"
+        },
+        name           = "SetupPassport",
+        timeoutSeconds = 300
+      }
+    ]
+
+    false = []
+  }
+
+  ssm_update_agent = [
+    {
+      action = "aws:runDocument",
+      inputs = {
+        documentPath = "AWS-UpdateSSMAgent",
+        documentType = "SSMDocument"
+      },
+      name           = "UpdateSSMAgent",
+      timeoutSeconds = 300
+    },
+  ]
 
   user_data_map = {
     amazon        = "amazon_linux_userdata.sh"
@@ -91,49 +233,23 @@ locals {
     windows2019   = "xvdf"
   }
 
-  cwagent_config = local.ec2_os_windows ? "windows_cw_agent_param.json" : "linux_cw_agent_param.json"
+  # local.tags can and should be applied to all taggable resources
 
   tags = {
-    Backup          = var.backup_tag_value
     Environment     = var.environment
-    "Patch Group"   = var.ssm_patching_group
     ServiceProvider = "Rackspace"
-    SSMInventory    = var.perform_ssm_inventory_tag
   }
 
-  ssm_codedeploy_include = {
-    enabled = <<EOF
-    {
-      "action": "aws:runDocument",
-      "inputs": {
-        "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_CodeDeploy",
-        "documentType": "SSMDocument"
-      },
-      "name": "InstallCodeDeployAgent"
-    },
-EOF
+  # local.tags_ec2 is applied to the autorecovery instance
 
-    disabled = ""
+  tags_ec2 = {
+    Backup           = var.backup_tag_value
+    Name             = var.name
+    "Patch Group"    = var.ssm_patching_group
+    ServiceProvider  = "Rackspace"
+    SSMInventory     = var.perform_ssm_inventory_tag
+    "SSM Target Tag" = "Target-${var.name}"
   }
-
-  ssm_scaleft_include = {
-    enabled = <<EOF
-    {
-      "action": "aws:runDocument",
-      "inputs": {
-        "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_ScaleFT",
-        "documentType": "SSMDocument"
-      },
-      "name": "SetupPassport",
-      "timeoutSeconds": 300
-    },
-EOF
-
-    disabled = ""
-  }
-
-  codedeploy_install = var.install_codedeploy_agent && var.rackspace_managed ? "enabled" : "disabled"
-  scaleft_install    = var.install_scaleft_agent && var.rackspace_managed ? "enabled" : "disabled"
 
   nfs_install = var.install_nfs && var.rackspace_managed && lookup(local.nfs_packages, local.ec2_os, "") != "" ? "enabled" : "disabled"
 
@@ -243,13 +359,12 @@ EOF
     },
   ]
 
-  cw_config_parameter_name = "CWAgent-${var.name}"
 }
 
 # Lookup the correct AMI based on the region specified
 data "aws_ami" "ar_ami" {
   most_recent = true
-  owners = [local.ami_owner_mapping[local.ec2_os]]
+  owners      = [local.ami_owner_mapping[local.ec2_os]]
 
   dynamic "filter" {
     for_each = concat(local.standard_filters, local.image_filter[local.ec2_os])
@@ -301,7 +416,7 @@ data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
       "ssm:CreateAssociation",
       "ssm:DescribeInstanceInformation",
     ]
-    effect = "Allow"
+    effect    = "Allow"
     resources = ["*"]
   }
 
@@ -317,7 +432,7 @@ data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
       "logs:PutLogEvents",
       "ssm:GetParameter",
     ]
-    effect = "Allow"
+    effect    = "Allow"
     resources = ["*"]
   }
 
@@ -331,7 +446,7 @@ data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
       "s3:ListBucket",
       "s3:ListBucketMultipartUploads",
     ]
-    effect = "Allow"
+    effect    = "Allow"
     resources = ["*"]
   }
 
@@ -339,7 +454,7 @@ data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
     actions = [
       "s3:GetBucketLocation",
     ]
-    effect = "Allow"
+    effect    = "Allow"
     resources = ["*"]
   }
 
@@ -417,85 +532,49 @@ resource "aws_iam_instance_profile" "instance_role_instance_profile" {
 }
 
 #
-# SSM Association
+# Provisioning of SSM related resources
 #
 
-data "template_file" "ssm_managed_commands" {
-  template = "\n${file("${path.module}/text/managed_ssm_steps.json")}"
-
-  vars = {
-    region = data.aws_region.current_region.name
-  }
-}
-
-data "template_file" "additional_ssm_docs" {
-  count = var.additional_ssm_bootstrap_step_count
-
-  template = "    $${additional_ssm_cmd_json},"
-
-  vars = {
-    additional_ssm_cmd_json = trimspace(
-      var.additional_ssm_bootstrap_list[count.index]["ssm_add_step"],
-    )
-  }
-}
-
-data "template_file" "ssm_bootstrap_template" {
-  template = file("${path.module}/text/ssm_bootstrap_template.json")
-
-  vars = {
-    region              = data.aws_region.current_region.name
-    cw_agent_param      = var.provide_custom_cw_agent_config ? var.custom_cw_agent_config_ssm_param : local.cw_config_parameter_name
-    managed_ssm_docs    = var.rackspace_managed ? data.template_file.ssm_managed_commands.rendered : ""
-    codedeploy_doc      = local.ssm_codedeploy_include[local.codedeploy_install]
-    scaleft_doc         = local.ssm_scaleft_include[local.scaleft_install]
-    nfs_doc             = local.ssm_nfs_include[local.nfs_install]
-    additional_ssm_docs = join("\n", data.template_file.additional_ssm_docs.*.rendered)
-  }
-}
-
 resource "aws_ssm_document" "ssm_bootstrap_doc" {
-  name            = "SSMDocument-${var.name}"
-  document_type   = "Command"
+  content         = jsonencode(local.ssm_doc_content)
   document_format = "JSON"
-  content         = data.template_file.ssm_bootstrap_template.rendered
-}
-
-resource "aws_ssm_parameter" "cwagentparam" {
-  count = var.provide_custom_cw_agent_config ? 0 : 1
-
-  name        = local.cw_config_parameter_name
-  description = "${var.name} Cloudwatch Agent configuration"
-  type        = "String"
-  value = replace(
-    replace(
-      file("${path.module}/text/${local.cwagent_config}"),
-      "((SYSTEM_LOG_GROUP_NAME))",
-      aws_cloudwatch_log_group.system_logs.name,
-    ),
-    "((APPLICATION_LOG_GROUP_NAME))",
-    aws_cloudwatch_log_group.application_logs.name,
-  )
+  document_type   = "Command"
+  name            = "SSMDocument-${var.name}"
 }
 
 resource "aws_ssm_association" "ssm_bootstrap_assoc" {
-  count = var.instance_count == 0 ? 0 : 1
-
   name                = aws_ssm_document.ssm_bootstrap_doc.name
   schedule_expression = var.ssm_association_refresh_rate
 
   targets {
-    key = "InstanceIds"
-    values = [coalescelist(
-      aws_instance.mod_ec2_instance_no_secondary_ebs.*.id,
-      aws_instance.mod_ec2_instance_with_secondary_ebs.*.id,
-    )]
+    key    = "tag:SSM Target Tag"
+    values = ["Target-${var.name}"]
   }
+
+  depends_on = [aws_ssm_document.ssm_bootstrap_doc]
 }
 
 #
 # CloudWatch and Logging
 #
+
+locals {
+  cwagentparam_vars = {
+    application_log = aws_cloudwatch_log_group.application_logs.name
+    system_log      = aws_cloudwatch_log_group.system_logs.name
+  }
+
+  cwagentparam_object = jsondecode(templatefile("${path.module}/text/${local.cwagent_config}", local.cwagentparam_vars))
+}
+
+resource "aws_ssm_parameter" "cwagentparam" {
+  count = var.provide_custom_cw_agent_config ? 0 : 1
+
+  description = "${var.name} Cloudwatch Agent configuration"
+  name        = local.cw_config_parameter_name
+  type        = "String"
+  value       = jsonencode(local.cwagentparam_object)
+}
 
 resource "aws_cloudwatch_log_group" "system_logs" {
   name              = "${var.name}-SystemLogs"
@@ -522,7 +601,7 @@ data "null_data_source" "alarm_dimensions" {
 }
 
 module "status_check_failed_system_alarm_ticket" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=MPCSUPENG-864"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.0"
 
   alarm_count       = var.instance_count
   alarm_description = "Status checks have failed for system, generating ticket."
@@ -596,7 +675,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_recover
 }
 
 module "status_check_failed_instance_alarm_ticket" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.0.1"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.0"
 
   alarm_count       = var.instance_count
   alarm_description = "Status checks have failed, generating ticket."
@@ -620,7 +699,7 @@ module "status_check_failed_instance_alarm_ticket" {
 }
 
 module "cpu_alarm_high" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.0.1"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.0"
 
   alarm_count              = var.instance_count
   alarm_description        = "CPU Alarm ${var.cw_cpu_high_operator} ${var.cw_cpu_high_threshold}% for ${var.cw_cpu_high_period} seconds ${var.cw_cpu_high_evaluations} times."
@@ -652,27 +731,18 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   instance_type          = var.instance_type
   key_name               = var.key_pair
   ebs_optimized          = var.enable_ebs_optimization
+  tags                   = merge(var.tags, local.tags, local.tags_ec2)
   tenancy                = var.tenancy
   monitoring             = var.detailed_monitoring
-  user_data_base64 = base64encode(data.template_file.user_data.rendered)
+  user_data_base64       = base64encode(data.template_file.user_data.rendered)
 
   # coalescelist and list("") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
   private_ip              = element(coalescelist(var.private_ip_address, [""]), count.index)
   disable_api_termination = var.disable_api_termination
-  volume_tags = var.ebs_volume_tags
+  volume_tags             = var.ebs_volume_tags
 
   credit_specification {
     cpu_credits = var.t2_unlimited_mode
-  }
-
-  root_block_device {
-    volume_type = var.primary_ebs_volume_type
-    volume_size = var.primary_ebs_volume_size
-    iops        = var.primary_ebs_volume_iops
-  }
-
-  timeouts {
-    create = var.creation_policy_timeout
   }
 
   iam_instance_profile = element(
@@ -683,13 +753,15 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
     0,
   )
 
-  tags = merge(
-    {
-      "Name" = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}"
-    },
-    local.tags,
-    var.additional_tags,
-  )
+  root_block_device {
+    volume_type = var.primary_ebs_volume_type
+    volume_size = var.primary_ebs_volume_size
+    iops        = var.primary_ebs_volume_iops
+  }
+
+  timeouts {
+    create = var.creation_policy_timeout
+  }
 }
 
 resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
@@ -701,10 +773,11 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   instance_type          = var.instance_type
   key_name               = var.key_pair
   ebs_optimized          = var.enable_ebs_optimization
+  tags                   = merge(var.tags, local.tags, local.tags_ec2)
   tenancy                = var.tenancy
   monitoring             = var.detailed_monitoring
-  volume_tags = var.ebs_volume_tags
-  user_data_base64 = base64encode(data.template_file.user_data.rendered)
+  volume_tags            = var.ebs_volume_tags
+  user_data_base64       = base64encode(data.template_file.user_data.rendered)
 
   # coalescelist and list("") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
   private_ip              = element(coalescelist(var.private_ip_address, [""]), count.index)
@@ -713,6 +786,14 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   credit_specification {
     cpu_credits = var.t2_unlimited_mode
   }
+
+  iam_instance_profile = element(
+    coalescelist(
+      aws_iam_instance_profile.instance_role_instance_profile.*.name,
+      [var.instance_profile_override_name],
+    ),
+    0,
+  )
 
   root_block_device {
     volume_type = var.primary_ebs_volume_type
@@ -732,22 +813,6 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   timeouts {
     create = var.creation_policy_timeout
   }
-
-  iam_instance_profile = element(
-    coalescelist(
-      aws_iam_instance_profile.instance_role_instance_profile.*.name,
-      [var.instance_profile_override_name],
-    ),
-    0,
-  )
-
-  tags = merge(
-    {
-      "Name" = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}"
-    },
-    local.tags,
-    var.additional_tags,
-  )
 }
 
 resource "aws_eip_association" "eip_assoc" {
