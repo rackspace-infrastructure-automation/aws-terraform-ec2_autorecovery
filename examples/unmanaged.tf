@@ -1,15 +1,16 @@
 provider "aws" {
-  version = "~> 1.2"
+  version = "~> 2.2"
   region  = "us-west-2"
 }
 
 module "vpc" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.9"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.0"
 
-  vpc_name = "EC2-AR-BaseNetwork-Test1"
+  name = "EC2-AR-BaseNetwork-Test1"
 }
 
-data "aws_region" "current_region" {}
+data "aws_region" "current_region" {
+}
 
 # Lookup the correct AMI based on the region specified
 data "aws_ami" "amazon_centos_7" {
@@ -38,12 +39,12 @@ module "unmanaged_ar" {
   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.20"
 
   ec2_os              = "centos7"
+  image_id            = data.aws_ami.amazon_centos_7.image_id
   instance_count      = "1"
-  subnets             = "${module.vpc.private_subnets}"
-  security_group_list = ["${module.vpc.default_sg}"]
-  image_id            = "${data.aws_ami.amazon_centos_7.image_id}"
   instance_type       = "t2.micro"
-  resource_name       = "my_unmanaged_instance"
-  notification_topic  = "${module.sns.topic_arn}"
+  notification_topic  = module.sns.topic_arn
   rackspace_managed   = false
+  resource_name       = "my_unmanaged_instance"
+  security_group_list = [module.vpc.default_sg]
+  subnets             = module.vpc.private_subnets
 }

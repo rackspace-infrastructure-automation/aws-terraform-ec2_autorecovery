@@ -1,15 +1,16 @@
 provider "aws" {
-  version = "~> 1.2"
+  version = "~> 2.2"
   region  = "us-west-2"
 }
 
 module "vpc" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.0.9"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.0"
 
-  vpc_name = "EC2-AR-BaseNetwork-Test1"
+  name = "EC2-AR-BaseNetwork-Test1"
 }
 
-data "aws_region" "current_region" {}
+data "aws_region" "current_region" {
+}
 
 # Lookup the correct AMI based on the region specified
 data "aws_ami" "amazon_centos_7" {
@@ -29,29 +30,29 @@ data "aws_ami" "amazon_centos_7" {
 }
 
 module "ec2_ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.20"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.0"
 
-  ec2_os                       = "centos7"
-  instance_count               = "3"
-  subnets                      = "${module.vpc.public_subnets}"
-  security_group_list          = ["${module.vpc.default_sg}"]
-  image_id                     = "${data.aws_ami.amazon_centos_7.image_id}"
-  key_pair                     = "mcardenas_testing"
-  instance_type                = "t2.micro"
-  resource_name                = "my_test_instance"
-  install_codedeploy_agent     = "False"
-  enable_ebs_optimization      = "False"
-  tenancy                      = "default"
   backup_tag_value             = "False"
   detailed_monitoring          = "True"
-  ssm_patching_group           = "Group1Patching"
-  primary_ebs_volume_size      = "60"
-  primary_ebs_volume_iops      = "0"
-  primary_ebs_volume_type      = "gp2"
-  secondary_ebs_volume_size    = "60"
-  secondary_ebs_volume_iops    = "0"
-  secondary_ebs_volume_type    = "gp2"
+  ec2_os                       = "centos7"
+  enable_ebs_optimization      = "False"
   encrypt_secondary_ebs_volume = "False"
+  image_id                     = data.aws_ami.amazon_centos_7.image_id
+  install_codedeploy_agent     = "False"
+  instance_count               = "3"
+  instance_type                = "t2.micro"
+  key_pair                     = "mcardenas_testing"
+  name                         = "my_test_instance"
+  primary_ebs_volume_iops      = "0"
+  primary_ebs_volume_size      = "60"
+  primary_ebs_volume_type      = "gp2"
+  secondary_ebs_volume_iops    = "0"
+  secondary_ebs_volume_size    = "60"
+  secondary_ebs_volume_type    = "gp2"
+  security_groups              = [module.vpc.default_sg]
+  ssm_patching_group           = "Group1Patching"
+  subnets                      = module.vpc.public_subnets
+  tenancy                      = "default"
 
   # Use Snapshot ID
   //  use_existing_ebs_snapshot = true
@@ -63,55 +64,46 @@ module "ec2_ar" {
   cloudwatch_log_retention          = "30"
   ssm_association_refresh_rate      = "rate(1 day)"
 
-  additional_ssm_bootstrap_list = [
+  ssm_bootstrap_list = [
     {
-      ssm_add_step = <<EOF
-      {
-        "action": "aws:runDocument",
-        "inputs": {
-          "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package",
-          "documentParameters": {
-            "Packages": "bind bindutils"
-          },
-          "documentType": "SSMDocument"
+      action = "aws:runDocument",
+      inputs = {
+        documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package",
+        documentParameters = {
+          Packages = "bind bindutils"
         },
-        "name": "InstallBindAndTools",
-        "timeoutSeconds": 300
-      }
-EOF
+        documentType = "SSMDocument"
+      },
+      name           = "InstallBindAndTools",
+      timeoutSeconds = 300
     },
     {
-      ssm_add_step = <<EOF
-      {
-        "action": "aws:runDocument",
-        "inputs": {
-          "documentPath": "AWS-RunShellScript",
-          "documentParameters": {
-            "commands": ["touch /tmp/myfile"]
-          },
-          "documentType": "SSMDocument"
+      action = "aws:runDocument",
+      inputs = {
+        documentPath = "AWS-RunShellScript",
+        documentParameters = {
+          commands = ["touch /tmp/myfile"]
         },
-        "name": "CreateFile",
-        "timeoutSeconds": 300
-      }
-EOF
+        documentType = "SSMDocument"
+      },
+      name           = "CreateFile",
+      timeoutSeconds = 300
     },
   ]
 
-  additional_ssm_bootstrap_step_count = "1"
-  private_ip_address                  = ["10.0.1.131", "10.0.1.132", "10.0.1.133"]
-  eip_allocation_id_list              = ["${aws_eip.my_eips.*.id}"]
-  eip_allocation_id_count             = "3"
-  notification_topic                  = ""
-  disable_api_termination             = "False"
-  t2_unlimited_mode                   = "standard"
-  creation_policy_timeout             = "20m"
-  cw_cpu_high_operator                = "GreaterThanThreshold"
-  cw_cpu_high_threshold               = "90"
-  cw_cpu_high_evaluations             = "15"
-  cw_cpu_high_period                  = "60"
+  creation_policy_timeout = "20m"
+  cw_cpu_high_evaluations = "15"
+  cw_cpu_high_operator    = "GreaterThanThreshold"
+  cw_cpu_high_period      = "60"
+  cw_cpu_high_threshold   = "90"
+  disable_api_termination = "False"
+  eip_allocation_id_count = "3"
+  eip_allocation_id_list  = [aws_eip.my_eips.*.id]
+  notification_topic      = ""
+  private_ip_address      = ["10.0.1.131", "10.0.1.132", "10.0.1.133"]
+  t2_unlimited_mode       = "standard"
 
-  additional_tags = {
+  tags = {
     MyTag1 = "MyValue1"
     MyTag2 = "MyValue2"
     MyTag3 = "MyValue3"
