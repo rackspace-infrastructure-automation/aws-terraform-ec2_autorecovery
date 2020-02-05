@@ -7,7 +7,7 @@
  *
  * ```HCL
  * module "ar" {
- *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.0"
+ *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.1"
  *
  *   ec2_os              = "amazon"
  *   subnets             = ["${module.vpc.private_subnets}"]
@@ -15,7 +15,7 @@
  *   name                = "my_ar_instance"
  *   security_groups = ["${module.sg.private_web_security_group_id}"]
  * }
- *```
+ * ```
  * Full working references are available at [examples](examples)
  * **Note** When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level._
  *
@@ -400,11 +400,6 @@ data "aws_iam_policy_document" "mod_ec2_assume_role_policy_doc" {
 }
 
 data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
-  statement {
-    actions   = ["cloudformation:Describe"]
-    effect    = "Allow"
-    resources = ["*"]
-  }
 
   statement {
     actions = [

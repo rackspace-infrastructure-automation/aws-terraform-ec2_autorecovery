@@ -6,7 +6,7 @@ This module creates one or more autorecovery instances.
 
 ```HCL
 module "ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.0"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.1"
 
   ec2_os              = "amazon"
   subnets             = ["${module.vpc.private_subnets}"]
@@ -14,17 +14,16 @@ module "ar" {
   name                = "my_ar_instance"
   security_groups = ["${module.sg.private_web_security_group_id}"]
 }
-```
-
-Full working references are available at [examples](examples)  
-\*Note\*\* When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.\_
+```  
+Full working references are available at [examples](examples)
+**Note** When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.\_
 
 ## Other TF Modules Used  
-Using [aws-terraform-cloudwatch\_alarm](https://github.com/rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm) to create the following CloudWatch Alarms:  
-- status\_check\_failed\_system\_alarm\_ticket  
-- status\_check\_failed\_instance\_alarm\_reboot  
-- status\_check\_failed\_system\_alarm\_recover  
-- status\_check\_failed\_instance\_alarm\_ticket  
+Using [aws-terraform-cloudwatch\_alarm](https://github.com/rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm) to create the following CloudWatch Alarms:
+- status\_check\_failed\_system\_alarm\_ticket
+- status\_check\_failed\_instance\_alarm\_reboot
+- status\_check\_failed\_system\_alarm\_recover
+- status\_check\_failed\_instance\_alarm\_ticket
 - cpu\_alarm\_high
 
 ## Terraform 0.12 upgrade
@@ -36,8 +35,8 @@ made when upgrading from a previous release to version 0.12.0 or higher.
 
 The following module variables were updated to better meet current Rackspace style guides:
 
-- `security_group_list` -> `security_groups`  
-- `resource_name` -> `name`  
+- `security_group_list` -> `security_groups`
+- `resource_name` -> `name`
 - `additional_tags` -> `tags`
 
 The following variables are no longer neccessary and were removed
