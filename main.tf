@@ -242,7 +242,6 @@ locals {
 
   tags_ec2 = {
     Backup           = var.backup_tag_value
-    Name             = var.name
     "Patch Group"    = var.ssm_patching_group
     ServiceProvider  = "Rackspace"
     SSMInventory     = var.perform_ssm_inventory_tag
@@ -721,7 +720,7 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   instance_type          = var.instance_type
   key_name               = var.key_pair
   ebs_optimized          = var.enable_ebs_optimization
-  tags                   = merge(var.tags, local.tags, local.tags_ec2)
+  tags                   = merge(var.tags, local.tags, local.tags_ec2, { Name = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}" })
   tenancy                = var.tenancy
   monitoring             = var.detailed_monitoring
   user_data_base64       = base64encode(data.template_file.user_data.rendered)
