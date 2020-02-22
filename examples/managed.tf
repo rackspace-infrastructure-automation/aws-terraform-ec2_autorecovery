@@ -100,9 +100,9 @@ module "ec2_ar" {
   // If EIPs were configured
   //eip_allocation_id_count = "3"
   //eip_allocation_id_list  = [aws_eip.my_eips.*.id]
-  notification_topic      = ""
-  private_ip_address      = ["172.18.0.5", "172.18.4.5", "172.18.0.6"]
-  t2_unlimited_mode       = "standard"
+  notification_topic = ""
+  private_ip_address = ["172.18.0.5", "172.18.4.5", "172.18.0.6"]
+  t2_unlimited_mode  = "standard"
 
   tags = {
     MyTag1 = "MyValue1"

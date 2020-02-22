@@ -762,7 +762,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   instance_type          = var.instance_type
   key_name               = var.key_pair
   ebs_optimized          = var.enable_ebs_optimization
-  tags                   = merge(var.tags, local.tags, local.tags_ec2)
+  tags                   = merge(var.tags, local.tags, local.tags_ec2, { Name = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}" })
   tenancy                = var.tenancy
   monitoring             = var.detailed_monitoring
   volume_tags            = var.ebs_volume_tags
