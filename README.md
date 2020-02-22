@@ -6,13 +6,13 @@ This module creates one or more autorecovery instances.
 
 ```HCL
 module "ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.1"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.3"
 
   ec2_os              = "amazon"
-  subnets             = ["${module.vpc.private_subnets}"]
-  image_id            = "${var.image_id}"
+  subnets             = module.vpc.private_subnets
+  image_id            = var.image_id
   name                = "my_ar_instance"
-  security_groups = ["${module.sg.private_web_security_group_id}"]
+  security_groups = [module.sg.private_web_security_group_id]
 }
 ```  
 Full working references are available at [examples](examples)
@@ -60,6 +60,7 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | additional\_ssm\_bootstrap\_list | A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples.<br><br>(DEPRECATED) This variable will be removed in future releases in favor of the `ssm_bootstrap_list` variable. | `list(map(string))` | `[]` | no |
 | backup\_tag\_value | Value of the 'Backup' tag, used to assign te EBSSnapper configuration | `string` | `"False"` | no |
 | cloudwatch\_log\_retention | The number of days to retain Cloudwatch Logs for this instance. | `number` | `30` | no |
+| create\_internal\_route53 | Toggle for creation of internal Route 53 records for instannces. | `bool` | `false` | no |
 | creation\_policy\_timeout | Time to wait for the number of signals for the creation policy. H/M/S Hours/Minutes/Seconds | `string` | `"20m"` | no |
 | custom\_cw\_agent\_config\_ssm\_param | SSM Parameter Store name that contains a custom CloudWatch agent configuration that you would like to use as an alternative to the default provided. | `string` | `""` | no |
 | cw\_cpu\_high\_evaluations | The number of periods over which data is compared to the specified threshold. | `number` | `15` | no |
@@ -88,6 +89,8 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | instance\_role\_managed\_policy\_arn\_count | The number of policy ARNs provided/set in variable 'instance\_role\_managed\_policy\_arns' | `number` | `0` | no |
 | instance\_role\_managed\_policy\_arns | List of IAM policy ARNs for the InstanceRole IAM role. IAM ARNs can be found within the Policies section of the AWS IAM console. e.g. ['arn:aws:iam::aws:policy/AmazonEC2FullAccess', 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM', 'arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole'] | `list(string)` | `[]` | no |
 | instance\_type | EC2 Instance Type e.g. 't2.micro' | `string` | `"t2.micro"` | no |
+| internal\_zone\_id | The Route53 Internal Hosted Zone ID | `string` | `""` | no |
+| internal\_zone\_name | TLD for Internal Hosted Zone | `string` | `""` | no |
 | key\_pair | Name of an existing EC2 KeyPair to enable SSH access to the instances. | `string` | `""` | no |
 | name | Name to be used for the provisioned EC2 instance(s) and other resources provisioned in this module | `string` | n/a | yes |
 | notification\_topic | SNS Topic ARN to notify if there are any alarms | `string` | `""` | no |
@@ -118,4 +121,5 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | ar\_image\_id | Image ID used for EC2 provisioning |
 | ar\_instance\_id\_list | List of resulting Instance IDs |
 | ar\_instance\_ip\_list | List of resulting Instance IP addresses |
+| ar\_instance\_r53\_name\_list | List of resulting Route 53 internal records |
 
