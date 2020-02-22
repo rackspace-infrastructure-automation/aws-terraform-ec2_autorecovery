@@ -36,7 +36,7 @@ module "sns" {
 }
 
 module "unmanaged_ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.1"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.3"
 
   ec2_os              = "centos7"
   image_id            = data.aws_ami.amazon_centos_7.image_id

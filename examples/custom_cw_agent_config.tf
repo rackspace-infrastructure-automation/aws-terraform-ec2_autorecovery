@@ -21,7 +21,7 @@ data "aws_region" "current_region" {
 }
 
 module "ec2_ar_with_codedeploy" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.1"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.3"
 
   ec2_os         = "rhel6"
   instance_count = "1"
@@ -40,7 +40,7 @@ module "ec2_ar_with_codedeploy" {
   detailed_monitoring              = true
   disable_api_termination          = false
   enable_ebs_optimization          = false
-  encrypt_secondary_ebs_volume     = "False"
+  encrypt_secondary_ebs_volume     = false
   environment                      = "Development"
   install_codedeploy_agent         = true
   instance_type                    = "t2.micro"

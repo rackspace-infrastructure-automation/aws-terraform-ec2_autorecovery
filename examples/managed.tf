@@ -30,18 +30,18 @@ data "aws_ami" "amazon_centos_7" {
 }
 
 module "ec2_ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.1"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.3"
 
   backup_tag_value             = "False"
-  detailed_monitoring          = "True"
+  detailed_monitoring          = true
   ec2_os                       = "centos7"
-  enable_ebs_optimization      = "False"
-  encrypt_secondary_ebs_volume = "False"
+  enable_ebs_optimization      = false
+  encrypt_secondary_ebs_volume = false
   image_id                     = data.aws_ami.amazon_centos_7.image_id
-  install_codedeploy_agent     = "False"
+  install_codedeploy_agent     = false
   instance_count               = "3"
   instance_type                = "t2.micro"
-  key_pair                     = "mcardenas_testing"
+  key_pair                     = "CircleCI"
   name                         = "my_test_instance"
   primary_ebs_volume_iops      = "0"
   primary_ebs_volume_size      = "60"
@@ -60,7 +60,7 @@ module "ec2_ar" {
   environment = "Development"
 
   instance_role_managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonEC2FullAccess", "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole", "arn:aws:iam::aws:policy/CloudWatchActionsEC2Access"]
-  perform_ssm_inventory_tag         = "True"
+  perform_ssm_inventory_tag         = true
   cloudwatch_log_retention          = "30"
   ssm_association_refresh_rate      = "rate(1 day)"
 
@@ -96,11 +96,12 @@ module "ec2_ar" {
   cw_cpu_high_operator    = "GreaterThanThreshold"
   cw_cpu_high_period      = "60"
   cw_cpu_high_threshold   = "90"
-  disable_api_termination = "False"
-  eip_allocation_id_count = "3"
-  eip_allocation_id_list  = [aws_eip.my_eips.*.id]
+  disable_api_termination = false
+  // If EIPs were configured
+  //eip_allocation_id_count = "3"
+  //eip_allocation_id_list  = [aws_eip.my_eips.*.id]
   notification_topic      = ""
-  private_ip_address      = ["10.0.1.131", "10.0.1.132", "10.0.1.133"]
+  private_ip_address      = ["172.18.0.5", "172.18.4.5", "172.18.0.6"]
   t2_unlimited_mode       = "standard"
 
   tags = {
