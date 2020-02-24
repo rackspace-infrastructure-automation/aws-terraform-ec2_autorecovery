@@ -40,7 +40,7 @@ module "unmanaged_ar" {
 
   ec2_os              = "centos7"
   image_id            = data.aws_ami.amazon_centos_7.image_id
-  instance_count      = "1"
+  instance_count      = 1
   instance_type       = "t2.micro"
   notification_topic  = module.sns.topic_arn
   rackspace_managed   = false
