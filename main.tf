@@ -7,7 +7,7 @@
  *
  * ```HCL
  * module "ar" {
- *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.3"
+ *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.4"
  *
  *   ec2_os              = "amazon"
  *   subnets             = module.vpc.private_subnets
@@ -140,15 +140,6 @@ locals {
         documentType = "SSMDocument"
       },
       name           = "DiagnosticTools",
-      timeoutSeconds = 300
-    },
-    {
-      action = "aws:runDocument",
-      inputs = {
-        documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-SetMotd",
-        documentType = "SSMDocument"
-      },
-      name           = "SetMotd",
       timeoutSeconds = 300
     },
   ]
