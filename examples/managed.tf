@@ -30,7 +30,7 @@ data "aws_ami" "amazon_centos_7" {
 }
 
 module "ec2_ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.3"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.4"
 
   backup_tag_value             = "False"
   detailed_monitoring          = true
@@ -98,7 +98,7 @@ module "ec2_ar" {
   cw_cpu_high_threshold   = 90
   disable_api_termination = false
   eip_allocation_id_count = 3
-  eip_allocation_id_list  = [aws_eip.my_eips.*.id]
+  eip_allocation_id_list  = aws_eip.my_eips.*.id
   notification_topic      = ""
   private_ip_address      = ["172.18.0.5", "172.18.4.5", "172.18.0.6"]
   t2_unlimited_mode       = "standard"

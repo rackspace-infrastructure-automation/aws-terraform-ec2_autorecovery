@@ -21,3 +21,7 @@ output "ar_instance_ip_list" {
   )
 }
 
+output "ar_instance_r53_name_list" {
+  description = "List of resulting Route 53 internal records"
+  value       = var.create_internal_route53 ? aws_route53_record.instance.*.fqdn : []
+}

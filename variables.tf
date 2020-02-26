@@ -22,6 +22,12 @@ variable "cloudwatch_log_retention" {
   default     = 30
 }
 
+variable "create_internal_route53" {
+  description = "Toggle for creation of internal Route 53 records for instannces."
+  type        = bool
+  default     = false
+}
+
 variable "cw_cpu_high_evaluations" {
   description = "The number of periods over which data is compared to the specified threshold."
   type        = number
@@ -151,6 +157,18 @@ variable "instance_type" {
   description = "EC2 Instance Type e.g. 't2.micro'"
   type        = string
   default     = "t2.micro"
+}
+
+variable "internal_zone_name" {
+  description = "TLD for Internal Hosted Zone"
+  type        = string
+  default     = ""
+}
+
+variable "internal_zone_id" {
+  description = "The Route53 Internal Hosted Zone ID"
+  type        = string
+  default     = ""
 }
 
 variable "key_pair" {
