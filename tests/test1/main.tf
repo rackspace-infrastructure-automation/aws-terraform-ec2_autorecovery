@@ -1,6 +1,6 @@
 provider "aws" {
-  version = "~> 2.2"
   region  = "us-west-2"
+  version = "~> 2.7"
 }
 
 resource "random_string" "res_name" {
@@ -25,7 +25,7 @@ module "internal_zone" {
   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-route53_internal_zone//?ref=v0.12.0"
 
   environment = "Test"
-  name        = "circleCITesting.local"
+  name        = "circlecitesting.local."
   vpc_id      = module.vpc.vpc_id
 }
 
