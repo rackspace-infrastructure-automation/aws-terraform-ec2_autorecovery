@@ -49,7 +49,7 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 
 | Name | Version |
 |------|---------|
-| aws | >= 2.1.0 |
+| aws | >= 2.7.0 |
 | null | n/a |
 | template | n/a |
 
