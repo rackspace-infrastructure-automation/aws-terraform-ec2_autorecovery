@@ -7,7 +7,7 @@
  *
  * ```HCL
  * module "ar" {
- *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.4"
+ *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.6"
  *
  *   ec2_os              = "amazon"
  *   subnets             = module.vpc.private_subnets
@@ -392,15 +392,20 @@ data "aws_iam_policy_document" "mod_ec2_assume_role_policy_doc" {
 data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
 
   statement {
+    effect    = "Allow"
+    resources = ["*"]
+
     actions = [
       "ssm:CreateAssociation",
       "ssm:DescribeInstanceInformation",
+      "ssm:GetParameter",
     ]
-    effect    = "Allow"
-    resources = ["*"]
   }
 
   statement {
+    effect    = "Allow"
+    resources = ["*"]
+
     actions = [
       "cloudwatch:GetMetricStatistics",
       "cloudwatch:ListMetrics",
@@ -410,38 +415,23 @@ data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
       "logs:CreateLogStream",
       "logs:DescribeLogStreams",
       "logs:PutLogEvents",
-      "ssm:GetParameter",
     ]
-    effect    = "Allow"
-    resources = ["*"]
   }
 
   statement {
+    effect    = "Allow"
+    resources = ["arn:aws:s3:::rackspace-*/*"]
+
     actions = [
-      "s3:PutObject",
-      "s3:GetObject",
-      "s3:GetEncryptionConfiguration",
       "s3:AbortMultipartUpload",
-      "s3:ListMultipartUploadParts",
+      "s3:GetBucketLocation",
+      "s3:GetEncryptionConfiguration",
+      "s3:GetObject",
       "s3:ListBucket",
       "s3:ListBucketMultipartUploads",
+      "s3:ListMultipartUploadParts",
+      "s3:PutObject",
     ]
-    effect    = "Allow"
-    resources = ["*"]
-  }
-
-  statement {
-    actions = [
-      "s3:GetBucketLocation",
-    ]
-    effect    = "Allow"
-    resources = ["*"]
-  }
-
-  statement {
-    actions   = ["ec2:DescribeTags"]
-    effect    = "Allow"
-    resources = ["*"]
   }
 }
 
