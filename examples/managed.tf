@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.0"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.1"
 
   name = "EC2-AR-BaseNetwork-Test1"
 }
@@ -12,32 +12,14 @@ module "vpc" {
 data "aws_region" "current_region" {
 }
 
-# Lookup the correct AMI based on the region specified
-data "aws_ami" "amazon_centos_7" {
-  most_recent = true
-
-  owners = [
-    "679593333241",
-  ]
-
-  filter {
-    name = "name"
-
-    values = [
-      "CentOS Linux 7 x86_64 HVM EBS*",
-    ]
-  }
-}
-
 module "ec2_ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.4"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.6"
 
   backup_tag_value             = "False"
   detailed_monitoring          = true
   ec2_os                       = "centos7"
   enable_ebs_optimization      = false
   encrypt_secondary_ebs_volume = false
-  image_id                     = data.aws_ami.amazon_centos_7.image_id
   install_codedeploy_agent     = false
   instance_count               = 3
   instance_type                = "t2.micro"

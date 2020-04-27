@@ -17,10 +17,6 @@ module "vpc" {
   name = "${random_string.res_name.result}-EC2-AR-BaseNetwork-Test1"
 }
 
-data "aws_region" "current_region" {
-}
-
-
 module "internal_zone" {
   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-route53_internal_zone//?ref=v0.12.0"
 
