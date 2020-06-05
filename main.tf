@@ -720,21 +720,19 @@ module "cpu_alarm_high" {
 resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   count = var.secondary_ebs_volume_size != "" ? 0 : var.instance_count
 
-  ami                    = var.image_id != "" ? var.image_id : data.aws_ami.ar_ami.image_id
-  subnet_id              = element(var.subnets, count.index)
-  vpc_security_group_ids = var.security_groups
-  instance_type          = var.instance_type
-  key_name               = var.key_pair
-  ebs_optimized          = var.enable_ebs_optimization
-  tags                   = merge(var.tags, local.tags, local.tags_ec2, { Name = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}" })
-  tenancy                = var.tenancy
-  monitoring             = var.detailed_monitoring
-  user_data_base64       = base64encode(data.template_file.user_data.rendered)
-
-  # coalescelist and list("") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-  private_ip              = element(coalescelist(var.private_ip_address, [""]), count.index)
+  ami                     = var.image_id != "" ? var.image_id : data.aws_ami.ar_ami.image_id
   disable_api_termination = var.disable_api_termination
+  ebs_optimized           = var.enable_ebs_optimization
+  instance_type           = var.instance_type
+  key_name                = var.key_pair
+  monitoring              = var.detailed_monitoring
+  private_ip              = length(var.private_ip_address) > 0 ? element(var.private_ip_address, count.index) : null
+  subnet_id               = element(var.subnets, count.index)
+  tags                    = merge(var.tags, local.tags, local.tags_ec2, { Name = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}" })
+  tenancy                 = var.tenancy
+  user_data_base64        = base64encode(data.template_file.user_data.rendered)
   volume_tags             = var.ebs_volume_tags
+  vpc_security_group_ids  = var.security_groups
 
   credit_specification {
     cpu_credits = var.t2_unlimited_mode
@@ -762,21 +760,19 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
 resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   count = var.secondary_ebs_volume_size != "" ? var.instance_count : 0
 
-  ami                    = var.image_id != "" ? var.image_id : data.aws_ami.ar_ami.image_id
-  subnet_id              = element(var.subnets, count.index)
-  vpc_security_group_ids = var.security_groups
-  instance_type          = var.instance_type
-  key_name               = var.key_pair
-  ebs_optimized          = var.enable_ebs_optimization
-  tags                   = merge(var.tags, local.tags, local.tags_ec2, { Name = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}" })
-  tenancy                = var.tenancy
-  monitoring             = var.detailed_monitoring
-  volume_tags            = var.ebs_volume_tags
-  user_data_base64       = base64encode(data.template_file.user_data.rendered)
-
-  # coalescelist and list("") were used here due to element not being able to handle empty lists, even if conditional will not allow portion to execute
-  private_ip              = element(coalescelist(var.private_ip_address, [""]), count.index)
+  ami                     = var.image_id != "" ? var.image_id : data.aws_ami.ar_ami.image_id
   disable_api_termination = var.disable_api_termination
+  ebs_optimized           = var.enable_ebs_optimization
+  instance_type           = var.instance_type
+  key_name                = var.key_pair
+  monitoring              = var.detailed_monitoring
+  private_ip              = length(var.private_ip_address) > 0 ? element(var.private_ip_address, count.index) : null
+  subnet_id               = element(var.subnets, count.index)
+  tags                    = merge(var.tags, local.tags, local.tags_ec2, { Name = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}" })
+  tenancy                 = var.tenancy
+  user_data_base64        = base64encode(data.template_file.user_data.rendered)
+  volume_tags             = var.ebs_volume_tags
+  vpc_security_group_ids  = var.security_groups
 
   credit_specification {
     cpu_credits = var.t2_unlimited_mode
