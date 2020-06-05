@@ -7,7 +7,7 @@
  *
  * ```HCL
  * module "ar" {
- *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.20"
+ *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.24"
  *
  *   ec2_os              = "amazon"
  *   subnets             = ["${module.vpc.private_subnets}"]
@@ -38,7 +38,7 @@
 # should be removed and\or updated.
 
 provider "aws" {
-  version = "< 2.65.0"
+  version = "!= 2.65"
   alias   = "dummy"
 }
 
