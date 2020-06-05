@@ -109,8 +109,6 @@ module "ec2_ar_centos7_no_codedeploy" {
   secondary_ebs_volume_type    = "gp2"
   encrypt_secondary_ebs_volume = false
 
-
-
   environment                       = "Development"
   instance_role_managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonEC2FullAccess", "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole", "arn:aws:iam::aws:policy/CloudWatchActionsEC2Access"]
   perform_ssm_inventory_tag         = true
@@ -145,7 +143,7 @@ module "ec2_ar_centos7_no_scaleft" {
 
   ec2_os                       = "centos7"
   instance_count               = 1
-  subnets                      = module.vpc.private_subnets
+  subnets                      = [element(module.vpc.private_subnets, 0)]
   security_groups              = [module.vpc.default_sg]
   key_pair                     = "CircleCI"
   instance_type                = "t2.micro"
@@ -157,6 +155,7 @@ module "ec2_ar_centos7_no_scaleft" {
   backup_tag_value             = "False"
   detailed_monitoring          = true
   ssm_patching_group           = "Group1Patching"
+  private_ip_address           = ["172.18.16.142"]
   primary_ebs_volume_size      = 60
   primary_ebs_volume_iops      = 0
   primary_ebs_volume_type      = "gp2"
@@ -409,5 +408,3 @@ module "ar_r53" {
   rackspace_managed       = false
 
 }
-
-
