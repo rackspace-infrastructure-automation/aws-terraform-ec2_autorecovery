@@ -18,7 +18,11 @@
  * ```
  *
  * Full working references are available at [examples](examples)
- * _**Note**: When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level._
+ *
+ * ## Limitations
+ *
+ * - **Note**: When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.
+ * - AWS provider 2.65.0 introduced a breaking change that causes validation errors if no private IP is assigned to the Autorecovery instance.  Until the issue is resolved within the provider, this module is being limited to AWS provider version prior to 2.65.0.  See https://github.com/terraform-providers/terraform-provider-aws/issues/13626 for further details
  *
  * ## Other TF Modules Used
  * Using [aws-terraform-cloudwatch_alarm](https://github.com/rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm) to create the following CloudWatch Alarms:
@@ -28,6 +32,15 @@
  * - status_check_failed_instance_alarm_ticket
  * - cpu_alarm_high
  */
+
+# Dummy AWS provider.  This alias is unused within the module, but does enable restricting the provider version.
+# Once https://github.com/terraform-providers/terraform-provider-aws/issues/13626 is resolved, this workaround
+# should be removed and\or updated.
+
+provider "aws" {
+  version = "< 2.65.0"
+  alias   = "dummy"
+}
 
 locals {
   ec2_os = "${lower(var.ec2_os)}"
