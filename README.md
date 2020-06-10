@@ -16,7 +16,7 @@ module "ar" {
 }
 ```  
 Full working references are available at [examples](examples)
-\*\*Note\*\* When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.\_
+**Note** When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.\_
 
 ## Other TF Modules Used  
 Using [aws-terraform-cloudwatch\_alarm](https://github.com/rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm) to create the following CloudWatch Alarms:
@@ -45,13 +45,6 @@ The following variables are no longer neccessary and were removed
 
 New variable `ssm_bootstrap_list` was added to allow setting the SSM association steps using objects instead of strings, allowing easier linting and formatting of these lines.  The `additional_ssm_bootstrap_list` variable will continue to work, but will be deprecated in a future release.
 
-## Requirements
-
-| Name | Version |
-|------|---------|
-| terraform | >= 0.12 |
-| aws | >= 2.7.0 |
-
 ## Providers
 
 | Name | Version |
@@ -63,7 +56,7 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+|------|-------------|------|---------|:-----:|
 | additional\_ssm\_bootstrap\_list | A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples.<br><br>(DEPRECATED) This variable will be removed in future releases in favor of the `ssm_bootstrap_list` variable. | `list(map(string))` | `[]` | no |
 | backup\_tag\_value | Value of the 'Backup' tag, used to assign te EBSSnapper configuration | `string` | `"False"` | no |
 | cloudwatch\_log\_retention | The number of days to retain Cloudwatch Logs for this instance. | `number` | `30` | no |
