@@ -117,7 +117,7 @@ resource "aws_eip" "test_eip_2" {
 
   tags = "${merge(
     local.tags,
-    map("Name", "Circle-CI-Test1-2-${random_string.res_name.result}"),
+    map("Name", format("Circle-CI-Test1-2-%s", random_string.res_name.result)),
   )}"
 }
 
@@ -563,7 +563,7 @@ resource "aws_ebs_volume" "nfs" {
 
   tags = "${merge(
     local.tags,
-    map("Name", "${random_string.res_name.result}-ar-nfs"),
+    map("Name", format("%s-ar-nfs", random_string.res_name.result)),
   )}"
 }
 
@@ -572,7 +572,7 @@ resource "aws_ebs_snapshot" "encrypted_nfs" {
 
   tags = "${merge(
     local.tags,
-    map("Name", "${random_string.res_name.result}-ar-nfs"),
+    map("Name", format("%s-ar-nfs", random_string.res_name.result)),
   )}"
 }
 
