@@ -464,13 +464,17 @@ resource "aws_ssm_document" "ssm_bootstrap_doc" {
   content         = "${data.template_file.ssm_bootstrap_template.rendered}"
 }
 
+locals {
+  cwagent_config_file_path = "${path.module}/text/${local.cwagent_config}"
+}
+
 resource "aws_ssm_parameter" "cwagentparam" {
   count = "${var.provide_custom_cw_agent_config ? 0 : 1}"
 
   name        = "${local.cw_config_parameter_name}"
   description = "${var.resource_name} Cloudwatch Agent configuration"
   type        = "String"
-  value       = "${replace(replace(file("${path.module}/text/${local.cwagent_config}"),"((SYSTEM_LOG_GROUP_NAME))",aws_cloudwatch_log_group.system_logs.name),"((APPLICATION_LOG_GROUP_NAME))",aws_cloudwatch_log_group.application_logs.name)}"
+  value       = "${replace(replace(file(local.cwagent_config_file_path),"((SYSTEM_LOG_GROUP_NAME))",aws_cloudwatch_log_group.system_logs.name),"((APPLICATION_LOG_GROUP_NAME))",aws_cloudwatch_log_group.application_logs.name)}"
 }
 
 resource "aws_ssm_association" "ssm_bootstrap_assoc" {
