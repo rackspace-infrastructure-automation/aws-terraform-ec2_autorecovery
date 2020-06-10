@@ -614,6 +614,10 @@ module "cpu_alarm_high" {
 # Provisioning of Instance(s)
 #
 
+locals {
+  instance_name = "${var.instance_count > 1 ? "%s-%03d" : "%s"}"
+}
+
 resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   count = "${var.secondary_ebs_volume_size != "" ? 0 : var.instance_count}"
 
@@ -651,9 +655,9 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   }
 
   tags = "${merge(
-    map("Name", "${var.resource_name}${var.instance_count > 1 ? format("-%03d",count.index+1) : ""}"),
+    map("Name", var.instance_count > 1 ? format(local.instance_name, var.resource_name, count.index) : format(local.instance_name, var.resource_name)
     local.tags,
-    var.additional_tags
+    var.additional_tags,
   )}"
 }
 
@@ -704,9 +708,9 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   }
 
   tags = "${merge(
-    map("Name", "${var.resource_name}${var.instance_count > 1 ? format("-%03d",count.index+1) : ""}"),
+    map("Name", var.instance_count > 1 ? format(local.instance_name, var.resource_name, count.index) : format(local.instance_name, var.resource_name)
     local.tags,
-    var.additional_tags
+    var.additional_tags,
   )}"
 }
 
