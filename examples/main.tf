@@ -29,7 +29,7 @@ data "aws_ami" "amazon_centos_7" {
 }
 
 module "ec2_ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.24"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.0.25"
 
   ec2_os                       = "centos7"
   instance_count               = "3"
