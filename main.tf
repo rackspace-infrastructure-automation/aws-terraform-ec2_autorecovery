@@ -417,8 +417,12 @@ resource "aws_iam_instance_profile" "instance_role_instance_profile" {
 # SSM Association
 #
 
+locals {
+  ssm_managed_commands_file_path = "${path.module}/text/managed_ssm_steps.json"
+}
+
 data "template_file" "ssm_managed_commands" {
-  template = "\n${file("${path.module}/text/managed_ssm_steps.json")}"
+  template = "\n${file(local.ssm_managed_commands_file_path)}"
 
   vars {
     region = "${data.aws_region.current_region.name}"
@@ -435,8 +439,12 @@ data "template_file" "additional_ssm_docs" {
   }
 }
 
+locals {
+  ssm_bootstrap_template_file_path = "${path.module}/text/ssm_bootstrap_template.json"
+}
+
 data "template_file" "ssm_bootstrap_template" {
-  template = "${file("${path.module}/text/ssm_bootstrap_template.json")}"
+  template = "${file(local.ssm_bootstrap_template_file_path)}"
 
   vars {
     region              = "${data.aws_region.current_region.name}"
