@@ -399,6 +399,8 @@ module "ec2_nfs" {
   secondary_ebs_volume_iops        = 0
   secondary_ebs_volume_type        = "gp2"
   secondary_ebs_volume_existing_id = aws_ebs_snapshot.encrypted_nfs.id
+
+  tags = local.tags
 }
 
 module "ar_r53" {
@@ -415,4 +417,6 @@ module "ar_r53" {
   name                    = "${random_string.res_name.result}-test1-instance_r53"
   notification_topic      = module.sns.topic_arn
   rackspace_managed       = false
+
+  tags = local.tags
 }
