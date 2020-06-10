@@ -595,4 +595,6 @@ module "ec2_nfs" {
   secondary_ebs_volume_iops        = 0
   secondary_ebs_volume_type        = "gp2"
   secondary_ebs_volume_existing_id = "${aws_ebs_snapshot.encrypted_nfs.id}"
+
+  additional_tags = "${local.tags}"
 }
