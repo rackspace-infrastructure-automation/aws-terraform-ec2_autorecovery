@@ -7,7 +7,7 @@
  *
  * ```HCL
  * module "ar" {
- *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.6"
+ *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.8"
  *
  *   ec2_os              = "amazon"
  *   subnets             = module.vpc.private_subnets
@@ -750,6 +750,8 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
     volume_type = var.primary_ebs_volume_type
     volume_size = var.primary_ebs_volume_size
     iops        = var.primary_ebs_volume_iops
+    encrypted   = var.encrypt_primary_ebs_volume
+    kms_key_id  = var.encrypt_primary_ebs_volume && var.encrypt_primary_ebs_volume_kms_id != "" ? var.encrypt_primary_ebs_volume_kms_id : null
   }
 
   timeouts {
@@ -790,6 +792,8 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
     volume_type = var.primary_ebs_volume_type
     volume_size = var.primary_ebs_volume_size
     iops        = var.primary_ebs_volume_iops
+    encrypted   = var.encrypt_primary_ebs_volume
+    kms_key_id  = var.encrypt_primary_ebs_volume && var.encrypt_primary_ebs_volume_kms_id != "" ? var.encrypt_primary_ebs_volume_kms_id : null
   }
 
   ebs_block_device {
@@ -798,6 +802,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
     volume_size = var.secondary_ebs_volume_size
     iops        = var.secondary_ebs_volume_iops
     encrypted   = var.secondary_ebs_volume_existing_id == "" ? var.encrypt_secondary_ebs_volume : false
+    kms_key_id  = var.encrypt_secondary_ebs_volume && var.encrypt_secondary_ebs_volume_kms_id != "" ? var.encrypt_secondary_ebs_volume_kms_id : null
     snapshot_id = var.secondary_ebs_volume_existing_id
   }
 

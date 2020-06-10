@@ -6,7 +6,7 @@ This module creates one or more autorecovery instances.
 
 ```HCL
 module "ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.6"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.8"
 
   ec2_os              = "amazon"
   subnets             = module.vpc.private_subnets
@@ -16,7 +16,7 @@ module "ar" {
 }
 ```  
 Full working references are available at [examples](examples)
-**Note** When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.\_
+\*\*Note\*\* When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.\_
 
 ## Other TF Modules Used  
 Using [aws-terraform-cloudwatch\_alarm](https://github.com/rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm) to create the following CloudWatch Alarms:
@@ -45,6 +45,13 @@ The following variables are no longer neccessary and were removed
 
 New variable `ssm_bootstrap_list` was added to allow setting the SSM association steps using objects instead of strings, allowing easier linting and formatting of these lines.  The `additional_ssm_bootstrap_list` variable will continue to work, but will be deprecated in a future release.
 
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 0.12 |
+| aws | >= 2.7.0 |
+
 ## Providers
 
 | Name | Version |
@@ -56,7 +63,7 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
+|------|-------------|------|---------|:--------:|
 | additional\_ssm\_bootstrap\_list | A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples.<br><br>(DEPRECATED) This variable will be removed in future releases in favor of the `ssm_bootstrap_list` variable. | `list(map(string))` | `[]` | no |
 | backup\_tag\_value | Value of the 'Backup' tag, used to assign te EBSSnapper configuration | `string` | `"False"` | no |
 | cloudwatch\_log\_retention | The number of days to retain Cloudwatch Logs for this instance. | `number` | `30` | no |
@@ -75,7 +82,10 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | eip\_allocation\_id\_list | A list of Allocation IDs of the EIPs you want to associate with the instance(s). This is one per instance. e.g. if you specify 2 for instance\_count then you must supply two allocation ids  here. | `list(string)` | `[]` | no |
 | enable\_ebs\_optimization | Use EBS Optimized? true or false | `bool` | `false` | no |
 | enable\_recovery\_alarms | Boolean parameter controlling if auto-recovery alarms should be created.  Recovery actions are not supported on all instance types and AMIs, especially those with ephemeral storage.  This parameter should be set to false for those cases. | `bool` | `true` | no |
-| encrypt\_secondary\_ebs\_volume | Encrypt EBS Volume? true or false | `bool` | `false` | no |
+| encrypt\_primary\_ebs\_volume | Encrypt root EBS Volume? true or false | `bool` | `false` | no |
+| encrypt\_primary\_ebs\_volume\_kms\_id | If `encrypt_primary_ebs_volume` is `true` you can optionally provide a KMS CMK ARN. | `string` | `""` | no |
+| encrypt\_secondary\_ebs\_volume | Encrypt secondary EBS Volume? true or false | `bool` | `false` | no |
+| encrypt\_secondary\_ebs\_volume\_kms\_id | If `encrypt_secondary_ebs_volume` is `true` you can optionally provide a KMS CMK ARN. | `string` | `""` | no |
 | environment | Application environment for which this network is being created. Preferred value are Development, Integration, PreProduction, Production, QA, Staging, or Test | `string` | `"Development"` | no |
 | final\_userdata\_commands | Commands to be given at the end of userdata for an instance. This should generally not include bootstrapping or ssm install. | `string` | `""` | no |
 | image\_id | The AMI ID to be used to build the EC2 Instance. If not provided, an AMI ID will be queried with an OS specified in variable ec2\_os. | `string` | `""` | no |
