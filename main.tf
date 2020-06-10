@@ -254,8 +254,8 @@ data "template_file" "user_data" {
   template = "${file(local.user_data_file_path)}"
 
   vars {
-    initial_commands = "${var.initial_userdata_commands != "" ? "${var.initial_userdata_commands}" : "" }"
-    final_commands   = "${var.final_userdata_commands != "" ? "${var.final_userdata_commands}" : "" }"
+    initial_commands = "${var.initial_userdata_commands != "" ? var.initial_userdata_commands : "" }"
+    final_commands   = "${var.final_userdata_commands != "" ? var.final_userdata_commands : "" }"
   }
 }
 
