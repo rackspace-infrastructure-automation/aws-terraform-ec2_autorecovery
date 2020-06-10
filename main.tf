@@ -246,8 +246,12 @@ data "aws_ami" "ar_ami" {
   filter      = "${concat(local.standard_filters, local.image_filter[local.ec2_os])}"
 }
 
+locals {
+  user_data_file_path = "${path.module}/text/${lookup(local.user_data_map, local.ec2_os)}"
+}
+
 data "template_file" "user_data" {
-  template = "${file("${path.module}/text/${lookup(local.user_data_map, local.ec2_os)}")}"
+  template = "${file(local.user_data_file_path)}"
 
   vars {
     initial_commands = "${var.initial_userdata_commands != "" ? "${var.initial_userdata_commands}" : "" }"
