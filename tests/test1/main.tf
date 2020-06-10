@@ -33,7 +33,7 @@ resource "aws_eip" "test_eip_1" {
 
   tags = "${merge(
     local.tags,
-    map("Name", "Circle-CI-Test1-1-${random_string.res_name.result}"),
+    map("Name", format("Circle-CI-Test1-1-%s", random_string.res_name.result)),
   )}"
 }
 

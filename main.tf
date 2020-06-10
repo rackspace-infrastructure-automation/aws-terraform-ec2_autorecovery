@@ -655,7 +655,7 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   }
 
   tags = "${merge(
-    map("Name", var.instance_count > 1 ? format(local.instance_name, var.resource_name, count.index) : format(local.instance_name, var.resource_name)
+    map("Name", var.instance_count > 1 ? format(local.instance_name, var.resource_name, count.index) : format(local.instance_name, var.resource_name)),
     local.tags,
     var.additional_tags,
   )}"
@@ -708,7 +708,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   }
 
   tags = "${merge(
-    map("Name", var.instance_count > 1 ? format(local.instance_name, var.resource_name, count.index) : format(local.instance_name, var.resource_name)
+    map("Name", var.instance_count > 1 ? format(local.instance_name, var.resource_name, count.index) : format(local.instance_name, var.resource_name)),
     local.tags,
     var.additional_tags,
   )}"
