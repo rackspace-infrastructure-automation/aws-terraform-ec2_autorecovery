@@ -18,7 +18,7 @@ module "vpc" {
 }
 
 module "ec2_ar_with_codedeploy" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.6"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.8"
 
   ec2_os         = "rhel6"
   instance_count = 1

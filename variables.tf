@@ -82,10 +82,28 @@ variable "enable_ebs_optimization" {
   default     = false
 }
 
-variable "encrypt_secondary_ebs_volume" {
-  description = "Encrypt EBS Volume? true or false"
+variable "encrypt_primary_ebs_volume" {
+  description = "Encrypt root EBS Volume? true or false"
   type        = bool
   default     = false
+}
+
+variable "encrypt_primary_ebs_volume_kms_id" {
+  description = "If `encrypt_primary_ebs_volume` is `true` you can optionally provide a KMS CMK ARN."
+  type        = string
+  default     = ""
+}
+
+variable "encrypt_secondary_ebs_volume" {
+  description = "Encrypt secondary EBS Volume? true or false"
+  type        = bool
+  default     = false
+}
+
+variable "encrypt_secondary_ebs_volume_kms_id" {
+  description = "If `encrypt_secondary_ebs_volume` is `true` you can optionally provide a KMS CMK ARN."
+  type        = string
+  default     = ""
 }
 
 variable "ec2_os" {

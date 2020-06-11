@@ -3,6 +3,15 @@ provider "aws" {
   version = "~> 2.7"
 }
 
+locals {
+  tags = {
+    Environment     = "Test"
+    Purpose         = "Testing aws-terraform-ec2_autorecovery"
+    ServiceProvider = "Rackspace"
+    Terraform       = "true"
+  }
+}
+
 resource "random_string" "res_name" {
   length  = 8
   upper   = false
@@ -29,9 +38,12 @@ module "internal_zone" {
 resource "aws_eip" "test_eip_1" {
   vpc = true
 
-  tags = {
-    Name = "-${random_string.res_name.result}-EC2-AR-Test1"
-  }
+  tags = merge(
+    local.tags,
+    {
+      Name = "-${random_string.res_name.result}-EC2-AR-Test1"
+    },
+  )
 }
 
 module "ec2_ar_centos7_with_codedeploy" {
@@ -70,19 +82,18 @@ module "ec2_ar_centos7_with_codedeploy" {
   tenancy                           = "default"
   ec2_os                            = "centos7"
 
-  tags = {
-    MyTag1 = "MyValue1"
-    MyTag2 = "MyValue2"
-    MyTag3 = "MyValue3"
-  }
+  tags = local.tags
 }
 
 resource "aws_eip" "test_eip_2" {
   vpc = true
 
-  tags = {
-    Name = "${random_string.res_name.result}-EC2-AR-BaseNetwork-Test1-2"
-  }
+  tags = merge(
+    local.tags,
+    {
+      Name = "${random_string.res_name.result}-EC2-AR-BaseNetwork-Test1-2"
+    },
+  )
 }
 
 module "ec2_ar_centos7_no_codedeploy" {
@@ -125,17 +136,9 @@ module "ec2_ar_centos7_no_codedeploy" {
   eip_allocation_id_count           = 1
   eip_allocation_id_list            = [aws_eip.test_eip_2.id]
 
-  ebs_volume_tags = {
-    MyTag1 = "MyValue1"
-    MyTag2 = "MyValue2"
-    MyTag3 = "MyValue3"
-  }
+  ebs_volume_tags = local.tags
 
-  tags = {
-    MyTag1 = "MyValue1"
-    MyTag2 = "MyValue2"
-    MyTag3 = "MyValue3"
-  }
+  tags = local.tags
 }
 
 module "ec2_ar_centos7_no_scaleft" {
@@ -164,11 +167,7 @@ module "ec2_ar_centos7_no_scaleft" {
   secondary_ebs_volume_type    = "gp2"
   encrypt_secondary_ebs_volume = false
 
-  ebs_volume_tags = {
-    MyTag1 = "MyValue1"
-    MyTag2 = "MyValue2"
-    MyTag3 = "MyValue3"
-  }
+  ebs_volume_tags = local.tags
 
   environment                       = "Development"
   instance_role_managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonEC2FullAccess", "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole", "arn:aws:iam::aws:policy/CloudWatchActionsEC2Access"]
@@ -185,11 +184,7 @@ module "ec2_ar_centos7_no_scaleft" {
   cw_cpu_high_period                = 60
 
 
-  tags = {
-    MyTag1 = "MyValue1"
-    MyTag2 = "MyValue2"
-    MyTag3 = "MyValue3"
-  }
+  tags = local.tags
 }
 
 module "ec2_ar_windows_with_codedeploy" {
@@ -229,11 +224,7 @@ module "ec2_ar_windows_with_codedeploy" {
   cw_cpu_high_evaluations           = 15
   cw_cpu_high_period                = 60
 
-  tags = {
-    MyTag1 = "MyValue1"
-    MyTag2 = "MyValue2"
-    MyTag3 = "MyValue3"
-  }
+  tags = local.tags
 }
 
 module "ec2_ar_windows_no_codedeploy" {
@@ -281,11 +272,7 @@ module "ec2_ar_windows_no_codedeploy" {
   cw_cpu_high_evaluations      = 15
   cw_cpu_high_period           = 60
 
-  tags = {
-    MyTag1 = "MyValue1"
-    MyTag2 = "MyValue2"
-    MyTag3 = "MyValue3"
-  }
+  tags = local.tags
 }
 
 module "ec2_ar_windows_no_scaleft" {
@@ -334,11 +321,7 @@ module "ec2_ar_windows_no_scaleft" {
   cw_cpu_high_evaluations      = 15
   cw_cpu_high_period           = 60
 
-  tags = {
-    MyTag1 = "MyValue1"
-    MyTag2 = "MyValue2"
-    MyTag3 = "MyValue3"
-  }
+  tags = local.tags
 }
 
 module "sns" {
@@ -373,24 +356,52 @@ module "zero_count_ar" {
   rackspace_managed  = false
 }
 
-module "ec2_nfs" {
-  source                    = "../../module"
-  ec2_os                    = "amazon2"
-  instance_count            = 1
-  subnets                   = module.vpc.private_subnets
-  security_groups           = [module.vpc.default_sg]
-  key_pair                  = "CircleCI"
-  instance_type             = "t2.micro"
-  name                      = "${random_string.res_name.result}-ar-nfs"
-  install_nfs               = true
-  primary_ebs_volume_size   = 60
-  primary_ebs_volume_iops   = 0
-  primary_ebs_volume_type   = "gp2"
-  secondary_ebs_volume_size = 60
-  secondary_ebs_volume_iops = 0
-  secondary_ebs_volume_type = "gp2"
+resource "aws_ebs_volume" "nfs" {
+  availability_zone = "us-west-2a"
+  size              = 60
+  encrypted         = true
+
+  tags = merge(
+    local.tags,
+    {
+      Name = "${random_string.res_name.result}-ar-nfs"
+    },
+  )
 }
 
+resource "aws_ebs_snapshot" "encrypted_nfs" {
+  volume_id = aws_ebs_volume.nfs.id
+
+  tags = merge(
+    local.tags,
+    {
+      Name = "${random_string.res_name.result}-ar-nfs"
+    },
+  )
+}
+
+module "ec2_nfs" {
+  source = "../../module"
+
+  ec2_os                           = "amazon2"
+  instance_count                   = 1
+  subnets                          = module.vpc.private_subnets
+  security_groups                  = [module.vpc.default_sg]
+  key_pair                         = "CircleCI"
+  instance_type                    = "t2.micro"
+  name                             = "${random_string.res_name.result}-ar-nfs"
+  install_nfs                      = true
+  primary_ebs_volume_size          = 60
+  primary_ebs_volume_iops          = 0
+  primary_ebs_volume_type          = "gp2"
+  encrypt_primary_ebs_volume       = true
+  secondary_ebs_volume_size        = 60
+  secondary_ebs_volume_iops        = 0
+  secondary_ebs_volume_type        = "gp2"
+  secondary_ebs_volume_existing_id = aws_ebs_snapshot.encrypted_nfs.id
+
+  tags = local.tags
+}
 
 module "ar_r53" {
   source = "../../module"
@@ -407,4 +418,5 @@ module "ar_r53" {
   notification_topic      = module.sns.topic_arn
   rackspace_managed       = false
 
+  tags = local.tags
 }
