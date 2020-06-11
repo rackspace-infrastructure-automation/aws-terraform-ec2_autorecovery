@@ -7,7 +7,7 @@
  *
  * ```HCL
  * module "ar" {
- *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.24"
+ *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.0.25"
  *
  *   ec2_os              = "amazon"
  *   subnets             = ["${module.vpc.private_subnets}"]
@@ -246,12 +246,16 @@ data "aws_ami" "ar_ami" {
   filter      = "${concat(local.standard_filters, local.image_filter[local.ec2_os])}"
 }
 
+locals {
+  user_data_file_path = "${path.module}/text/${lookup(local.user_data_map, local.ec2_os)}"
+}
+
 data "template_file" "user_data" {
-  template = "${file("${path.module}/text/${lookup(local.user_data_map, local.ec2_os)}")}"
+  template = "${file(local.user_data_file_path)}"
 
   vars {
-    initial_commands = "${var.initial_userdata_commands != "" ? "${var.initial_userdata_commands}" : "" }"
-    final_commands   = "${var.final_userdata_commands != "" ? "${var.final_userdata_commands}" : "" }"
+    initial_commands = "${var.initial_userdata_commands != "" ? var.initial_userdata_commands : "" }"
+    final_commands   = "${var.final_userdata_commands != "" ? var.final_userdata_commands : "" }"
   }
 }
 
@@ -413,8 +417,12 @@ resource "aws_iam_instance_profile" "instance_role_instance_profile" {
 # SSM Association
 #
 
+locals {
+  ssm_managed_commands_file_path = "${path.module}/text/managed_ssm_steps.json"
+}
+
 data "template_file" "ssm_managed_commands" {
-  template = "\n${file("${path.module}/text/managed_ssm_steps.json")}"
+  template = "\n${file(local.ssm_managed_commands_file_path)}"
 
   vars {
     region = "${data.aws_region.current_region.name}"
@@ -431,8 +439,12 @@ data "template_file" "additional_ssm_docs" {
   }
 }
 
+locals {
+  ssm_bootstrap_template_file_path = "${path.module}/text/ssm_bootstrap_template.json"
+}
+
 data "template_file" "ssm_bootstrap_template" {
-  template = "${file("${path.module}/text/ssm_bootstrap_template.json")}"
+  template = "${file(local.ssm_bootstrap_template_file_path)}"
 
   vars {
     region              = "${data.aws_region.current_region.name}"
@@ -452,13 +464,17 @@ resource "aws_ssm_document" "ssm_bootstrap_doc" {
   content         = "${data.template_file.ssm_bootstrap_template.rendered}"
 }
 
+locals {
+  cwagent_config_file_path = "${path.module}/text/${local.cwagent_config}"
+}
+
 resource "aws_ssm_parameter" "cwagentparam" {
   count = "${var.provide_custom_cw_agent_config ? 0 : 1}"
 
   name        = "${local.cw_config_parameter_name}"
   description = "${var.resource_name} Cloudwatch Agent configuration"
   type        = "String"
-  value       = "${replace(replace(file("${path.module}/text/${local.cwagent_config}"),"((SYSTEM_LOG_GROUP_NAME))",aws_cloudwatch_log_group.system_logs.name),"((APPLICATION_LOG_GROUP_NAME))",aws_cloudwatch_log_group.application_logs.name)}"
+  value       = "${replace(replace(file(local.cwagent_config_file_path),"((SYSTEM_LOG_GROUP_NAME))",aws_cloudwatch_log_group.system_logs.name),"((APPLICATION_LOG_GROUP_NAME))",aws_cloudwatch_log_group.application_logs.name)}"
 }
 
 resource "aws_ssm_association" "ssm_bootstrap_assoc" {
@@ -598,6 +614,10 @@ module "cpu_alarm_high" {
 # Provisioning of Instance(s)
 #
 
+locals {
+  instance_name = "${var.instance_count > 1 ? "%s-%03d" : "%s"}"
+}
+
 resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   count = "${var.secondary_ebs_volume_size != "" ? 0 : var.instance_count}"
 
@@ -624,6 +644,8 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
     volume_type = "${var.primary_ebs_volume_type}"
     volume_size = "${var.primary_ebs_volume_size}"
     iops        = "${var.primary_ebs_volume_iops}"
+    encrypted   = "${var.encrypt_primary_ebs_volume}"
+    kms_key_id  = "${var.encrypt_primary_ebs_volume && var.encrypt_primary_ebs_volume_kms_id != "" ? var.encrypt_primary_ebs_volume_kms_id : ""}"
   }
 
   volume_tags = "${var.ebs_volume_tags}"
@@ -633,9 +655,9 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   }
 
   tags = "${merge(
-    map("Name", "${var.resource_name}${var.instance_count > 1 ? format("-%03d",count.index+1) : ""}"),
+    map("Name", var.instance_count > 1 ? format(local.instance_name, var.resource_name, count.index) : format(local.instance_name, var.resource_name)),
     local.tags,
-    var.additional_tags
+    var.additional_tags,
   )}"
 }
 
@@ -665,6 +687,8 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
     volume_type = "${var.primary_ebs_volume_type}"
     volume_size = "${var.primary_ebs_volume_size}"
     iops        = "${var.primary_ebs_volume_iops}"
+    encrypted   = "${var.encrypt_primary_ebs_volume}"
+    kms_key_id  = "${var.encrypt_primary_ebs_volume && var.encrypt_primary_ebs_volume_kms_id != "" ? var.encrypt_primary_ebs_volume_kms_id : ""}"
   }
 
   volume_tags = "${var.ebs_volume_tags}"
@@ -675,6 +699,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
     volume_size = "${var.secondary_ebs_volume_size}"
     iops        = "${var.secondary_ebs_volume_iops}"
     encrypted   = "${var.secondary_ebs_volume_existing_id == "" ? var.encrypt_secondary_ebs_volume: false}"
+    kms_key_id  = "${var.encrypt_secondary_ebs_volume && var.encrypt_secondary_ebs_volume_kms_id != "" ? var.encrypt_secondary_ebs_volume_kms_id : ""}"
     snapshot_id = "${var.secondary_ebs_volume_existing_id}"
   }
 
@@ -683,9 +708,9 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   }
 
   tags = "${merge(
-    map("Name", "${var.resource_name}${var.instance_count > 1 ? format("-%03d",count.index+1) : ""}"),
+    map("Name", var.instance_count > 1 ? format(local.instance_name, var.resource_name, count.index) : format(local.instance_name, var.resource_name)),
     local.tags,
-    var.additional_tags
+    var.additional_tags,
   )}"
 }
 
