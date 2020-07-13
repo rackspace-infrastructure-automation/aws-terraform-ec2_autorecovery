@@ -122,6 +122,7 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | Name | Description |
 |------|-------------|
 | ar\_image\_id | Image ID used for EC2 provisioning |
+| ar\_instance\_az\_list | List of resulting Instance availability zones |
 | ar\_instance\_id\_list | List of resulting Instance IDs |
 | ar\_instance\_ip\_list | List of resulting Instance IP addresses |
 | ar\_instance\_r53\_name\_list | List of resulting Route 53 internal records |
