@@ -105,6 +105,7 @@ Using [aws-terraform-cloudwatch\_alarm](https://github.com/rackspace-infrastruct
 | Name | Description |
 |------|-------------|
 | ar\_image\_id | Image ID used for EC2 provisioning |
+| ar\_instance\_az\_list | List of resulting Instance availability zones |
 | ar\_instance\_id\_list | List of resulting Instance IDs |
 | ar\_instance\_ip\_list | List of resulting Instance IP addresses |
 
