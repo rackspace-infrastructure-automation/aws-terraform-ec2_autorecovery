@@ -18,7 +18,7 @@ if [[ $ssm_running != "0" ]]; then
 else
     if [[ -r "/tmp/ssm_agent_install" ]]; then : ;
     else mkdir -p /tmp/ssm_agent_install; fi
-    curl https://s3.<obj>region</obj>.amazonaws.com/amazon-ssm-<obj>region</obj>/latest/linux_amd64/amazon-ssm-agent.rpm -o /tmp/ssm_agent_install/amazon-ssm-agent.rpm
+    curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o /tmp/ssm_agent_install/amazon-ssm-agent.rpm
     rpm -Uvh /tmp/ssm_agent_install/amazon-ssm-agent.rpm
     ssm_running=$( ps -ef | grep [a]mazon-ssm-agent | wc -l )
     systemctl=$( command -v systemctl | wc -l )
