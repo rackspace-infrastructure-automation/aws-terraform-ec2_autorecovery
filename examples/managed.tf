@@ -13,7 +13,7 @@ data "aws_region" "current_region" {
 }
 
 module "ec2_ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.8"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.10"
 
   backup_tag_value             = "False"
   detailed_monitoring          = true
