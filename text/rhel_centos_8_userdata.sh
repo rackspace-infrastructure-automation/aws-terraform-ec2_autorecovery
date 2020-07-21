@@ -4,6 +4,9 @@ ${initial_commands}
 
 exec 1> >(logger -s -t $(basename $0)) 2>&1
 
+# Ensure SSM installed on Amazon Linux
+# in cases where it is not available / removed
+
 mkdir -p /opt/aws/bin
 cd /opt/aws
 curl https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -o /tmp/epel-release-latest-8.noarch.rpm
@@ -18,7 +21,7 @@ if [[ $ssm_running != "0" ]]; then
 else
     if [[ -r "/tmp/ssm_agent_install" ]]; then : ;
     else mkdir -p /tmp/ssm_agent_install; fi
-    curl https://s3.<obj>region</obj>.amazonaws.com/amazon-ssm-<obj>region</obj>/latest/linux_amd64/amazon-ssm-agent.rpm -o /tmp/ssm_agent_install/amazon-ssm-agent.rpm
+    curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o /tmp/ssm_agent_install/amazon-ssm-agent.rpm
     rpm -Uvh /tmp/ssm_agent_install/amazon-ssm-agent.rpm
     ssm_running=$( ps -ef | grep [a]mazon-ssm-agent | wc -l )
     systemctl=$( command -v systemctl | wc -l )

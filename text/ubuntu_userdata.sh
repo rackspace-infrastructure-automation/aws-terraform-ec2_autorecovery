@@ -7,6 +7,9 @@ exec 1> >(logger -s -t $(basename $0)) 2>&1
 export LC_ALL=C.UTF-8
 export DEBIAN_FRONTEND=noninteractive
 
+# Ensure SSM installed on Amazon Linux
+# in cases where it is not available / removed
+
 apt-get update
 apt-get -y install python-setuptools python-pip
 pip install awscli --upgrade
