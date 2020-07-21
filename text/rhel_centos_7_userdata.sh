@@ -4,6 +4,9 @@ ${initial_commands}
 
 exec 1> >(logger -s -t $(basename $0)) 2>&1
 
+# Ensure SSM installed on Amazon Linux
+# in cases where it is not available / removed
+
 mkdir -p /opt/aws/bin
 cd /opt/aws
 curl https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -o /tmp/epel-release-latest-7.noarch.rpm

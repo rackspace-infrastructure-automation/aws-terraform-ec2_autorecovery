@@ -6,7 +6,7 @@ This module creates one or more autorecovery instances.
 
 ```HCL
 module "ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.8"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.10"
 
   ec2_os              = "amazon"
   subnets             = module.vpc.private_subnets
