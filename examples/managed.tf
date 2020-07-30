@@ -1,3 +1,5 @@
+# Warning: This example uses a large number of EIPs if nothing is adjusted
+# See "for reduced EIP usage" sections to avoid this.
 provider "aws" {
   version = "~> 2.7"
   region  = "us-west-2"
@@ -23,7 +25,7 @@ module "ec2_ar" {
   install_codedeploy_agent     = false
   instance_count               = 3
   instance_type                = "t2.micro"
-  key_pair                     = "CircleCI"
+  key_pair                     = "CircleCI" # Requires non-example resources
   name                         = "my_test_instance"
   primary_ebs_volume_iops      = 0
   primary_ebs_volume_size      = 60
@@ -79,8 +81,8 @@ module "ec2_ar" {
   cw_cpu_high_period      = 60
   cw_cpu_high_threshold   = 90
   disable_api_termination = false
-  eip_allocation_id_count = 3
-  eip_allocation_id_list  = aws_eip.my_eips.*.id
+  eip_allocation_id_count = 3                    # Set to 0 for reduced EIP usage
+  eip_allocation_id_list  = aws_eip.my_eips.*.id # Remove for reduced EIP usage
   notification_topic      = ""
   private_ip_address      = ["172.18.0.5", "172.18.4.5", "172.18.0.6"]
   t2_unlimited_mode       = "standard"
@@ -92,6 +94,7 @@ module "ec2_ar" {
   }
 }
 
+# Remove for reduced EIP usage
 resource "aws_eip" "my_eips" {
   count = 3
 
