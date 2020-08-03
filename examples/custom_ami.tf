@@ -12,6 +12,27 @@ module "vpc" {
 data "aws_region" "current_region" {
 }
 
+data "aws_ami" "my_custom_ami" {
+  executable_users = ["self"]
+  most_recent      = true
+  owners           = ["self"]
+
+  filter {
+    name   = "name"
+    values = ["MyCustomAMI"]
+  }
+}
+
+data "aws_ami" "community_ami" {
+  most_recent = true
+  owners      = ["679593333241"]
+
+  filter {
+    name   = "name"
+    values = ["CentOS Linux 7 x86_64 HVM EBS*"]
+  }
+}
+
 module "ec2_ar" {
   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.10"
 
@@ -20,6 +41,7 @@ module "ec2_ar" {
   ec2_os                       = "centos7"
   enable_ebs_optimization      = false
   encrypt_secondary_ebs_volume = false
+  image_id                     = data.aws_ami.community_ami.ami_id
   install_codedeploy_agent     = false
   instance_count               = 3
   instance_type                = "t2.micro"
