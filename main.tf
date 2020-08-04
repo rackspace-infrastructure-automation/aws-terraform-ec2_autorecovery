@@ -11,7 +11,6 @@
  *
  *   ec2_os              = "amazon"
  *   subnets             = module.vpc.private_subnets
- *   image_id            = var.image_id
  *   name                = "my_ar_instance"
  *   security_groups = [module.sg.private_web_security_group_id]
  * }
