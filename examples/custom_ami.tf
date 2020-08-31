@@ -74,11 +74,11 @@ module "ec2_ar" {
       inputs = {
         documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package",
         documentParameters = {
-          Packages = "bind bindutils"
+          Packages = "tmux"
         },
         documentType = "SSMDocument"
       },
-      name           = "InstallBindAndTools",
+      name           = "InstallTmux",
       timeoutSeconds = 300
     },
     {
