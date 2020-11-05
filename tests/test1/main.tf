@@ -61,7 +61,7 @@ module "ec2_ar_centos7_with_codedeploy" {
   eip_allocation_id_count           = 1
   eip_allocation_id_list            = [aws_eip.test_eip_1.id]
   enable_ebs_optimization           = false
-  encrypt_secondary_ebs_volume      = false
+  encrypt_secondary_ebs_volume      = fals
   environment                       = "Development"
   install_codedeploy_agent          = true
   instance_count                    = 3
