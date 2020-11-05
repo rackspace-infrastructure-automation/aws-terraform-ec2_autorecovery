@@ -18,7 +18,7 @@ resource "random_string" "res_name" {
   lower   = true
   special = false
   number  = false
-}
+
 
 module "vpc" {
   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.0"
@@ -61,7 +61,7 @@ module "ec2_ar_centos7_with_codedeploy" {
   eip_allocation_id_count           = 1
   eip_allocation_id_list            = [aws_eip.test_eip_1.id]
   enable_ebs_optimization           = false
-  encrypt_secondary_ebs_volume      = fals
+  encrypt_secondary_ebs_volume      = false
   environment                       = "Development"
   install_codedeploy_agent          = true
   instance_count                    = 3
