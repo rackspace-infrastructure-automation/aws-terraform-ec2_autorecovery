@@ -18,7 +18,7 @@ resource "random_string" "res_name" {
   lower   = true
   special = false
   number  = false
-
+}
 
 module "vpc" {
   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.0"
@@ -47,7 +47,7 @@ resource "aws_eip" "test_eip_1" {
 }
 
 module "ec2_ar_centos7_with_codedeploy" {
-  source = "../../module"
+  source = "../../module2s"
 
   backup_tag_value                  = "False"
   cloudwatch_log_retention          = 30
