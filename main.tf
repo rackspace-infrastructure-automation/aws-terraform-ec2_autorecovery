@@ -42,6 +42,7 @@
  * The following variables are no longer neccessary and were removed
  *
  * - `additional_ssm_bootstrap_step_count`
+ * - `install_scaleft_agent`
  *
  * New variable `ssm_bootstrap_list` was added to allow setting the SSM association steps using objects instead of strings, allowing easier linting and formatting of these lines.  The `additional_ssm_bootstrap_list` variable will continue to work, but will be deprecated in a future release.
  */
@@ -74,7 +75,6 @@ locals {
   ssm_command_list = concat(
     local.default_ssm_cmd_list,
     local.ssm_codedeploy_include[var.install_codedeploy_agent],
-    local.ssm_scaleft_include[var.install_scaleft_agent],
     [for s in var.additional_ssm_bootstrap_list : jsondecode(s.ssm_add_step)],
     var.ssm_bootstrap_list,
     local.ssm_update_agent
@@ -144,8 +144,6 @@ locals {
   ]
 
   codedeploy_install = var.install_codedeploy_agent && var.rackspace_managed ? "enabled" : "disabled"
-  scaleft_install    = var.install_scaleft_agent && var.rackspace_managed ? "enabled" : "disabled"
-
   ssm_codedeploy_include = {
     true = [
       {
@@ -155,22 +153,6 @@ locals {
           documentType = "SSMDocument"
         },
         name = "InstallCodeDeployAgent"
-      }
-    ]
-
-    false = []
-  }
-
-  ssm_scaleft_include = {
-    true = [
-      {
-        action = "aws:runDocument",
-        inputs = {
-          documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_ScaleFT",
-          documentType = "SSMDocument"
-        },
-        name           = "SetupPassport",
-        timeoutSeconds = 300
       }
     ]
 
