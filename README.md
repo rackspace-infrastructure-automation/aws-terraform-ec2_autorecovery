@@ -41,6 +41,7 @@ The following module variables were updated to better meet current Rackspace sty
 The following variables are no longer neccessary and were removed
 
 - `additional_ssm_bootstrap_step_count`
+- `install_scaleft_agent`
 
 New variable `ssm_bootstrap_list` was added to allow setting the SSM association steps using objects instead of strings, allowing easier linting and formatting of these lines.  The `additional_ssm_bootstrap_list` variable will continue to work, but will be deprecated in a future release.
 
@@ -84,7 +85,6 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | initial\_userdata\_commands | Commands to be given at the start of userdata for an instance. This should generally not include bootstrapping or ssm install. | `string` | `""` | no |
 | install\_codedeploy\_agent | Install codedeploy agent on instance(s)? true or false | `bool` | `false` | no |
 | install\_nfs | Install NFS service on instance(s)? true or false | `bool` | `false` | no |
-| install\_scaleft\_agent | Install scaleft agent on instance(s)? true or false | `bool` | `true` | no |
 | instance\_count | Number of identical instances to deploy | `number` | `1` | no |
 | instance\_profile\_override | Optionally provide an instance profile. Any override profile should contain the permissions required for Rackspace support tooling to continue to function if required. | `bool` | `false` | no |
 | instance\_profile\_override\_name | Provide an instance profile name. Any override profile should contain the permissions required for Rackspace support tooling to continue to function if required. To use this set `instance_profile_override` to `true`. | `string` | `""` | no |

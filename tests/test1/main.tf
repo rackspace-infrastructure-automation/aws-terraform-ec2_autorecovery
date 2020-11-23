@@ -141,52 +141,6 @@ module "ec2_ar_centos7_no_codedeploy" {
   tags = local.tags
 }
 
-module "ec2_ar_centos7_no_scaleft" {
-  source = "../../module"
-
-  ec2_os                       = "centos7"
-  instance_count               = 1
-  subnets                      = [element(module.vpc.private_subnets, 0)]
-  security_groups              = [module.vpc.default_sg]
-  key_pair                     = "CircleCI"
-  instance_type                = "t2.micro"
-  name                         = "${random_string.res_name.result}-ar_centos7_nonscaleft"
-  install_codedeploy_agent     = false
-  install_scaleft_agent        = false
-  enable_ebs_optimization      = false
-  tenancy                      = "default"
-  backup_tag_value             = "False"
-  detailed_monitoring          = true
-  ssm_patching_group           = "Group1Patching"
-  private_ip_address           = ["172.18.16.142"]
-  primary_ebs_volume_size      = 60
-  primary_ebs_volume_iops      = 0
-  primary_ebs_volume_type      = "gp2"
-  secondary_ebs_volume_size    = 60
-  secondary_ebs_volume_iops    = 0
-  secondary_ebs_volume_type    = "gp2"
-  encrypt_secondary_ebs_volume = false
-
-  ebs_volume_tags = local.tags
-
-  environment                       = "Development"
-  instance_role_managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonEC2FullAccess", "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole", "arn:aws:iam::aws:policy/CloudWatchActionsEC2Access"]
-  perform_ssm_inventory_tag         = true
-  cloudwatch_log_retention          = 30
-  ssm_association_refresh_rate      = "rate(1 day)"
-  notification_topic                = ""
-  disable_api_termination           = false
-  t2_unlimited_mode                 = "standard"
-  creation_policy_timeout           = "20m"
-  cw_cpu_high_operator              = "GreaterThanThreshold"
-  cw_cpu_high_threshold             = 90
-  cw_cpu_high_evaluations           = 15
-  cw_cpu_high_period                = 60
-
-
-  tags = local.tags
-}
-
 module "ec2_ar_windows_with_codedeploy" {
   source = "../../module"
 
@@ -240,55 +194,6 @@ module "ec2_ar_windows_no_codedeploy" {
   instance_type                = "t2.micro"
   name                         = "${random_string.res_name.result}-ar_windows_noncodedeploy"
   install_codedeploy_agent     = false
-  enable_ebs_optimization      = false
-  tenancy                      = "default"
-  backup_tag_value             = "False"
-  detailed_monitoring          = true
-  ssm_patching_group           = "Group1Patching"
-  primary_ebs_volume_size      = 60
-  primary_ebs_volume_iops      = 0
-  primary_ebs_volume_type      = "gp2"
-  secondary_ebs_volume_size    = 60
-  secondary_ebs_volume_iops    = 0
-  secondary_ebs_volume_type    = "gp2"
-  encrypt_secondary_ebs_volume = false
-  environment                  = "Development"
-
-  instance_role_managed_policy_arns = [
-    "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
-    "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole",
-    "arn:aws:iam::aws:policy/CloudWatchActionsEC2Access",
-  ]
-
-  perform_ssm_inventory_tag    = true
-  cloudwatch_log_retention     = 30
-  ssm_association_refresh_rate = "rate(1 day)"
-  notification_topic           = ""
-  disable_api_termination      = false
-  t2_unlimited_mode            = "standard"
-  creation_policy_timeout      = "20m"
-  cw_cpu_high_operator         = "GreaterThanThreshold"
-  cw_cpu_high_threshold        = 90
-  cw_cpu_high_evaluations      = 15
-  cw_cpu_high_period           = 60
-
-  tags = local.tags
-}
-
-module "ec2_ar_windows_no_scaleft" {
-  source = "../../module"
-
-  ec2_os         = "windows2016"
-  instance_count = 1
-  subnets        = module.vpc.private_subnets
-
-  security_groups = [module.vpc.default_sg]
-
-  key_pair                     = "CircleCI"
-  instance_type                = "t2.micro"
-  name                         = "${random_string.res_name.result}-ar_windows_nonscaleft"
-  install_codedeploy_agent     = false
-  install_scaleft_agent        = false
   enable_ebs_optimization      = false
   tenancy                      = "default"
   backup_tag_value             = "False"
