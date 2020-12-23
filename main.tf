@@ -734,6 +734,12 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
     kms_key_id  = var.encrypt_primary_ebs_volume && var.encrypt_primary_ebs_volume_kms_id != "" ? var.encrypt_primary_ebs_volume_kms_id : null
   }
 
+  lifecycle {
+    ignore_changes = [
+      user_data_base64,
+    ]
+  }
+
   timeouts {
     create = var.creation_policy_timeout
   }
@@ -784,6 +790,12 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
     encrypted   = var.secondary_ebs_volume_existing_id == "" ? var.encrypt_secondary_ebs_volume : false
     kms_key_id  = var.encrypt_secondary_ebs_volume && var.encrypt_secondary_ebs_volume_kms_id != "" ? var.encrypt_secondary_ebs_volume_kms_id : null
     snapshot_id = var.secondary_ebs_volume_existing_id
+  }
+
+  lifecycle {
+    ignore_changes = [
+      user_data_base64,
+    ]
   }
 
   timeouts {
