@@ -15,7 +15,7 @@ module "ar" {
 }
 ```  
 Full working references are available at [examples](examples)
-**Note** When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.\_
+\*\*Note\*\* When using an existing EBS snapshot you can not use the encryption variable. The encryption must be set at the snapshot level.\_
 
 ## Other TF Modules Used  
 Using [aws-terraform-cloudwatch\_alarm](https://github.com/rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm) to create the following CloudWatch Alarms:
@@ -41,9 +41,15 @@ The following module variables were updated to better meet current Rackspace sty
 The following variables are no longer neccessary and were removed
 
 - `additional_ssm_bootstrap_step_count`
-- `install_scaleft_agent`
 
 New variable `ssm_bootstrap_list` was added to allow setting the SSM association steps using objects instead of strings, allowing easier linting and formatting of these lines.  The `additional_ssm_bootstrap_list` variable will continue to work, but will be deprecated in a future release.
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 0.12 |
+| aws | >= 2.7.0 |
 
 ## Providers
 
@@ -56,7 +62,7 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
+|------|-------------|------|---------|:--------:|
 | additional\_ssm\_bootstrap\_list | A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples.<br><br>(DEPRECATED) This variable will be removed in future releases in favor of the `ssm_bootstrap_list` variable. | `list(map(string))` | `[]` | no |
 | backup\_tag\_value | Value of the 'Backup' tag, used to assign te EBSSnapper configuration | `string` | `"False"` | no |
 | cloudwatch\_log\_retention | The number of days to retain Cloudwatch Logs for this instance. | `number` | `30` | no |
@@ -70,7 +76,7 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | detailed\_monitoring | Enable Detailed Monitoring? true or false | `bool` | `true` | no |
 | disable\_api\_termination | Specifies that an instance should not be able to be deleted via the API. true or false. This option must be toggled to false to allow Terraform to destroy the resource. | `bool` | `false` | no |
 | ebs\_volume\_tags | (Optional) A mapping of tags to assign to the devices created by the instance at launch time. | `map(string)` | `{}` | no |
-| ec2\_os | Intended Operating System/Distribution of Instance. Valid inputs are `amazon`, `amazon2`, `centos6`, `centos7`, `rhel6`, `rhel7`, `rhel8`, `ubuntu14`, `ubuntu16`, `ubuntu18`, `windows2012r2`, `windows2016`, `windows2019` | `string` | n/a | yes |
+| ec2\_os | Intended Operating System/Distribution of Instance. Valid inputs are `amazon`, `amazon2`, `centos6`, `centos7`, `rhel6`, `rhel7`, `rhel8`, `ubuntu14`, `ubuntu16`, `ubuntu18`, `ubuntu20`, `windows2012r2`, `windows2016`, `windows2019` | `string` | n/a | yes |
 | eip\_allocation\_id\_count | A count of supplied eip allocation IDs in variable eip\_allocation\_id\_list | `number` | `0` | no |
 | eip\_allocation\_id\_list | A list of Allocation IDs of the EIPs you want to associate with the instance(s). This is one per instance. e.g. if you specify 2 for instance\_count then you must supply two allocation ids  here. | `list(string)` | `[]` | no |
 | enable\_ebs\_optimization | Use EBS Optimized? true or false | `bool` | `false` | no |

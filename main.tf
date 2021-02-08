@@ -42,7 +42,6 @@
  * The following variables are no longer neccessary and were removed
  *
  * - `additional_ssm_bootstrap_step_count`
- * - `install_scaleft_agent`
  *
  * New variable `ssm_bootstrap_list` was added to allow setting the SSM association steps using objects instead of strings, allowing easier linting and formatting of these lines.  The `additional_ssm_bootstrap_list` variable will continue to work, but will be deprecated in a future release.
  */
@@ -75,6 +74,7 @@ locals {
   ssm_command_list = concat(
     local.default_ssm_cmd_list,
     local.ssm_codedeploy_include[var.install_codedeploy_agent],
+    local.ssm_scaleft_include[var.install_scaleft_agent],
     [for s in var.additional_ssm_bootstrap_list : jsondecode(s.ssm_add_step)],
     var.ssm_bootstrap_list,
     local.ssm_update_agent
@@ -144,6 +144,8 @@ locals {
   ]
 
   codedeploy_install = var.install_codedeploy_agent && var.rackspace_managed ? "enabled" : "disabled"
+  scaleft_install    = var.install_scaleft_agent && var.rackspace_managed ? "enabled" : "disabled"
+
   ssm_codedeploy_include = {
     true = [
       {
@@ -153,6 +155,22 @@ locals {
           documentType = "SSMDocument"
         },
         name = "InstallCodeDeployAgent"
+      }
+    ]
+
+    false = []
+  }
+
+  ssm_scaleft_include = {
+    true = [
+      {
+        action = "aws:runDocument",
+        inputs = {
+          documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_ScaleFT",
+          documentType = "SSMDocument"
+        },
+        name           = "SetupPassport",
+        timeoutSeconds = 300
       }
     ]
 
@@ -183,6 +201,7 @@ locals {
     ubuntu14      = "ubuntu_userdata.sh"
     ubuntu16      = "ubuntu_userdata.sh"
     ubuntu18      = "ubuntu_userdata.sh"
+    ubuntu20      = "ubuntu_userdata.sh"
     windows2012r2 = "windows_userdata.ps1"
     windows2016   = "windows_userdata.ps1"
     windows2019   = "windows_userdata.ps1"
@@ -200,6 +219,7 @@ locals {
     ubuntu14      = "/dev/sdf"
     ubuntu16      = "/dev/sdf"
     ubuntu18      = "/dev/sdf"
+    ubuntu20      = "/dev/sdf"
     windows2012r2 = "xvdf"
     windows2016   = "xvdf"
     windows2019   = "xvdf"
@@ -231,6 +251,7 @@ locals {
     ubuntu14 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
     ubuntu16 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
     ubuntu18 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+    ubuntu20 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
   }
 
   ssm_nfs_include = {
@@ -263,6 +284,7 @@ EOF
     ubuntu14      = "099720109477"
     ubuntu16      = "099720109477"
     ubuntu18      = "099720109477"
+    ubuntu20      = "099720109477"
     windows2012r2 = "801119661308"
     windows2016   = "801119661308"
     windows2019   = "801119661308"
@@ -280,6 +302,7 @@ EOF
     ubuntu14      = "*ubuntu-trusty-14.04-amd64-server*"
     ubuntu16      = "*ubuntu-xenial-16.04-amd64-server*"
     ubuntu18      = "ubuntu/images/hvm-ssd/*ubuntu-bionic-18.04-amd64-server*"
+    ubuntu20      = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
     windows2012r2 = "Windows_Server-2012-R2_RTM-English-64Bit-Base*"
     windows2016   = "Windows_Server-2016-English-Full-Base*"
     windows2019   = "Windows_Server-2019-English-Full-Base*"
@@ -297,6 +320,7 @@ EOF
     ubuntu14      = []
     ubuntu16      = []
     ubuntu18      = []
+    ubuntu20      = []
     windows2012r2 = []
     windows2016   = []
     windows2019   = []
@@ -734,12 +758,6 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
     kms_key_id  = var.encrypt_primary_ebs_volume && var.encrypt_primary_ebs_volume_kms_id != "" ? var.encrypt_primary_ebs_volume_kms_id : null
   }
 
-  lifecycle {
-    ignore_changes = [
-      user_data_base64,
-    ]
-  }
-
   timeouts {
     create = var.creation_policy_timeout
   }
@@ -790,12 +808,6 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
     encrypted   = var.secondary_ebs_volume_existing_id == "" ? var.encrypt_secondary_ebs_volume : false
     kms_key_id  = var.encrypt_secondary_ebs_volume && var.encrypt_secondary_ebs_volume_kms_id != "" ? var.encrypt_secondary_ebs_volume_kms_id : null
     snapshot_id = var.secondary_ebs_volume_existing_id
-  }
-
-  lifecycle {
-    ignore_changes = [
-      user_data_base64,
-    ]
   }
 
   timeouts {
