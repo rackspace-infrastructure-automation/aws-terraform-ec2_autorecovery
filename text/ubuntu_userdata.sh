@@ -1,12 +1,22 @@
 #!/bin/bash -xe
 
+function lock_wait {
+    endtime=$(( $(date +%s) + 300 ))
+    set +e
+    while [ $(date +%s) -lt $endtime ]; do
+        "$@" && break
+        sleep 15
+    done
+    set -e
+}
+
 function install_ssm_deb {
     if [[ -r "/tmp/ssm_agent_install" ]]; then : ;
     else
       mkdir -p /tmp/ssm_agent_install
     fi
     curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb -o /tmp/ssm_agent_install/amazon-ssm-agent.deb
-    dpkg -i /tmp/ssm_agent_install/amazon-ssm-agent.deb
+    lock_wait dpkg -i /tmp/ssm_agent_install/amazon-ssm-agent.deb
 
     if ps -ef | grep -q [a]mazon-ssm-agent  ;then
         ssm_running="yes"
@@ -41,6 +51,9 @@ function install_ssm_snap {
     return 0
 }
 
+export LC_ALL=C.UTF-8
+export DEBIAN_FRONTEND=noninteractive
+
 ${initial_commands}
 
 exec 1> >(logger -s -t $(basename $0)) 2>&1
@@ -48,9 +61,23 @@ exec 1> >(logger -s -t $(basename $0)) 2>&1
 export LC_ALL=C.UTF-8
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get update
-apt-get -y install python-setuptools python-pip
-pip install awscli --upgrade
+source /etc/os-release
+if [[ "$VERSION_ID"  == "14.04" || "$VERSION_ID"  == "16.04" || "$VERSION_ID"  == "18.04" ]]; then
+  lock_wait apt-get update
+  lock_wait apt-get -y install python-setuptools python-pip
+
+  pip install awscli --upgrade
+
+else
+  #20.04+ use python3 stuff
+  lock_wait apt-get update
+  lock_wait apt-get -y install python-setuptools python3-pip
+fi
+
+cp -a /usr/local/init/ubuntu/cfn-hup /etc/init.d/cfn-hup
+chmod +x /etc/init.d/cfn-hup
+update-rc.d cfn-hup defaults
+
 if ps -ef | grep -q [a]mazon-ssm-agent ;then
     ssm_running="yes"
 else
@@ -60,7 +87,7 @@ fi
 if [[ $ssm_running == "yes" ]]; then
     echo "amazon-ssm-agent already running"
 else
-# check the possible ubuntu cases
+   # check the possible ubuntu cases
    source /etc/os-release
    if [[ "$VERSION_ID"  == "14.04" ]]; then
         # use deb installer

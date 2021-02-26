@@ -21,13 +21,13 @@ resource "random_string" "res_name" {
 }
 
 module "vpc" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.0"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.4"
 
   name = "${random_string.res_name.result}-EC2-AR-BaseNetwork-Test1"
 }
 
 module "internal_zone" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-route53_internal_zone//?ref=v0.12.0"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-route53_internal_zone//?ref=v0.12.1"
 
   environment = "Test"
   name        = "circlecitesting.local."
@@ -230,7 +230,7 @@ module "ec2_ar_windows_no_codedeploy" {
 }
 
 module "sns" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns?ref=v0.12.0"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-sns?ref=v0.12.2"
 
   name = "${random_string.res_name.result}-Test1-alarm-notification-topic"
 }
@@ -304,6 +304,7 @@ module "ec2_nfs" {
   secondary_ebs_volume_iops        = 0
   secondary_ebs_volume_type        = "gp2"
   secondary_ebs_volume_existing_id = aws_ebs_snapshot.encrypted_nfs.id
+  rackspace_managed                = false
 
   tags = local.tags
 }

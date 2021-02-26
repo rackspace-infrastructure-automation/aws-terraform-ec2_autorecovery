@@ -7,7 +7,7 @@
  *
  * ```HCL
  * module "ar" {
- *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.10"
+ *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.15"
  *
  *   ec2_os              = "amazon"
  *   subnets             = module.vpc.private_subnets
@@ -183,6 +183,7 @@ locals {
     ubuntu14      = "ubuntu_userdata.sh"
     ubuntu16      = "ubuntu_userdata.sh"
     ubuntu18      = "ubuntu_userdata.sh"
+    ubuntu20      = "ubuntu_userdata.sh"
     windows2012r2 = "windows_userdata.ps1"
     windows2016   = "windows_userdata.ps1"
     windows2019   = "windows_userdata.ps1"
@@ -200,6 +201,7 @@ locals {
     ubuntu14      = "/dev/sdf"
     ubuntu16      = "/dev/sdf"
     ubuntu18      = "/dev/sdf"
+    ubuntu20      = "/dev/sdf"
     windows2012r2 = "xvdf"
     windows2016   = "xvdf"
     windows2019   = "xvdf"
@@ -231,6 +233,7 @@ locals {
     ubuntu14 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
     ubuntu16 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
     ubuntu18 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+    ubuntu20 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
   }
 
   ssm_nfs_include = {
@@ -263,6 +266,7 @@ EOF
     ubuntu14      = "099720109477"
     ubuntu16      = "099720109477"
     ubuntu18      = "099720109477"
+    ubuntu20      = "099720109477"
     windows2012r2 = "801119661308"
     windows2016   = "801119661308"
     windows2019   = "801119661308"
@@ -280,6 +284,7 @@ EOF
     ubuntu14      = "*ubuntu-trusty-14.04-amd64-server*"
     ubuntu16      = "*ubuntu-xenial-16.04-amd64-server*"
     ubuntu18      = "ubuntu/images/hvm-ssd/*ubuntu-bionic-18.04-amd64-server*"
+    ubuntu20      = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
     windows2012r2 = "Windows_Server-2012-R2_RTM-English-64Bit-Base*"
     windows2016   = "Windows_Server-2016-English-Full-Base*"
     windows2019   = "Windows_Server-2019-English-Full-Base*"
@@ -297,6 +302,7 @@ EOF
     ubuntu14      = []
     ubuntu16      = []
     ubuntu18      = []
+    ubuntu20      = []
     windows2012r2 = []
     windows2016   = []
     windows2019   = []
@@ -576,7 +582,7 @@ data "null_data_source" "alarm_dimensions" {
 }
 
 module "status_check_failed_system_alarm_ticket" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.4"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.5"
 
   alarm_count       = var.instance_count
   alarm_description = "Status checks have failed for system, generating ticket."
@@ -650,7 +656,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_recover
 }
 
 module "status_check_failed_instance_alarm_ticket" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.4"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.5"
 
   alarm_count       = var.instance_count
   alarm_description = "Status checks have failed, generating ticket."
@@ -674,7 +680,7 @@ module "status_check_failed_instance_alarm_ticket" {
 }
 
 module "cpu_alarm_high" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.4"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.5"
 
   alarm_count              = var.instance_count
   alarm_description        = "CPU Alarm ${var.cw_cpu_high_operator} ${var.cw_cpu_high_threshold}% for ${var.cw_cpu_high_period} seconds ${var.cw_cpu_high_evaluations} times."
@@ -691,6 +697,7 @@ module "cpu_alarm_high" {
   rackspace_managed        = var.rackspace_managed
   statistic                = "Average"
   threshold                = var.cw_cpu_high_threshold
+  unit                     = "Count"
 }
 
 #
