@@ -697,7 +697,7 @@ module "cpu_alarm_high" {
   rackspace_managed        = var.rackspace_managed
   statistic                = "Average"
   threshold                = var.cw_cpu_high_threshold
-  unit                     = "Count"
+  unit                     = "Percent"
 }
 
 #
