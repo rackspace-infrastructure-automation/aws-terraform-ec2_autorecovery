@@ -64,9 +64,9 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 
 | Name | Source | Version |
 |------|--------|---------|
-| cpu_alarm_high | git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.5 |  |
-| status_check_failed_instance_alarm_ticket | git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.5 |  |
-| status_check_failed_system_alarm_ticket | git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.5 |  |
+| cpu_alarm_high | git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=0.12.6 |  |
+| status_check_failed_instance_alarm_ticket | git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=0.12.6 |  |
+| status_check_failed_system_alarm_ticket | git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=0.12.6 |  |
 
 ## Resources
 
