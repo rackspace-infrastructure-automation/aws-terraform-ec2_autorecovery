@@ -582,7 +582,7 @@ data "null_data_source" "alarm_dimensions" {
 }
 
 module "status_check_failed_system_alarm_ticket" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=0.12.6"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.6"
 
   alarm_count       = var.instance_count
   alarm_description = "Status checks have failed for system, generating ticket."
@@ -656,7 +656,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_recover
 }
 
 module "status_check_failed_instance_alarm_ticket" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=0.12.6"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.6"
 
   alarm_count       = var.instance_count
   alarm_description = "Status checks have failed, generating ticket."
@@ -680,7 +680,7 @@ module "status_check_failed_instance_alarm_ticket" {
 }
 
 module "cpu_alarm_high" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=0.12.6"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.12.6"
 
   alarm_count              = var.instance_count
   alarm_description        = "CPU Alarm ${var.cw_cpu_high_operator} ${var.cw_cpu_high_threshold}% for ${var.cw_cpu_high_period} seconds ${var.cw_cpu_high_evaluations} times."
