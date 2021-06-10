@@ -9,9 +9,9 @@
  * module "ar" {
  *   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.15"
  *
- *   ec2_os              = "amazon"
- *   subnets             = module.vpc.private_subnets
- *   name                = "my_ar_instance"
+ *   ec2_os          = "amazon"
+ *   subnets         = module.vpc.private_subnets
+ *   name            = "my_ar_instance"
  *   security_groups = [module.sg.private_web_security_group_id]
  * }
  * ```
@@ -77,69 +77,90 @@ locals {
     local.ssm_codedeploy_include[var.install_codedeploy_agent],
     [for s in var.additional_ssm_bootstrap_list : jsondecode(s.ssm_add_step)],
     var.ssm_bootstrap_list,
-    local.ssm_update_agent
   )
 
   # This is a list of ssm main steps
   default_ssm_cmd_list = [
     {
-      action = "aws:runDocument",
-      inputs = {
-        documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-BusyWait",
-        documentType = "SSMDocument"
-      },
-      name           = "BusyWait",
+      action         = "aws:runDocument"
+      name           = "BusyWait"
       timeoutSeconds = 300
+
+      inputs = {
+        documentPath = "AWS-RunDocument"
+        documentType = "SSMDocument"
+
+        documentParameters = {
+          documentParameters = {}
+          sourceInfo         = "{\"path\": \"https://rackspace-ssm-docs-${data.aws_region.current_region.name}.s3.amazonaws.com/latest/configuration/Rack-BusyWait.json\"}"
+          sourceType         = "S3"
+        }
+      }
     },
     {
-      action = "aws:runDocument",
+      action         = "aws:runDocument"
+      name           = "InstallCWAgent"
+      timeoutSeconds = 300
+
       inputs = {
-        documentPath = "AWS-ConfigureAWSPackage",
+        documentPath = "AWS-ConfigureAWSPackage"
+        documentType = "SSMDocument"
+
         documentParameters = {
-          action = "Install",
+          action = "Install"
           name   = "AmazonCloudWatchAgent"
-        },
-        documentType = "SSMDocument"
-      },
-      name           = "InstallCWAgent",
-      timeoutSeconds = 300
+        }
+      }
     },
     {
-      action = "aws:runDocument",
+      action         = "aws:runDocument"
+      name           = "ConfigureCWAgent"
+      timeoutSeconds = 300
+
       inputs = {
-        documentPath = "AmazonCloudWatch-ManageAgent",
+        documentPath = "AmazonCloudWatch-ManageAgent"
+        documentType = "SSMDocument"
+
         documentParameters = {
-          action                        = "configure",
-          optionalConfigurationSource   = "ssm",
-          optionalConfigurationLocation = "${var.provide_custom_cw_agent_config ? var.custom_cw_agent_config_ssm_param : local.cw_config_parameter_name}",
-          optionalRestart               = "yes",
+          action                        = "configure"
           name                          = "AmazonCloudWatchAgent"
-        },
-        documentType = "SSMDocument"
-      },
-      name           = "ConfigureCWAgent",
-      timeoutSeconds = 300
+          optionalConfigurationLocation = var.provide_custom_cw_agent_config ? var.custom_cw_agent_config_ssm_param : local.cw_config_parameter_name
+          optionalConfigurationSource   = "ssm"
+          optionalRestart               = "yes"
+        }
+      }
     },
     {
-      action = "aws:runDocument",
-      inputs = {
-        documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-ConfigureAWSTimeSync",
-        documentType = "SSMDocument"
-      },
-      name           = "SetupTimeSync",
+      action         = "aws:runDocument"
+      name           = "SetupTimeSync"
       timeoutSeconds = 300
-    },
-    {
-      action = "aws:runDocument",
+
       inputs = {
-        documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_Package",
+        documentPath = "AWS-RunDocument"
+        documentType = "SSMDocument"
+
         documentParameters = {
-          Packages = "sysstat ltrace strace iptraf tcpdump"
-        },
-        documentType = "SSMDocument"
-      },
-      name           = "DiagnosticTools",
+          documentParameters = {}
+          sourceInfo         = "{\"path\": \"https://rackspace-ssm-docs-${data.aws_region.current_region.name}.s3.amazonaws.com/latest/configuration/Rack-ConfigureAWSTimeSync.json\"}"
+          sourceType         = "S3"
+        }
+      }
+    },
+    {
+      action         = "aws:runDocument"
+      name           = "DiagnosticTools"
       timeoutSeconds = 300
+
+      inputs = {
+        documentPath = "AWS-RunDocument"
+        documentType = "SSMDocument"
+
+        documentParameters = {
+          documentParameters = { Packages = lookup(local.diagnostic_packages, local.ec2_os, "") }
+          sourceInfo         = "{\"path\": \"https://rackspace-ssm-docs-${data.aws_region.current_region.name}.s3.amazonaws.com/latest/configuration/Rack-Install_Package.json\"}"
+          sourceType         = "S3"
+        }
+      }
     },
   ]
 
@@ -147,29 +168,50 @@ locals {
   ssm_codedeploy_include = {
     true = [
       {
-        action = "aws:runDocument",
+        action         = "aws:runDocument"
+        name           = "InstallCodeDeployAgent"
+        timeoutSeconds = 300
+
         inputs = {
-          documentPath = "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_CodeDeploy",
+          documentPath = "AWS-RunDocument"
           documentType = "SSMDocument"
-        },
-        name = "InstallCodeDeployAgent"
-      }
+
+          documentParameters = {
+            documentParameters = {}
+            sourceInfo         = "{\"path\": \"https://rackspace-ssm-docs-${data.aws_region.current_region.name}.s3.amazonaws.com/latest/configuration/Rack-Install_CodeDeploy.json\"}"
+            sourceType         = "S3"
+          }
+        }
+      },
     ]
 
     false = []
   }
 
-  ssm_update_agent = [
-    {
-      action = "aws:runDocument",
-      inputs = {
-        documentPath = "AWS-UpdateSSMAgent",
-        documentType = "SSMDocument"
-      },
-      name           = "UpdateSSMAgent",
-      timeoutSeconds = 300
-    },
-  ]
+  defaults = {
+    diagnostic_packages = {
+      amazon = "sysstat ltrace strace iptraf tcpdump"
+      rhel   = "sysstat ltrace strace lsof iotop iptraf-ng tcpdump"
+      ubuntu = "sysstat iotop iptraf-ng"
+    }
+  }
+
+  diagnostic_packages = {
+    amazon    = local.defaults["diagnostic_packages"]["amazon"]
+    amazon2   = local.defaults["diagnostic_packages"]["amazon"]
+    amazoneks = local.defaults["diagnostic_packages"]["amazon"]
+    amazonecs = local.defaults["diagnostic_packages"]["amazon"]
+    rhel6     = local.defaults["diagnostic_packages"]["rhel"]
+    rhel7     = local.defaults["diagnostic_packages"]["rhel"]
+    rhel8     = local.defaults["diagnostic_packages"]["rhel"]
+    centos6   = local.defaults["diagnostic_packages"]["rhel"]
+    centos7   = local.defaults["diagnostic_packages"]["rhel"]
+    centos8   = local.defaults["diagnostic_packages"]["rhel"]
+    ubuntu14  = local.defaults["diagnostic_packages"]["ubuntu"]
+    ubuntu16  = local.defaults["diagnostic_packages"]["ubuntu"]
+    ubuntu18  = local.defaults["diagnostic_packages"]["ubuntu"]
+    ubuntu20  = local.defaults["diagnostic_packages"]["ubuntu"]
+  }
 
   user_data_map = {
     amazon        = "amazon_linux_userdata.sh"

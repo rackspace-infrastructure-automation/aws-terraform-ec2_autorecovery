@@ -8,9 +8,9 @@ This module creates one or more autorecovery instances.
 module "ar" {
   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery//?ref=v0.12.15"
 
-  ec2_os              = "amazon"
-  subnets             = module.vpc.private_subnets
-  name                = "my_ar_instance"
+  ec2_os          = "amazon"
+  subnets         = module.vpc.private_subnets
+  name            = "my_ar_instance"
   security_groups = [module.sg.private_web_security_group_id]
 }
 ```  
