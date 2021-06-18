@@ -1,8 +1,13 @@
     {
       "action": "aws:runDocument",
       "inputs": {
-      "documentPath": "arn:aws:ssm:${region}:507897595701:document/Rack-ConfigureAWSTimeSync",
-      "documentType": "SSMDocument"
+      "documentPath": "AWS-RunDocument",
+      "documentType": "SSMDocument",
+        "documentParameters" : {
+          "documentParameters" : {},
+          "sourceInfo" : "{\"path\": \"https://rackspace-ssm-docs-${data.aws_region.current_region.name}.s3.amazonaws.com/latest/configuration/Rack-ConfigureAWSTimeSync.json\"}",
+          "sourceType" : "S3"
+        }
       },
       "name": "SetupTimeSync",
       "timeoutSeconds": 300
@@ -10,10 +15,13 @@
     {
       "action": "aws:runDocument",
       "inputs": {
-      "documentPath": "arn:aws:ssm:${region}:507897595701:document/Rack-Install_Package",
-      "documentParameters": {
-        "Packages": "sysstat ltrace strace iptraf tcpdump"
-      },
+      "documentPath": "AWS-RunDocument",
+    "documentParameters" : {
+    "documentParameters" : { Packages = lookup(local.diagnostic_packages, local.ec2_os, "") }
+    "sourceInfo"         : "{\"path\": \"https://rackspace-ssm-docs-${data.aws_region.current_region.name}.s3.amazonaws.com/latest/configuration/Rack-Install_Package.json\"}"
+    "sourceType"         : "S3"
+    }
+    },
       "documentType": "SSMDocument"
       },
       "name": "DiagnosticTools",

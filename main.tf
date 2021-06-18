@@ -59,6 +59,7 @@ locals {
     ubuntu14      = "ubuntu_userdata.sh"
     ubuntu16      = "ubuntu_userdata.sh"
     ubuntu18      = "ubuntu_userdata.sh"
+    ubuntu20      = "ubuntu_userdata.sh"
     windows2008   = "windows_userdata.ps1"
     windows2012r2 = "windows_userdata.ps1"
     windows2016   = "windows_userdata.ps1"
@@ -76,6 +77,7 @@ locals {
     ubuntu14      = "/dev/sdf"
     ubuntu16      = "/dev/sdf"
     ubuntu18      = "/dev/sdf"
+    ubuntu20      = "/dev/sdf"
     windows2008   = "xvdf"
     windows2012r2 = "xvdf"
     windows2016   = "xvdf"
@@ -135,6 +137,7 @@ EOF
     ubuntu14 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
     ubuntu16 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
     ubuntu18 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+    ubuntu20 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
   }
 
   ssm_nfs_include = {
@@ -166,6 +169,7 @@ EOF
     ubuntu14      = "099720109477"
     ubuntu16      = "099720109477"
     ubuntu18      = "099720109477"
+    ubuntu20      = "099720109477"
     windows2008   = "801119661308"
     windows2012r2 = "801119661308"
     windows2016   = "801119661308"
@@ -183,6 +187,7 @@ EOF
     ubuntu14      = "*ubuntu-trusty-14.04-amd64-server*"
     ubuntu16      = "*ubuntu-xenial-16.04-amd64-server*"
     ubuntu18      = "ubuntu/images/hvm-ssd/*ubuntu-bionic-18.04-amd64-server*"
+    ubuntu20      = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
     windows2008   = "Windows_Server-2008-R2_SP1-English-64Bit-Base*"
     windows2012r2 = "Windows_Server-2012-R2_RTM-English-64Bit-Base*"
     windows2016   = "Windows_Server-2016-English-Full-Base*"
@@ -199,6 +204,7 @@ EOF
     ubuntu14      = []
     ubuntu16      = []
     ubuntu18      = []
+    ubuntu20      = []
     windows2008   = []
     windows2012r2 = []
     windows2016   = []
