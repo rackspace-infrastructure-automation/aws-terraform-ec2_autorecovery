@@ -97,13 +97,20 @@ locals {
   ssm_codedeploy_include = {
     enabled = <<EOF
     {
-      "action": "aws:runDocument",
-      "inputs": {
-        "documentPath": "arn:aws:ssm:${data.aws_region.current_region.name}:507897595701:document/Rack-Install_CodeDeploy",
-        "documentType": "SSMDocument"
-      },
-      "name": "InstallCodeDeployAgent"
-    },
+        action         = "aws:runDocument"
+        name           = "InstallCodeDeployAgent"
+        timeoutSeconds = 300
+
+        inputs = {
+          documentPath = "AWS-RunDocument"
+          documentType = "SSMDocument"
+
+          documentParameters = {
+            documentParameters = {}
+            sourceInfo         = "{\"path\": \"https://rackspace-ssm-docs-${data.aws_region.current_region.name}.s3.amazonaws.com/latest/configuration/Rack-Install_CodeDeploy.json\"}"
+            sourceType         = "S3"
+          }
+        },
 EOF
 
     disabled = ""

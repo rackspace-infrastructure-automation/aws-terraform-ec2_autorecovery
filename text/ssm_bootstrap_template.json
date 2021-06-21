@@ -6,17 +6,16 @@
     {
       "action": "aws:runDocument",
       "inputs": {
-      "documentPath": "AWS-RunDocument",
-      "documentType": "SSMDocument",
-        "documentParameters" : {
-          "documentParameters" : {},
-          "sourceInfo" : "{\"path\": \"https://rackspace-ssm-docs-${data.aws_region.current_region.name}.s3.amazonaws.com/latest/configuration/Rack-BusyWait.json\"}"
-          "sourceType" : "S3"
+        "documentPath": "AWS-RunDocument",
+        "documentType": "SSMDocument",
+        "documentParameters": {
+          "documentParameters": {},
+          "sourceInfo": "{\"path\": \"https://rackspace-ssm-docs-${region}.s3.amazonaws.com/latest/configuration/Rack-BusyWait.json\"}",
+          "sourceType": "S3"
         }
       },
       "name": "BusyWait",
-      "timeoutSeconds": 300,
-
+      "timeoutSeconds": 300
     },
     {
       "action": "aws:runDocument",
