@@ -53,30 +53,20 @@ function install_ssm_snap {
 
 export LC_ALL=C.UTF-8
 export DEBIAN_FRONTEND=noninteractive
+lock_wait apt-get update
 
 ${initial_commands}
 
 exec 1> >(logger -s -t $(basename $0)) 2>&1
 
-export LC_ALL=C.UTF-8
-export DEBIAN_FRONTEND=noninteractive
+#install awscliv2
+lock_wait apt-get install unzip
+mkdir -p /tmp/awscliv2
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2/awscliv2.zip"
+unzip /tmp/awscliv2/awscliv2.zip -d /tmp/awscliv2/
+./tmp/awscliv2/aws/install
 
-source /etc/os-release
-if [[ "$VERSION_ID"  == "14.04" || "$VERSION_ID"  == "16.04" || "$VERSION_ID"  == "18.04" ]]; then
-  lock_wait apt-get update
-  lock_wait apt-get -y install python-setuptools python-pip
 
-  pip install awscli --upgrade
-
-else
-  #20.04+ use python3 stuff
-  lock_wait apt-get update
-  lock_wait apt-get -y install python-setuptools python3-pip
-fi
-
-cp -a /usr/local/init/ubuntu/cfn-hup /etc/init.d/cfn-hup
-chmod +x /etc/init.d/cfn-hup
-update-rc.d cfn-hup defaults
 
 if ps -ef | grep -q [a]mazon-ssm-agent ;then
     ssm_running="yes"
