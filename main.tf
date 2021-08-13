@@ -201,10 +201,8 @@ locals {
     amazon2   = local.defaults["diagnostic_packages"]["amazon"]
     amazoneks = local.defaults["diagnostic_packages"]["amazon"]
     amazonecs = local.defaults["diagnostic_packages"]["amazon"]
-    rhel6     = local.defaults["diagnostic_packages"]["rhel"]
     rhel7     = local.defaults["diagnostic_packages"]["rhel"]
     rhel8     = local.defaults["diagnostic_packages"]["rhel"]
-    centos6   = local.defaults["diagnostic_packages"]["rhel"]
     centos7   = local.defaults["diagnostic_packages"]["rhel"]
     centos8   = local.defaults["diagnostic_packages"]["rhel"]
     ubuntu14  = local.defaults["diagnostic_packages"]["ubuntu"]
@@ -216,10 +214,8 @@ locals {
   user_data_map = {
     amazon        = "amazon_linux_userdata.sh"
     amazon2       = "amazon_linux_userdata.sh"
-    centos6       = "rhel_centos_6_userdata.sh"
     centos7       = "rhel_centos_7_userdata.sh"
     centos8       = "rhel_centos_8_userdata.sh"
-    rhel6         = "rhel_centos_6_userdata.sh"
     rhel7         = "rhel_centos_7_userdata.sh"
     rhel8         = "rhel_centos_8_userdata.sh"
     ubuntu14      = "ubuntu_userdata.sh"
@@ -234,10 +230,8 @@ locals {
   ebs_device_map = {
     amazon        = "/dev/sdf"
     amazon2       = "/dev/sdf"
-    centos6       = "/dev/sdf"
     centos7       = "/dev/sdf"
     centos8       = "/dev/sdf"
-    rhel6         = "/dev/sdf"
     rhel7         = "/dev/sdf"
     rhel8         = "/dev/sdf"
     ubuntu14      = "/dev/sdf"
@@ -299,10 +293,8 @@ EOF
   ami_owner_mapping = {
     amazon        = "137112412989"
     amazon2       = "137112412989"
-    centos6       = "679593333241"
     centos7       = "125523088429"
     centos8       = "125523088429"
-    rhel6         = "309956199498"
     rhel7         = "309956199498"
     rhel8         = "309956199498"
     ubuntu14      = "099720109477"
@@ -317,10 +309,8 @@ EOF
   ami_name_mapping = {
     amazon        = "amzn-ami-hvm-2018.03.0.*gp2"
     amazon2       = "amzn2-ami-hvm-2.0.*-ebs"
-    centos6       = "CentOS Linux 6 x86_64 HVM EBS*"
     centos7       = "CentOS 7.* x86_64*"
     centos8       = "CentOS 8.* x86_64*"
-    rhel6         = "RHEL-6.*_HVM_GA-*x86_64*"
     rhel7         = "RHEL-7.*_HVM_GA-*x86_64*"
     rhel8         = "RHEL-8.*_HVM-*x86_64*"
     ubuntu14      = "*ubuntu-trusty-14.04-amd64-server*"
@@ -336,7 +326,6 @@ EOF
   image_filter = {
     amazon        = []
     amazon2       = []
-    rhel6         = []
     rhel7         = []
     rhel8         = []
     centos7       = []
@@ -348,13 +337,6 @@ EOF
     windows2012r2 = []
     windows2016   = []
     windows2019   = []
-    # Added to ensure only AMIS under the official CentOS 6 product code are retrieved
-    centos6 = [
-      {
-        name   = "product-code"
-        values = ["6x5jmcajty9edm3f211pqjfn2"]
-      },
-    ]
   }
 
   standard_filters = [
