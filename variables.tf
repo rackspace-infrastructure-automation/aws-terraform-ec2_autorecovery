@@ -107,7 +107,7 @@ variable "encrypt_secondary_ebs_volume_kms_id" {
 }
 
 variable "ec2_os" {
-  description = "Intended Operating System/Distribution of Instance. Valid inputs are `amazon`, `amazon2`, `centos6`, `centos7`, `rhel6`, `rhel7`, `rhel8`, `ubuntu14`, `ubuntu16`, `ubuntu18`, `ubuntu20`, `windows2012r2`, `windows2016`, `windows2019`"
+  description = "Intended Operating System/Distribution of Instance. Valid inputs are `amazon2`, `centos7`, `rhel7`, `rhel8`, `ubuntu14`, `ubuntu16`, `ubuntu18`, `ubuntu20`, `windows2012r2`, `windows2016`, `windows2019`"
   type        = string
 }
 

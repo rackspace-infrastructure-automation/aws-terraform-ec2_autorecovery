@@ -20,11 +20,6 @@ else
         if [[ $ssm_running == "0" ]]; then
             systemctl start amazon-ssm-agent
         fi
-    else
-        # Amazon Linux
-        if [[ $ssm_running == "0" ]]; then
-            start amazon-ssm-agent
-        fi
     fi
 fi
 
