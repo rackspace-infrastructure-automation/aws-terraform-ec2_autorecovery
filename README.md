@@ -31,6 +31,12 @@ Using [aws-terraform-cloudwatch\_alarm](https://github.com/rackspace-infrastruct
 - status\_check\_failed\_instance\_alarm\_ticket
 - cpu\_alarm\_high
 
+## Requirements
+
+| Name | Version |
+|------|---------|
+| aws | != 2.65 |
+
 ## Providers
 
 | Name | Version |
@@ -39,10 +45,40 @@ Using [aws-terraform-cloudwatch\_alarm](https://github.com/rackspace-infrastruct
 | null | n/a |
 | template | n/a |
 
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| cpu_alarm_high | git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.0.1 |  |
+| status_check_failed_instance_alarm_ticket | git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.0.1 |  |
+| status_check_failed_system_alarm_ticket | git@github.com:rackspace-infrastructure-automation/aws-terraform-cloudwatch_alarm//?ref=v0.0.1 |  |
+
+## Resources
+
+| Name |
+|------|
+| [aws_ami](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/data-sources/ami) |
+| [aws_caller_identity](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/data-sources/caller_identity) |
+| [aws_cloudwatch_log_group](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/resources/cloudwatch_log_group) |
+| [aws_cloudwatch_metric_alarm](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/resources/cloudwatch_metric_alarm) |
+| [aws_eip_association](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/resources/eip_association) |
+| [aws_iam_instance_profile](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/resources/iam_instance_profile) |
+| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/resources/iam_policy) |
+| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/data-sources/iam_policy_document) |
+| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/resources/iam_role) |
+| [aws_iam_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/resources/iam_role_policy_attachment) |
+| [aws_instance](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/resources/instance) |
+| [aws_region](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/data-sources/region) |
+| [aws_ssm_association](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/resources/ssm_association) |
+| [aws_ssm_document](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/resources/ssm_document) |
+| [aws_ssm_parameter](https://registry.terraform.io/providers/hashicorp/aws/2.65/docs/resources/ssm_parameter) |
+| [null_data_source](https://registry.terraform.io/providers/hashicorp/null/latest/docs/data-sources/data_source) |
+| [template_file](https://registry.terraform.io/providers/hashicorp/template/latest/docs/data-sources/file) |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
+|------|-------------|------|---------|:--------:|
 | additional\_ssm\_bootstrap\_list | A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples. | `list` | `[]` | no |
 | additional\_ssm\_bootstrap\_step\_count | Count of steps added for input 'additional\_ssm\_bootstrap\_list'. This is required since 'additional\_ssm\_bootstrap\_list' is a list of maps | `string` | `"0"` | no |
 | additional\_tags | Additional tags to be added to the EC2 instance Please see usage.tf.example in this repo for examples. | `map` | `{}` | no |
