@@ -223,6 +223,7 @@ locals {
     windows2012r2 = "windows_userdata.ps1"
     windows2016   = "windows_userdata.ps1"
     windows2019   = "windows_userdata.ps1"
+    windows2022   = "windows_userdata.ps1"
   }
 
   ebs_device_map = {
@@ -238,6 +239,7 @@ locals {
     windows2012r2 = "xvdf"
     windows2016   = "xvdf"
     windows2019   = "xvdf"
+    windows2022   = "xvdf"
   }
 
   # local.tags can and should be applied to all taggable resources
@@ -299,6 +301,7 @@ EOF
     windows2012r2 = "801119661308"
     windows2016   = "801119661308"
     windows2019   = "801119661308"
+    windows2022   = "801119661308"
   }
 
   ami_name_mapping = {
@@ -314,6 +317,7 @@ EOF
     windows2012r2 = "Windows_Server-2012-R2_RTM-English-64Bit-Base*"
     windows2016   = "Windows_Server-2016-English-Full-Base*"
     windows2019   = "Windows_Server-2019-English-Full-Base*"
+    windows2022   = "Windows_Server-2022-English-Full-Base*"
   }
 
   # Any custom AMI filters for a given OS can be added in this mapping
@@ -330,6 +334,7 @@ EOF
     windows2012r2 = []
     windows2016   = []
     windows2019   = []
+    windows2022   = []
   }
 
   standard_filters = [
