@@ -77,29 +77,13 @@ fi
 if [[ $ssm_running == "yes" ]]; then
     echo "amazon-ssm-agent already running"
 else
-   # check the possible ubuntu cases
-   source /etc/os-release
-   if [[ "$VERSION_ID"  == "14.04" ]]; then
-        # use deb installer
-        install_ssm_deb
-
-   elif [[ "$VERSION_ID"  == "16.04" ]]; then
-        # assume snap then fallback to deb
-        if snap list amazon-ssm-agent | grep -q amazon-ssm-agent  ; then
-             echo "snap is installed ... starting"
-             snap start amazon-ssm-agent
-        else
-            # aws guidance says if snap package is not present,use deb for >16.04
-            install_ssm_deb
-        fi
-   else
-        #always  uses snap for 18.04 and higher
-        if snap list amazon-ssm-agent | grep -q amazon-ssm-agent ; then
-             echo "snap is installed ... starting"
-             snap start amazon-ssm-agent
-        else
-            install_ssm_snap
-        fi
+    source /etc/os-release
+    #always  uses snap for 18.04 and higher
+    if snap list amazon-ssm-agent | grep -q amazon-ssm-agent ; then
+         echo "snap is installed ... starting"
+         snap start amazon-ssm-agent
+    else
+        install_ssm_snap
     fi
 fi
 
