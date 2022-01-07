@@ -96,7 +96,7 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | additional\_ssm\_bootstrap\_list | A list of maps consisting of main step actions, to be appended to SSM associations. Please see usage.tf.example in this repo for examples.<br><br>(DEPRECATED) This variable will be removed in future releases in favor of the `ssm_bootstrap_list` variable. | `list(map(string))` | `[]` | no |
-| backup\_tag\_value | Value of the 'Backup' tag, used to assign te EBSSnapper configuration | `string` | `"False"` | no |
+| backup\_tag\_value | Value of the 'Backup' tag, used to assign to the AWS Backup configuration | `string` | `"False"` | no |
 | cloudwatch\_log\_retention | The number of days to retain Cloudwatch Logs for this instance. | `number` | `30` | no |
 | create\_internal\_route53 | Toggle for creation of internal Route 53 records for instannces. | `bool` | `false` | no |
 | creation\_policy\_timeout | Time to wait for the number of signals for the creation policy. H/M/S Hours/Minutes/Seconds | `string` | `"20m"` | no |

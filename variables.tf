@@ -5,7 +5,7 @@ variable "additional_ssm_bootstrap_list" {
 }
 
 variable "backup_tag_value" {
-  description = "Value of the 'Backup' tag, used to assign te EBSSnapper configuration"
+  description = "Value of the 'Backup' tag, used to assign to the AWS Backup configuration"
   type        = string
   default     = "False"
 }
