@@ -448,7 +448,7 @@ resource "aws_route53_record" "instance" {
   count = var.create_internal_route53 ? var.instance_count : 0
 
   name    = "${var.name}${var.instance_count > 1 ? format("-%03d.", count.index + 1) : "."}${var.internal_zone_name}"
-  records = ["${data.null_data_source.instance_ips[count.index].outputs["private_ip"]}"]
+  records = [data.null_data_source.instance_ips[count.index].outputs["private_ip"]]
   ttl     = "300"
   type    = "A"
   zone_id = var.internal_zone_id
