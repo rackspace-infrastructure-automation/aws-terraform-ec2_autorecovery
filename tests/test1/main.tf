@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "us-west-2"
-  version = "3.27.0"
+  version = "~> 3.0"
 }
 
 locals {
@@ -19,7 +19,7 @@ resource "random_string" "res_name" {
   special = false
   number  = false
 }
-
+/*
 module "vpc" {
   source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.4"
 
@@ -326,3 +326,4 @@ module "ar_r53" {
 
   tags = local.tags
 }
+*/
