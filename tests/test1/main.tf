@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "us-west-2"
-  version = "~> 3.0"
+  version = "3.27.0"
 }
 
 locals {
