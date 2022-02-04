@@ -108,7 +108,7 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | detailed\_monitoring | Enable Detailed Monitoring? true or false | `bool` | `true` | no |
 | disable\_api\_termination | Specifies that an instance should not be able to be deleted via the API. true or false. This option must be toggled to false to allow Terraform to destroy the resource. | `bool` | `false` | no |
 | ebs\_volume\_tags | (Optional) A mapping of tags to assign to the devices created by the instance at launch time. | `map(string)` | `{}` | no |
-| ec2\_os | Intended Operating System/Distribution of Instance. Valid inputs are `amazon2`, `centos7`, `rhel7`, `rhel8`, `ubuntu18`, `ubuntu20`, `windows2012r2`, `windows2016`, `windows2019` | `string` | n/a | yes |
+| ec2\_os | Intended Operating System/Distribution of Instance. Valid inputs are `amazon2`, `centos7`, `rhel7`, `rhel8`, `ubuntu18`, `ubuntu20`, `windows2012r2`, `windows2016`, `windows2019` `windows2022` | `string` | n/a | yes |
 | eip\_allocation\_id\_count | A count of supplied eip allocation IDs in variable eip\_allocation\_id\_list | `number` | `0` | no |
 | eip\_allocation\_id\_list | A list of Allocation IDs of the EIPs you want to associate with the instance(s). This is one per instance. e.g. if you specify 2 for instance\_count then you must supply two allocation ids  here. | `list(string)` | `[]` | no |
 | enable\_ebs\_optimization | Use EBS Optimized? true or false | `bool` | `false` | no |
