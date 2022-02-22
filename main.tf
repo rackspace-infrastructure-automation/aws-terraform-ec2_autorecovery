@@ -203,7 +203,6 @@ locals {
     rhel7     = local.defaults["diagnostic_packages"]["rhel"]
     rhel8     = local.defaults["diagnostic_packages"]["rhel"]
     centos7   = local.defaults["diagnostic_packages"]["rhel"]
-    centos8   = local.defaults["diagnostic_packages"]["rhel"]
     ubuntu18  = local.defaults["diagnostic_packages"]["ubuntu"]
     ubuntu20  = local.defaults["diagnostic_packages"]["ubuntu"]
   }
@@ -211,7 +210,6 @@ locals {
   user_data_map = {
     amazon2       = "amazon_linux_userdata.sh"
     centos7       = "rhel_centos_7_userdata.sh"
-    centos8       = "rhel_centos_8_userdata.sh"
     rhel7         = "rhel_centos_7_userdata.sh"
     rhel8         = "rhel_centos_8_userdata.sh"
     ubuntu18      = "ubuntu_userdata.sh"
@@ -225,7 +223,6 @@ locals {
   ebs_device_map = {
     amazon2       = "/dev/sdf"
     centos7       = "/dev/sdf"
-    centos8       = "/dev/sdf"
     rhel7         = "/dev/sdf"
     rhel8         = "/dev/sdf"
     ubuntu18      = "/dev/sdf"
@@ -283,7 +280,6 @@ EOF
   ami_owner_mapping = {
     amazon2       = "137112412989"
     centos7       = "125523088429"
-    centos8       = "125523088429"
     rhel7         = "309956199498"
     rhel8         = "309956199498"
     ubuntu18      = "099720109477"
@@ -297,7 +293,6 @@ EOF
   ami_name_mapping = {
     amazon2       = "amzn2-ami-hvm-2.0.*-ebs"
     centos7       = "CentOS 7.* x86_64*"
-    centos8       = "CentOS 8.* x86_64*"
     rhel7         = "RHEL-7.*_HVM_GA-*x86_64*"
     rhel8         = "RHEL-8.*_HVM-*x86_64*"
     ubuntu18      = "ubuntu/images/hvm-ssd/*ubuntu-bionic-18.04-amd64-server*"
@@ -314,7 +309,6 @@ EOF
     rhel7         = []
     rhel8         = []
     centos7       = []
-    centos8       = []
     ubuntu18      = []
     ubuntu20      = []
     windows2012r2 = []
