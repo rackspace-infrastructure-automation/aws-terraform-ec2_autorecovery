@@ -9,17 +9,10 @@
       ["AutoScalingGroupName"],
       ["InstanceId", "device"]
     ],
-    "namespace": "System/Linux",
     "metrics_collected": {
       "mem": {
         "metrics_collection_interval": 60,
-        "measurement": [
-          {
-            "rename": "MemoryUtilization",
-            "name": "mem_used_percent",
-            "unit": "Percent"
-          }
-        ]
+        "measurement": ["used_percent"]
       },
       "disk": {
         "ignore_file_system_types": [
