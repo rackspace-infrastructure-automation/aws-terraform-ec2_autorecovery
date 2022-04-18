@@ -47,6 +47,13 @@
  * New variable `ssm_bootstrap_list` was added to allow setting the SSM association steps using objects instead of strings, allowing easier linting and formatting of these lines.  The `additional_ssm_bootstrap_list` variable will continue to work, but will be deprecated in a future release.
  */
 
+locals {
+  user_data_vars = {
+    initial_commands = var.initial_userdata_commands
+    final_commands   = var.final_userdata_commands
+  }
+}
+
 terraform {
   required_version = ">= 0.12"
 
@@ -345,15 +352,6 @@ data "aws_ami" "ar_ami" {
       name   = filter.value.name
       values = filter.value.values
     }
-  }
-}
-
-data "template_file" "user_data" {
-  template = file("${path.module}/text/${local.user_data_map[local.ec2_os]}")
-
-  vars = {
-    initial_commands = var.initial_userdata_commands
-    final_commands   = var.final_userdata_commands
   }
 }
 
@@ -719,7 +717,7 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   subnet_id               = element(var.subnets, count.index)
   tags                    = merge(var.tags, local.tags, local.tags_ec2, { Name = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}" })
   tenancy                 = var.tenancy
-  user_data_base64        = base64encode(data.template_file.user_data.rendered)
+  user_data_base64        = base64encode(templatefile("${path.module}/text/${local.user_data_map[local.ec2_os]}", local.user_data_vars))
   volume_tags             = var.ebs_volume_tags
   vpc_security_group_ids  = var.security_groups
 
@@ -767,7 +765,7 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   subnet_id               = element(var.subnets, count.index)
   tags                    = merge(var.tags, local.tags, local.tags_ec2, { Name = "${var.name}${var.instance_count > 1 ? format("-%03d", count.index + 1) : ""}" })
   tenancy                 = var.tenancy
-  user_data_base64        = base64encode(data.template_file.user_data.rendered)
+  user_data_base64        = base64encode(templatefile("${path.module}/text/${local.user_data_map[local.ec2_os]}", local.user_data_vars))
   volume_tags             = var.ebs_volume_tags
   vpc_security_group_ids  = var.security_groups
 
