@@ -1,5 +1,12 @@
+locals {
+  cwagent_vars = {
+    application_log_group_name = "custom_app_log_group_name"
+    system_log_group_name      = "custom_system_log_group_name"
+  }
+}
+
 provider "aws" {
-  version = "~> 2.7"
+  version = "~> 3.0"
   region  = "us-west-2"
 }
 
@@ -59,14 +66,5 @@ resource "aws_ssm_parameter" "custom_cwagentparam" {
   name        = "custom_cw_param-${random_string.res_name.result}"
   description = "Custom Cloudwatch Agent configuration"
   type        = "String"
-  value       = data.template_file.custom_cwagentparam.rendered
-}
-
-data "template_file" "custom_cwagentparam" {
-  template = file("./text/linux_cw_agent_param.json")
-
-  vars = {
-    application_log_group_name = "custom_app_log_group_name"
-    system_log_group_name      = "custom_system_log_group_name"
-  }
+  value       = templatefile("./text/linux_cw_agent_param.json", local.cwagent_vars)
 }
