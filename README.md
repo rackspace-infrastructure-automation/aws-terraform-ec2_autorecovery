@@ -57,7 +57,6 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | Name | Version |
 |------|---------|
 | aws | >= 2.7.0 |
-| null | n/a |
 
 ## Modules
 
@@ -87,7 +86,6 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | [aws_ssm_association](https://registry.terraform.io/providers/hashicorp/aws/2.7.0/docs/resources/ssm_association) |
 | [aws_ssm_document](https://registry.terraform.io/providers/hashicorp/aws/2.7.0/docs/resources/ssm_document) |
 | [aws_ssm_parameter](https://registry.terraform.io/providers/hashicorp/aws/2.7.0/docs/resources/ssm_parameter) |
-| [null_data_source](https://registry.terraform.io/providers/hashicorp/null/latest/docs/data-sources/data_source) |
 
 ## Inputs
 

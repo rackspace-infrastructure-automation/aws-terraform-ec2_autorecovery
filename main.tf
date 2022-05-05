@@ -422,25 +422,22 @@ data "aws_iam_policy_document" "mod_ec2_instance_role_policies" {
 }
 
 
-data "null_data_source" "instance_ips" {
-  count = var.instance_count
-
-  inputs = {
-    private_ip = element(
-      coalescelist(
-        aws_instance.mod_ec2_instance_with_secondary_ebs.*.private_ip,
-        aws_instance.mod_ec2_instance_no_secondary_ebs.*.private_ip,
+locals {
+  instance_ips = tolist([for n in range(var.instance_count) :
+    element(coalescelist(
+      aws_instance.mod_ec2_instance_with_secondary_ebs.*.private_ip,
+      aws_instance.mod_ec2_instance_no_secondary_ebs.*.private_ip,
       ),
-      count.index,
+      n
     )
-  }
+  ])
 }
 
 resource "aws_route53_record" "instance" {
   count = var.create_internal_route53 ? var.instance_count : 0
 
   name    = "${var.name}${var.instance_count > 1 ? format("-%03d.", count.index + 1) : "."}${var.internal_zone_name}"
-  records = [data.null_data_source.instance_ips[count.index].outputs["private_ip"]]
+  records = [local.instance_ips[count.index]]
   ttl     = "300"
   type    = "A"
   zone_id = var.internal_zone_id
@@ -567,18 +564,18 @@ resource "aws_cloudwatch_log_group" "application_logs" {
   retention_in_days = var.cloudwatch_log_retention
 }
 
-data "null_data_source" "alarm_dimensions" {
-  count = var.instance_count
+locals {
 
-  inputs = {
-    InstanceId = element(
-      coalescelist(
-        aws_instance.mod_ec2_instance_with_secondary_ebs.*.id,
-        aws_instance.mod_ec2_instance_no_secondary_ebs.*.id,
+  instance_ids = [for n in range(var.instance_count) :
+    element(coalescelist(
+      aws_instance.mod_ec2_instance_with_secondary_ebs.*.id,
+      aws_instance.mod_ec2_instance_no_secondary_ebs.*.id,
       ),
-      count.index,
+      n
     )
-  }
+  ]
+
+  alarm_dimensions = tolist([for n in range(var.instance_count) :  tomap({"InstanceId" = tostring(local.instance_ids[n])})])
 }
 
 module "status_check_failed_system_alarm_ticket" {
@@ -591,7 +588,7 @@ module "status_check_failed_system_alarm_ticket" {
     ["StatusCheckFailedSystemAlarmTicket", var.name],
   )
   comparison_operator      = "GreaterThanThreshold"
-  dimensions               = data.null_data_source.alarm_dimensions.*.outputs
+  dimensions               = local.alarm_dimensions[*]
   evaluation_periods       = "2"
   notification_topic       = [var.notification_topic]
   metric_name              = "StatusCheckFailed_System"
@@ -618,7 +615,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_instance_alarm_reboo
     ],
   )
   comparison_operator = "GreaterThanThreshold"
-  dimensions          = data.null_data_source.alarm_dimensions[count.index].outputs
+  dimensions          = local.alarm_dimensions[count.index]
   evaluation_periods  = "5"
   metric_name         = "StatusCheckFailed_Instance"
   namespace           = "AWS/EC2"
@@ -643,7 +640,7 @@ resource "aws_cloudwatch_metric_alarm" "status_check_failed_system_alarm_recover
     ],
   )
   comparison_operator = "GreaterThanThreshold"
-  dimensions          = data.null_data_source.alarm_dimensions[count.index].outputs
+  dimensions          = local.alarm_dimensions[count.index]
   evaluation_periods  = "2"
   metric_name         = "StatusCheckFailed_System"
   namespace           = "AWS/EC2"
@@ -665,7 +662,7 @@ module "status_check_failed_instance_alarm_ticket" {
     ["StatusCheckFailedInstanceAlarmTicket", var.name],
   )
   comparison_operator      = "GreaterThanThreshold"
-  dimensions               = data.null_data_source.alarm_dimensions.*.outputs
+  dimensions               = local.alarm_dimensions[*]
   evaluation_periods       = "10"
   metric_name              = "StatusCheckFailed_Instance"
   notification_topic       = [var.notification_topic]
@@ -687,7 +684,7 @@ module "cpu_alarm_high" {
   alarm_name               = join("-", ["CPUAlarmHigh", var.name])
   comparison_operator      = var.cw_cpu_high_operator
   customer_alarms_enabled  = true
-  dimensions               = data.null_data_source.alarm_dimensions.*.outputs
+  dimensions               = local.alarm_dimensions[*]
   evaluation_periods       = var.cw_cpu_high_evaluations
   metric_name              = "CPUUtilization"
   notification_topic       = [var.notification_topic]
