@@ -575,7 +575,7 @@ locals {
     )
   ]
 
-  alarm_dimensions = tolist([for n in range(var.instance_count) :  tomap({"InstanceId" = tostring(local.instance_ids[n])})])
+  alarm_dimensions = tolist([for n in range(var.instance_count) : tomap({ "InstanceId" = tostring(local.instance_ids[n]) })])
 }
 
 module "status_check_failed_system_alarm_ticket" {
