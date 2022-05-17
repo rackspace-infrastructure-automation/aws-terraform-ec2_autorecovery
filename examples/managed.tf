@@ -1,10 +1,10 @@
 provider "aws" {
-  version = "~> 2.7"
+  version = "~> 3.0"
   region  = "us-west-2"
 }
 
 module "vpc" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.1"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.7"
 
   name = "EC2-AR-BaseNetwork-Test1"
 }
@@ -13,7 +13,7 @@ data "aws_region" "current_region" {
 }
 
 module "ec2_ar" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.10"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.26"
 
   backup_tag_value             = "False"
   detailed_monitoring          = true

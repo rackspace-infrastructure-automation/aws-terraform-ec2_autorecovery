@@ -1,7 +1,7 @@
 locals {
   cwagent_vars = {
-    application_log_group_name = "custom_app_log_group_name"
-    system_log_group_name      = "custom_system_log_group_name"
+    application_log = "custom_app_log_group_name"
+    system_log      = "custom_system_log_group_name"
   }
 }
 
@@ -19,15 +19,15 @@ resource "random_string" "res_name" {
 }
 
 module "vpc" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.1"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.7"
 
   name = "EC2-AR-BaseNetwork-Test1"
 }
 
 module "ec2_ar_with_codedeploy" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.10"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-ec2_autorecovery?ref=v0.12.26"
 
-  ec2_os         = "rhel6"
+  ec2_os         = "amazon2"
   instance_count = 1
   subnets        = module.vpc.private_subnets
 
