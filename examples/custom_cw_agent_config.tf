@@ -5,6 +5,10 @@ locals {
   }
 }
 
+terraform {
+  required_version = ">= 1.0.0"
+}
+
 provider "aws" {
   version = "~> 3.0"
   region  = "us-west-2"
@@ -19,7 +23,7 @@ resource "random_string" "res_name" {
 }
 
 module "vpc" {
-  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.7"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-vpc_basenetwork?ref=v0.12.8"
 
   name = "EC2-AR-BaseNetwork-Test1"
 }
