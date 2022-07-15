@@ -55,11 +55,12 @@ locals {
 }
 
 terraform {
-  required_version = ">= 0.13.7"
+  required_version = ">= 1.0.0"
+}
 
-  required_providers {
-    aws = "~> 3.0"
-  }
+provider "aws" {
+  version = "~> 3.0"
+  region  = "us-west-2"
 }
 
 locals {
