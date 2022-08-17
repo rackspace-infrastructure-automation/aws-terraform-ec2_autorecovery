@@ -1,12 +1,10 @@
 {
   "metrics": {
     "append_dimensions": {
-      "InstanceId": "$${aws:InstanceId}",
-      "AutoScalingGroupName": "$${aws:AutoScalingGroupName}"
+      "InstanceId": "$${aws:InstanceId}"
     },
     "aggregation_dimensions": [
       ["InstanceId"],
-      ["AutoScalingGroupName"],
       ["InstanceId", "device"]
     ],
     "metrics_collected": {
@@ -24,7 +22,11 @@
         ],
         "metrics_collection_interval": 60,
         "resources": ["*"],
-        "measurement": ["used_percent"]
+        "measurement": [
+          "used_percent",
+          "disk_total",
+          "disk_used"
+        ]
       }
     }
   },
