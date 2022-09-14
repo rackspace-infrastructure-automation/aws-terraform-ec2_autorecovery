@@ -201,6 +201,7 @@ locals {
       amazon = "sysstat ltrace strace iptraf tcpdump"
       rhel   = "sysstat ltrace strace lsof iotop iptraf-ng tcpdump"
       ubuntu = "sysstat iotop iptraf-ng"
+      debian = "sysstat iotop iptraf-ng"
     }
   }
 
@@ -213,6 +214,8 @@ locals {
     centos7   = local.defaults["diagnostic_packages"]["rhel"]
     ubuntu18  = local.defaults["diagnostic_packages"]["ubuntu"]
     ubuntu20  = local.defaults["diagnostic_packages"]["ubuntu"]
+    debian10  = local.defaults["diagnostic_packages"]["debian"]
+    debian11  = local.defaults["diagnostic_packages"]["debian"]
   }
 
   user_data_map = {
@@ -222,6 +225,8 @@ locals {
     rhel8         = "rhel_centos_8_userdata.sh"
     ubuntu18      = "ubuntu_userdata.sh"
     ubuntu20      = "ubuntu_userdata.sh"
+    debian10      = "debian_userdata.sh"
+    debian11      = "debian_userdata.sh"
     windows2012r2 = "windows_userdata.ps1"
     windows2016   = "windows_userdata.ps1"
     windows2019   = "windows_userdata.ps1"
@@ -235,6 +240,8 @@ locals {
     rhel8         = "/dev/sdf"
     ubuntu18      = "/dev/sdf"
     ubuntu20      = "/dev/sdf"
+    debian10      = "/dev/sdf"
+    debian11      = "/dev/sdf"
     windows2012r2 = "xvdf"
     windows2016   = "xvdf"
     windows2019   = "xvdf"
@@ -265,6 +272,8 @@ locals {
     centos7  = "nfs-utils"
     ubuntu18 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
     ubuntu20 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+    debian10 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+    debian11 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
   }
 
   ssm_nfs_include = {
@@ -292,6 +301,8 @@ EOF
     rhel8         = "309956199498"
     ubuntu18      = "099720109477"
     ubuntu20      = "099720109477"
+    debian10      = "136693071363"
+    debian11      = "136693071363"
     windows2012r2 = "801119661308"
     windows2016   = "801119661308"
     windows2019   = "801119661308"
@@ -305,6 +316,8 @@ EOF
     rhel8         = "RHEL-8.*_HVM-*x86_64*"
     ubuntu18      = "ubuntu/images/hvm-ssd/*ubuntu-bionic-18.04-amd64-server*"
     ubuntu20      = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
+    debian10      = "debian-10-amd64-*"
+    debian11      = "debian-11-amd64-*"
     windows2012r2 = "Windows_Server-2012-R2_RTM-English-64Bit-Base*"
     windows2016   = "Windows_Server-2016-English-Full-Base*"
     windows2019   = "Windows_Server-2019-English-Full-Base*"
@@ -319,6 +332,8 @@ EOF
     centos7       = []
     ubuntu18      = []
     ubuntu20      = []
+    debian10      = []
+    debian11      = []
     windows2012r2 = []
     windows2016   = []
     windows2019   = []
