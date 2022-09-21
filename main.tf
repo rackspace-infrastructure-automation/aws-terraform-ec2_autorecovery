@@ -312,7 +312,7 @@ EOF
   ami_name_mapping = {
     amazon2       = "amzn2-ami-hvm-2.0.*-ebs"
     centos7       = "CentOS 7.* x86_64*"
-    rhel7         = "RHEL-7.*_HVM_GA-*x86_64*"
+    rhel7         = "RHEL-7.*_HVM-*x86_64*"
     rhel8         = "RHEL-8.*_HVM-*x86_64*"
     ubuntu18      = "ubuntu/images/hvm-ssd/*ubuntu-bionic-18.04-amd64-server*"
     ubuntu20      = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
