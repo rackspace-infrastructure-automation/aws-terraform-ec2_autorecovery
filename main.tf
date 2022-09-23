@@ -206,20 +206,22 @@ locals {
   }
 
   diagnostic_packages = {
-    amazon2   = local.defaults["diagnostic_packages"]["amazon"]
-    amazoneks = local.defaults["diagnostic_packages"]["amazon"]
-    amazonecs = local.defaults["diagnostic_packages"]["amazon"]
-    rhel7     = local.defaults["diagnostic_packages"]["rhel"]
-    rhel8     = local.defaults["diagnostic_packages"]["rhel"]
-    centos7   = local.defaults["diagnostic_packages"]["rhel"]
-    ubuntu18  = local.defaults["diagnostic_packages"]["ubuntu"]
-    ubuntu20  = local.defaults["diagnostic_packages"]["ubuntu"]
-    debian10  = local.defaults["diagnostic_packages"]["debian"]
-    debian11  = local.defaults["diagnostic_packages"]["debian"]
+    amazon2    = local.defaults["diagnostic_packages"]["amazon"]
+    amazoneks  = local.defaults["diagnostic_packages"]["amazon"]
+    amazonecs  = local.defaults["diagnostic_packages"]["amazon"]
+    amazon2022 = local.defaults["diagnostic_packages"]["amazon"]
+    rhel7      = local.defaults["diagnostic_packages"]["rhel"]
+    rhel8      = local.defaults["diagnostic_packages"]["rhel"]
+    centos7    = local.defaults["diagnostic_packages"]["rhel"]
+    ubuntu18   = local.defaults["diagnostic_packages"]["ubuntu"]
+    ubuntu20   = local.defaults["diagnostic_packages"]["ubuntu"]
+    debian10   = local.defaults["diagnostic_packages"]["debian"]
+    debian11   = local.defaults["diagnostic_packages"]["debian"]
   }
 
   user_data_map = {
     amazon2       = "amazon_linux_userdata.sh"
+    amazon2022    = "amazon_linux_userdata.sh"
     centos7       = "rhel_centos_7_userdata.sh"
     rhel7         = "rhel_centos_7_userdata.sh"
     rhel8         = "rhel_centos_8_userdata.sh"
@@ -235,6 +237,7 @@ locals {
 
   ebs_device_map = {
     amazon2       = "/dev/sdf"
+    amazon2022    = "/dev/sdf"
     centos7       = "/dev/sdf"
     rhel7         = "/dev/sdf"
     rhel8         = "/dev/sdf"
@@ -268,12 +271,13 @@ locals {
   nfs_install = var.install_nfs && var.rackspace_managed && lookup(local.nfs_packages, local.ec2_os, "") != "" ? "enabled" : "disabled"
 
   nfs_packages = {
-    amazon2  = "nfs-utils"
-    centos7  = "nfs-utils"
-    ubuntu18 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
-    ubuntu20 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
-    debian10 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
-    debian11 = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+    amazon2    = "nfs-utils"
+    amazon2022 = "nfs-utils"
+    centos7    = "nfs-utils"
+    ubuntu18   = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+    ubuntu20   = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+    debian10   = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
+    debian11   = "nfs-kernel-server rpcbind nfs-common nfs4-acl-tools"
   }
 
   ssm_nfs_include = {
@@ -296,6 +300,7 @@ EOF
 
   ami_owner_mapping = {
     amazon2       = "137112412989"
+    amazon2022    = "137112412989"
     centos7       = "125523088429"
     rhel7         = "309956199498"
     rhel8         = "309956199498"
@@ -311,6 +316,7 @@ EOF
 
   ami_name_mapping = {
     amazon2       = "amzn2-ami-hvm-2.0.*-ebs"
+    amazon2022    = "al2022-ami-2022*-kernel-*-x86_64"
     centos7       = "CentOS 7.* x86_64*"
     rhel7         = "RHEL-7.*_HVM-*x86_64*"
     rhel8         = "RHEL-8.*_HVM-*x86_64*"
@@ -327,6 +333,7 @@ EOF
   # Any custom AMI filters for a given OS can be added in this mapping
   image_filter = {
     amazon2       = []
+    amazon2022    = []
     rhel7         = []
     rhel8         = []
     centos7       = []
