@@ -58,10 +58,6 @@ terraform {
   required_version = ">= 1.0.0"
 }
 
-provider "aws" {
-  version = "~> 3.0"
-  region  = "us-west-2"
-}
 
 locals {
   ec2_os = lower(var.ec2_os)
@@ -317,7 +313,7 @@ EOF
   ami_name_mapping = {
     amazon2       = "amzn2-ami-hvm-2.0.*-ebs"
     amazon2022    = "al2022-ami-2022*-kernel-*-x86_64"
-    centos7       = "CentOS 7.* x86_64*"
+    centos7       = "CentOS Linux 7 x86_64 - *"
     rhel7         = "RHEL-7.*_HVM-*x86_64*"
     rhel8         = "RHEL-8.*_HVM-*x86_64*"
     ubuntu18      = "ubuntu/images/hvm-ssd/*ubuntu-bionic-18.04-amd64-server*"
