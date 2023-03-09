@@ -50,13 +50,12 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | Name | Version |
 |------|---------|
 | terraform | >= 1.0.0 |
-| aws | ~> 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | ~> 3.0 |
+| aws | n/a |
 
 ## Modules
 
@@ -70,22 +69,22 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 
 | Name |
 |------|
-| [aws_ami](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/data-sources/ami) |
-| [aws_caller_identity](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/data-sources/caller_identity) |
-| [aws_cloudwatch_log_group](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/cloudwatch_log_group) |
-| [aws_cloudwatch_metric_alarm](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/cloudwatch_metric_alarm) |
-| [aws_eip_association](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/eip_association) |
-| [aws_iam_instance_profile](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/iam_instance_profile) |
-| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/iam_policy) |
-| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/data-sources/iam_policy_document) |
-| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/iam_role) |
-| [aws_iam_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/iam_role_policy_attachment) |
-| [aws_instance](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/instance) |
-| [aws_region](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/data-sources/region) |
-| [aws_route53_record](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/route53_record) |
-| [aws_ssm_association](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/ssm_association) |
-| [aws_ssm_document](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/ssm_document) |
-| [aws_ssm_parameter](https://registry.terraform.io/providers/hashicorp/aws/3.0/docs/resources/ssm_parameter) |
+| [aws_ami](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) |
+| [aws_caller_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) |
+| [aws_cloudwatch_log_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) |
+| [aws_cloudwatch_metric_alarm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) |
+| [aws_eip_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip_association) |
+| [aws_iam_instance_profile](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) |
+| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) |
+| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) |
+| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) |
+| [aws_iam_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) |
+| [aws_instance](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) |
+| [aws_region](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) |
+| [aws_route53_record](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) |
+| [aws_ssm_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_association) |
+| [aws_ssm_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_document) |
+| [aws_ssm_parameter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_parameter) |
 
 ## Inputs
 
