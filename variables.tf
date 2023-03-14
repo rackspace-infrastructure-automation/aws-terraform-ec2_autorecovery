@@ -342,3 +342,27 @@ variable "initial_userdata_commands" {
   type        = string
   default     = ""
 }
+
+variable "metadata_http_endpoint" {
+  description = "Whether the metadata service is available. Valid values include enabled or disabled."
+  type        = string
+  default     = "enabled"
+}
+
+variable "metadata_http_put_response_hop_limit" {
+  description = " Desired HTTP PUT response hop limit for instance metadata requests. The larger the number, the further instance metadata requests can travel. Valid values are integer from 1 to 64"
+  type        = number
+  default     = 1
+}
+
+variable "metadata_http_tokens" {
+  description = "Whether or not the metadata service requires session tokens, also referred to as Instance Metadata Service Version 2 (IMDSv2). Valid values include optional or required."
+  type        = string
+  default     = "optional"
+}
+
+variable "metadata_instance_metadata_tags" {
+  description = "Enables or disables access to instance tags from the instance metadata service. Valid values include enabled or disabled"
+  type        = string
+  default     = "disabled"
+}

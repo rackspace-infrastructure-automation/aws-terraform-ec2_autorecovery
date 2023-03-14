@@ -768,10 +768,10 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   }
 
   metadata_options {
-    http_endpoint               = "enabled"
-    http_tokens                 = "required"
-    http_put_response_hop_limit = 1
-    instance_metadata_tags      = "enabled"
+    http_endpoint               = var.metadata_http_endpoint
+    http_put_response_hop_limit = var.metadata_http_put_response_hop_limit
+    http_tokens                 = var.metadata_http_tokens
+    instance_metadata_tags      = var.metadata_instance_metadata_tags
   }
 }
 
@@ -833,10 +833,10 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
   }
 
   metadata_options {
-    http_endpoint               = "enabled"
-    http_tokens                 = "required"
-    http_put_response_hop_limit = 1
-    instance_metadata_tags      = "enabled"
+    http_endpoint               = var.metadata_http_endpoint
+    http_put_response_hop_limit = var.metadata_http_put_response_hop_limit
+    http_tokens                 = var.metadata_http_tokens
+    instance_metadata_tags      = var.metadata_instance_metadata_tags
   }
 }
 

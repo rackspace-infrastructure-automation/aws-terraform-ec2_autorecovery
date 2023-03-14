@@ -127,6 +127,10 @@ New variable `ssm_bootstrap_list` was added to allow setting the SSM association
 | internal\_zone\_id | The Route53 Internal Hosted Zone ID | `string` | `""` | no |
 | internal\_zone\_name | TLD for Internal Hosted Zone | `string` | `""` | no |
 | key\_pair | Name of an existing EC2 KeyPair to enable SSH access to the instances. | `string` | `""` | no |
+| metadata\_http\_endpoint | Whether the metadata service is available. Valid values include enabled or disabled. | `string` | `"enabled"` | no |
+| metadata\_http\_put\_response\_hop\_limit | Desired HTTP PUT response hop limit for instance metadata requests. The larger the number, the further instance metadata requests can travel. Valid values are integer from 1 to 64 | `number` | `1` | no |
+| metadata\_http\_tokens | Whether or not the metadata service requires session tokens, also referred to as Instance Metadata Service Version 2 (IMDSv2). Valid values include optional or required. | `string` | `"optional"` | no |
+| metadata\_instance\_metadata\_tags | Enables or disables access to instance tags from the instance metadata service. Valid values include enabled or disabled | `string` | `"disabled"` | no |
 | name | Name to be used for the provisioned EC2 instance(s) and other resources provisioned in this module | `string` | n/a | yes |
 | notification\_topic | SNS Topic ARN to notify if there are any alarms | `string` | `""` | no |
 | perform\_ssm\_inventory\_tag | Determines whether Instance is tracked via System Manager Inventory. | `bool` | `true` | no |
