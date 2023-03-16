@@ -766,6 +766,13 @@ resource "aws_instance" "mod_ec2_instance_no_secondary_ebs" {
   timeouts {
     create = var.creation_policy_timeout
   }
+
+  metadata_options {
+    http_endpoint               = var.metadata_http_endpoint
+    http_put_response_hop_limit = var.metadata_http_put_response_hop_limit
+    http_tokens                 = var.metadata_http_tokens
+    instance_metadata_tags      = var.metadata_instance_metadata_tags
+  }
 }
 
 resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
@@ -823,6 +830,13 @@ resource "aws_instance" "mod_ec2_instance_with_secondary_ebs" {
 
   timeouts {
     create = var.creation_policy_timeout
+  }
+
+  metadata_options {
+    http_endpoint               = var.metadata_http_endpoint
+    http_put_response_hop_limit = var.metadata_http_put_response_hop_limit
+    http_tokens                 = var.metadata_http_tokens
+    instance_metadata_tags      = var.metadata_instance_metadata_tags
   }
 }
 
