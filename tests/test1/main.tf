@@ -330,3 +330,48 @@ module "ar_r53" {
 
   tags = local.tags
 }
+
+module "ec2_ar_amazon2023_no_codedeploy" {
+  source = "../../module"
+
+  ec2_os                       = "amazon2023"
+  instance_count               = 1
+  subnets                      = module.vpc.public_subnets
+  security_groups              = [module.vpc.default_sg]
+  key_pair                     = "CircleCI"
+  instance_type                = "t2.micro"
+  name                         = "${random_string.res_name.result}-ar_amazon2023_noncodedeploy"
+  install_codedeploy_agent     = false
+  enable_ebs_optimization      = false
+  tenancy                      = "default"
+  backup_tag_value             = "False"
+  detailed_monitoring          = true
+  ssm_patching_group           = "Group1Patching"
+  primary_ebs_volume_size      = 60
+  primary_ebs_volume_iops      = 0
+  primary_ebs_volume_type      = "gp2"
+  secondary_ebs_volume_size    = 60
+  secondary_ebs_volume_iops    = 0
+  secondary_ebs_volume_type    = "gp2"
+  encrypt_secondary_ebs_volume = false
+
+  environment                       = "Development"
+  instance_role_managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonEC2FullAccess", "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole", "arn:aws:iam::aws:policy/CloudWatchActionsEC2Access"]
+  perform_ssm_inventory_tag         = true
+  cloudwatch_log_retention          = 30
+  ssm_association_refresh_rate      = "rate(1 day)"
+  notification_topic                = ""
+  disable_api_termination           = false
+  t2_unlimited_mode                 = "standard"
+  creation_policy_timeout           = "20m"
+  cw_cpu_high_operator              = "GreaterThanThreshold"
+  cw_cpu_high_threshold             = 90
+  cw_cpu_high_evaluations           = 15
+  cw_cpu_high_period                = 60
+  eip_allocation_id_count           = 1
+  eip_allocation_id_list            = [aws_eip.test_eip_2.id]
+
+  ebs_volume_tags = local.tags
+
+  tags = local.tags
+}
