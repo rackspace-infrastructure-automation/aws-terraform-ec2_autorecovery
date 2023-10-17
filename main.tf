@@ -216,35 +216,33 @@ locals {
   }
 
   user_data_map = {
-    amazon2       = "amazon_linux_userdata.sh"
-    amazon2023    = "amazon_linux_userdata.sh"
-    centos7       = "rhel_centos_7_userdata.sh"
-    rhel7         = "rhel_centos_7_userdata.sh"
-    rhel8         = "rhel_centos_8_userdata.sh"
-    ubuntu18      = "ubuntu_userdata.sh"
-    ubuntu20      = "ubuntu_userdata.sh"
-    debian10      = "debian_userdata.sh"
-    debian11      = "debian_userdata.sh"
-    windows2012r2 = "windows_userdata.ps1"
-    windows2016   = "windows_userdata.ps1"
-    windows2019   = "windows_userdata.ps1"
-    windows2022   = "windows_userdata.ps1"
+    amazon2     = "amazon_linux_userdata.sh"
+    amazon2023  = "amazon_linux_userdata.sh"
+    centos7     = "rhel_centos_7_userdata.sh"
+    rhel7       = "rhel_centos_7_userdata.sh"
+    rhel8       = "rhel_centos_8_userdata.sh"
+    ubuntu18    = "ubuntu_userdata.sh"
+    ubuntu20    = "ubuntu_userdata.sh"
+    debian10    = "debian_userdata.sh"
+    debian11    = "debian_userdata.sh"
+    windows2016 = "windows_userdata.ps1"
+    windows2019 = "windows_userdata.ps1"
+    windows2022 = "windows_userdata.ps1"
   }
 
   ebs_device_map = {
-    amazon2       = "/dev/sdf"
-    amazon2023    = "/dev/sdf"
-    centos7       = "/dev/sdf"
-    rhel7         = "/dev/sdf"
-    rhel8         = "/dev/sdf"
-    ubuntu18      = "/dev/sdf"
-    ubuntu20      = "/dev/sdf"
-    debian10      = "/dev/sdf"
-    debian11      = "/dev/sdf"
-    windows2012r2 = "xvdf"
-    windows2016   = "xvdf"
-    windows2019   = "xvdf"
-    windows2022   = "xvdf"
+    amazon2     = "/dev/sdf"
+    amazon2023  = "/dev/sdf"
+    centos7     = "/dev/sdf"
+    rhel7       = "/dev/sdf"
+    rhel8       = "/dev/sdf"
+    ubuntu18    = "/dev/sdf"
+    ubuntu20    = "/dev/sdf"
+    debian10    = "/dev/sdf"
+    debian11    = "/dev/sdf"
+    windows2016 = "xvdf"
+    windows2019 = "xvdf"
+    windows2022 = "xvdf"
   }
 
   # local.tags can and should be applied to all taggable resources
@@ -295,52 +293,49 @@ EOF
   }
 
   ami_owner_mapping = {
-    amazon2       = "137112412989"
-    amazon2023    = "137112412989"
-    centos7       = "125523088429"
-    rhel7         = "309956199498"
-    rhel8         = "309956199498"
-    ubuntu18      = "099720109477"
-    ubuntu20      = "099720109477"
-    debian10      = "136693071363"
-    debian11      = "136693071363"
-    windows2012r2 = "801119661308"
-    windows2016   = "801119661308"
-    windows2019   = "801119661308"
-    windows2022   = "801119661308"
+    amazon2     = "137112412989"
+    amazon2023  = "137112412989"
+    centos7     = "125523088429"
+    rhel7       = "309956199498"
+    rhel8       = "309956199498"
+    ubuntu18    = "099720109477"
+    ubuntu20    = "099720109477"
+    debian10    = "136693071363"
+    debian11    = "136693071363"
+    windows2016 = "801119661308"
+    windows2019 = "801119661308"
+    windows2022 = "801119661308"
   }
 
   ami_name_mapping = {
-    amazon2       = "amzn2-ami-hvm-2.0.*-ebs"
-    amazon2023    = "al2023-ami-2023*-kernel-*-x86_64"
-    centos7       = "CentOS Linux 7 x86_64 - *"
-    rhel7         = "RHEL-7.*_HVM-*x86_64*"
-    rhel8         = "RHEL-8.*_HVM-*x86_64*"
-    ubuntu18      = "ubuntu/images/hvm-ssd/*ubuntu-bionic-18.04-amd64-server*"
-    ubuntu20      = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
-    debian10      = "debian-10-amd64-*"
-    debian11      = "debian-11-amd64-*"
-    windows2012r2 = "Windows_Server-2012-R2_RTM-English-64Bit-Base*"
-    windows2016   = "Windows_Server-2016-English-Full-Base*"
-    windows2019   = "Windows_Server-2019-English-Full-Base*"
-    windows2022   = "Windows_Server-2022-English-Full-Base*"
+    amazon2     = "amzn2-ami-hvm-2.0.*-ebs"
+    amazon2023  = "al2023-ami-2023*-kernel-*-x86_64"
+    centos7     = "CentOS Linux 7 x86_64 - *"
+    rhel7       = "RHEL-7.*_HVM-*x86_64*"
+    rhel8       = "RHEL-8.*_HVM-*x86_64*"
+    ubuntu18    = "ubuntu/images/hvm-ssd/*ubuntu-bionic-18.04-amd64-server*"
+    ubuntu20    = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
+    debian10    = "debian-10-amd64-*"
+    debian11    = "debian-11-amd64-*"
+    windows2016 = "Windows_Server-2016-English-Full-Base*"
+    windows2019 = "Windows_Server-2019-English-Full-Base*"
+    windows2022 = "Windows_Server-2022-English-Full-Base*"
   }
 
   # Any custom AMI filters for a given OS can be added in this mapping
   image_filter = {
-    amazon2       = []
-    amazon2023    = []
-    rhel7         = []
-    rhel8         = []
-    centos7       = []
-    ubuntu18      = []
-    ubuntu20      = []
-    debian10      = []
-    debian11      = []
-    windows2012r2 = []
-    windows2016   = []
-    windows2019   = []
-    windows2022   = []
+    amazon2     = []
+    amazon2023  = []
+    rhel7       = []
+    rhel8       = []
+    centos7     = []
+    ubuntu18    = []
+    ubuntu20    = []
+    debian10    = []
+    debian11    = []
+    windows2016 = []
+    windows2019 = []
+    windows2022 = []
   }
 
   standard_filters = [
